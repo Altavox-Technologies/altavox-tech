@@ -237,7 +237,7 @@ export function ArchitectureCalculator({
       <div className="mt-6 rounded-2xl bg-[#030d17] p-5 text-white border border-slate-800">
         <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
             <span className="text-xs font-bold font-mono uppercase tracking-wider text-orange-300">
               Live Topology Schematic · {sector.toUpperCase()} Infrastructure
             </span>

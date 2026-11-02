@@ -19,7 +19,6 @@ import {
 } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
-import { TechStackTicker } from '@/components/tech-stack-ticker'
 import { serviceDetails } from '@/lib/site-data'
 
 const icons = [Code2, Network, Server, Globe, Database, Shield]
@@ -71,18 +70,9 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* Live Technologies Ticker in Motion */}
-        <TechStackTicker />
-
         {/* Services Grid */}
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center max-w-3xl mx-auto mb-12"
-          >
+          <div className="text-center max-w-3xl mx-auto mb-12">
             <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
               Specialized Solutions
             </span>
@@ -92,20 +82,15 @@ export default function ServicesPage() {
             <p className="mt-2 text-sm text-slate-600">
               Each engagement is delivered with direct socket-level testing, automated database migrations, and operational runbooks.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {serviceDetails.map((service, index) => {
               const Icon = icons[index % icons.length]
               return (
-                <motion.div
+                <div
                   key={service.title}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -6 }}
-                  className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-xs hover:border-[#f26522] hover:shadow-xl transition-all duration-200"
+                  className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-xs hover:border-[#f26522] transition-colors duration-150"
                 >
                   <div>
                     <div className="flex items-center justify-between">
@@ -139,7 +124,7 @@ export default function ServicesPage() {
                     <span>{service.highlight}</span>
                     <ArrowRight className="size-3.5 text-[#f26522] shrink-0" />
                   </div>
-                </motion.div>
+                </div>
               )
             })}
           </div>
@@ -165,20 +150,15 @@ export default function ServicesPage() {
                 { step: '02', title: 'Smallest System', desc: 'Design the leanest, most dependable architecture that reliably carries the workload without excess baggage.' },
                 { step: '03', title: 'Staging & Sandbox', desc: 'Verify API webhooks, database constraints, and queue latency in realistic live staging.' },
                 { step: '04', title: 'Handover & SLA', desc: 'Train internal operators, document runbooks, and provide continuous observability.' }
-              ].map((st, i) => (
-                <motion.div
+              ].map((st) => (
+                <div
                   key={st.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.45, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -4 }}
-                  className="rounded-2xl bg-slate-50 border border-slate-200 p-5 hover:border-[#f26522] transition duration-200"
+                  className="rounded-2xl bg-slate-50 border border-slate-200 p-5 hover:border-[#f26522] transition-colors duration-150"
                 >
                   <span className="text-xl font-mono font-black text-[#f26522]">{st.step}</span>
                   <h4 className="mt-3 text-sm font-bold text-[#07294d]">{st.title}</h4>
                   <p className="mt-1.5 text-xs text-slate-600 leading-relaxed">{st.desc}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
 

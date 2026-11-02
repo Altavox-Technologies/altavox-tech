@@ -114,22 +114,22 @@ const TECH_STACK: TechItem[] = [
 
 export function TechStackTicker() {
   const [isPaused, setIsPaused] = useState(false)
-  const [speed, setSpeed] = useState<number>(32) // seconds for full marquee pass
+  const [speed, setSpeed] = useState<number>(55) // Calm, steady, non-intrusive drift
   const [activeTech, setActiveTech] = useState<TechItem | null>(null)
 
   // Duplicate items twice to ensure endless continuous flow without blank gaps
   const tickerItems = [...TECH_STACK, ...TECH_STACK, ...TECH_STACK]
 
   return (
-    <section className="relative bg-gradient-to-b from-white via-slate-50 to-white py-10 border-y border-slate-200 overflow-hidden select-none">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-6">
+    <section className="relative bg-gradient-to-b from-white via-slate-50 to-white py-8 border-y border-slate-200 overflow-hidden select-none">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="flex size-2 rounded-full bg-[#f26522] animate-ping" />
-            <h3 className="text-xs font-extrabold uppercase tracking-widest text-[#07294d] flex items-center gap-2">
-              <span>Mission-Critical Production Stack In Motion</span>
-              <span className="inline-flex items-center gap-1 text-[10px] bg-orange-100 text-[#f26522] px-2 py-0.5 rounded-full font-bold">
-                <Activity className="size-3" /> Live Pipeline
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#07294d] flex items-center gap-2">
+              <span>Mission-Critical Production Stack</span>
+              <span className="inline-flex items-center gap-1 text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-semibold border border-slate-200">
+                <Activity className="size-3 text-[#f26522]" /> Live Pipeline
               </span>
             </h3>
           </div>
@@ -154,7 +154,7 @@ export function TechStackTicker() {
                 {isPaused ? (
                   <>
                     <Play className="size-3 text-amber-800" />
-                    <span>Resume Motion</span>
+                    <span>Resume</span>
                   </>
                 ) : (
                   <>
@@ -166,11 +166,11 @@ export function TechStackTicker() {
 
               <button
                 type="button"
-                onClick={() => setSpeed((prev) => (prev === 32 ? 18 : 32))}
+                onClick={() => setSpeed((prev) => (prev === 55 ? 30 : 55))}
                 className="text-[10px] font-mono px-2 py-1 text-slate-600 hover:bg-slate-100 rounded transition"
                 title="Toggle Speed"
               >
-                {speed === 18 ? 'Speed: Fast' : 'Speed: Normal'}
+                {speed === 30 ? 'Speed: Faster' : 'Speed: Calm'}
               </button>
             </div>
           </div>
@@ -207,11 +207,10 @@ export function TechStackTicker() {
           {tickerItems.map((tech, idx) => {
             const Icon = tech.icon
             return (
-              <motion.div
+              <div
                 key={`${tech.id}-${idx}`}
-                whileHover={{ y: -4, scale: 1.02 }}
                 onClick={() => setActiveTech(tech)}
-                className={`group flex items-center gap-3.5 rounded-xl border border-slate-200/90 bg-white/95 px-4 sm:px-5 py-3 shadow-xs hover:shadow-lg transition-all duration-200 cursor-pointer ${tech.bgHover} min-w-[280px] sm:min-w-[320px]`}
+                className={`group flex items-center gap-3.5 rounded-xl border border-slate-200 bg-white px-4 sm:px-5 py-3 shadow-xs hover:border-[#f26522] transition-colors duration-150 cursor-pointer min-w-[280px] sm:min-w-[320px]`}
               >
                 <div className={`flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100/90 border border-slate-200/80 group-hover:scale-105 transition-transform`}>
                   <Icon className={`size-5 ${tech.accentColor}`} />
@@ -235,7 +234,7 @@ export function TechStackTicker() {
                     {tech.subtext}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             )
           })}
         </motion.div>

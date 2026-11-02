@@ -20,7 +20,9 @@ import {
   Network,
   Server,
   Terminal,
-  Activity
+  Activity,
+  Zap,
+  Wifi
 } from 'lucide-react'
 import { coursesData, courseCategories } from '@/lib/courses-data'
 import { DemoModal } from '@/components/demo-modal'
@@ -112,6 +114,13 @@ export function AltavoxHeader() {
             >
               Book Tech Demo
             </button>
+            <Link
+              href="/wifi"
+              className="rounded bg-[#f26522] px-2.5 py-0.5 text-white hover:bg-[#e05312] transition flex items-center gap-1 font-bold text-[11px]"
+            >
+              <Wifi className="size-2.5" />
+              <span>Altavox WiFi</span>
+            </Link>
             <Link
               href="/computer"
               className="rounded bg-white/10 px-2 py-0.5 text-white hover:bg-[#f26522] transition flex items-center gap-1"
@@ -324,6 +333,14 @@ export function AltavoxHeader() {
             <Link href="/services" className="hover:text-[#f26522] transition">
               Services
             </Link>
+            <Link href="/launchpad" className="text-[#f26522] hover:text-[#d94f12] transition font-bold flex items-center gap-1">
+              <Zap className="size-3" />
+              <span>Tools</span>
+            </Link>
+            <Link href="/wifi" className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 transition">
+              <Wifi className="size-3 text-emerald-600" />
+              <span>Altavox WiFi</span>
+            </Link>
             <Link href="/deployments" className="hover:text-[#f26522] transition">
               Deployments
             </Link>
@@ -432,8 +449,10 @@ export function AltavoxHeader() {
 
               <nav aria-label="Mobile main navigation" className="mt-4 grid grid-cols-1 gap-1 text-sm font-semibold text-slate-800">
                 {[
+                  { href: '/wifi', label: 'Altavox WiFi (UpesiLipa Engine)', detail: 'Hotspot billing, vouchers & M-Pesa' },
                   { href: '/projects', label: 'Production Projects', detail: 'Products and platforms' },
                   { href: '/services', label: 'Engineering Services', detail: 'Software and infrastructure' },
+                  { href: '/launchpad', label: 'Engineering Tools & Launchpad', detail: 'MikroTik script forge & edge prober' },
                   { href: '/deployments', label: 'Deployments & Architecture', detail: 'Live systems and delivery' },
                   { href: '/courses', label: 'Tech Academy', detail: 'Learning and technical tracks' },
                   { href: '/store', label: 'Altavox Bookstore', detail: 'Browse digital and printed books' },

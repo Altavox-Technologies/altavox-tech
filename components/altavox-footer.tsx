@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Phone, Mail, MapPin, ShieldCheck, Award, Star, CheckCircle2, Terminal, Network, Server, Layers } from 'lucide-react'
+import { Phone, Mail, MapPin, ShieldCheck, Award, Star, CheckCircle2, Terminal, Network, Server, Layers, Wifi } from 'lucide-react'
 import { coursesData } from '@/lib/courses-data'
 
 export function AltavoxFooter() {
@@ -134,6 +134,12 @@ export function AltavoxFooter() {
               <li>
                 <Link href="/courses/nexora-cloud" className="hover:text-[#f26522] transition">
                   Nexora Cloud — Deployment Engine
+                </Link>
+              </li>
+              <li>
+                <Link href="/wifi" className="text-emerald-400 font-bold hover:underline flex items-center gap-1.5">
+                  <Wifi className="size-3" />
+                  <span>Altavox WiFi — UpesiLipa Hotspot Engine</span>
                 </Link>
               </li>
               <li>

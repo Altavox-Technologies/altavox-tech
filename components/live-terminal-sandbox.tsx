@@ -332,10 +332,7 @@ export function LiveTerminalSandbox() {
       <div className="bg-[#020b14] border-b border-white/10 px-4 py-2.5 flex flex-wrap items-center justify-between text-[11px] font-mono gap-3">
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-slate-300">
           <div className="flex items-center gap-2">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
-            </span>
+            <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
             <span className="text-white font-bold">NOC Gateway:</span>
             <span className="text-emerald-400 font-bold">ONLINE ({latencyJitter}ms)</span>
           </div>
@@ -473,18 +470,15 @@ export function LiveTerminalSandbox() {
       {/* 3. Terminal Output Screen */}
       <div
         ref={terminalScrollRef}
-        className="p-4 sm:p-5 font-mono text-xs leading-relaxed max-h-80 min-h-64 overflow-y-auto space-y-1.5 bg-[#030d17]/85 selection:bg-[#f26522] selection:text-white border-b border-white/5"
+        className="p-4 sm:p-5 font-mono text-xs leading-relaxed max-h-80 min-h-64 overflow-y-auto space-y-1 bg-[#030d17]/85 selection:bg-[#f26522] selection:text-white border-b border-white/5"
       >
         {currentLogs().map((log, idx) => {
           const isHighlight = log.includes('[WEBHOOK]') || log.includes('[SUCCESS]') || log.includes('[RENDER]') || log.includes('[VERIFIED]')
           const isWarn = log.includes('[SYNC]') || log.includes('[AUTH]') || log.includes('Executing:')
           const isPrompt = log.includes('root@altavox-edge:~#')
           return (
-            <motion.div
+            <div
               key={`${idx}-${log.slice(0, 20)}`}
-              initial={{ opacity: 0, x: -6 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
               className={`flex items-start gap-2 ${
                 isHighlight
                   ? 'text-emerald-300 font-semibold'
@@ -497,19 +491,15 @@ export function LiveTerminalSandbox() {
             >
               <span className="text-[#f26522] shrink-0 font-bold">›</span>
               <span className="break-all">{log}</span>
-            </motion.div>
+            </div>
           )
         })}
 
         {isRunning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-2 text-orange-400 pt-1 animate-pulse"
-          >
-            <span className="text-[#f26522]">›</span>
+          <div className="flex items-center gap-2 text-orange-400 pt-1">
+            <span className="size-1.5 rounded-full bg-orange-400 animate-pulse" />
             <span>Processing operational protocol command...</span>
-          </motion.div>
+          </div>
         )}
       </div>
 
@@ -561,8 +551,8 @@ export function LiveTerminalSandbox() {
 
       {/* 5. Interactive Trigger Controls Footer */}
       <div className="border-t border-white/10 bg-[#071d33] p-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span className="flex size-2 rounded-full bg-emerald-400 animate-ping" />
+        <div className="flex items-center gap-2.5">
+          <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
           <p className="text-xs text-slate-300">
             Simulate real-world operational traffic:
           </p>

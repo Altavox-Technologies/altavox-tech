@@ -6,7 +6,6 @@ import { motion } from 'motion/react'
 import { ArrowUpRight, Check, ExternalLink, Monitor, PhoneCall, Sparkles, Activity, ShieldCheck, ArrowRight } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
-import { TechStackTicker } from '@/components/tech-stack-ticker'
 import { projects } from '@/lib/site-data'
 
 const screenshotUrl = (site: string) =>
@@ -57,18 +56,9 @@ export default function ProjectsPage() {
           </div>
         </section>
 
-        {/* Live Technologies in Motion */}
-        <TechStackTicker />
-
         {/* Projects Showcase Grid */}
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5 }}
-            className="mb-12 flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end"
-          >
+          <div className="mb-12 flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end">
             <div>
               <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                 Our Portfolio
@@ -80,17 +70,13 @@ export default function ProjectsPage() {
             <p className="max-w-md text-xs sm:text-sm text-slate-500">
               Each platform is engineered with strict database constraints, live subscriber telemetry, and automated operator runbooks.
             </p>
-          </motion.div>
+          </div>
 
-          <div className="space-y-20">
+          <div className="space-y-16">
             {projects.map((project, index) => (
-              <motion.article
+              <article
                 key={project.slug}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-sm hover:border-[#f26522] transition-colors duration-150"
               >
                 <div className="grid gap-8 lg:grid-cols-12 lg:gap-12 items-center">
                   <div className="lg:col-span-5 space-y-4">
@@ -173,7 +159,7 @@ export default function ProjectsPage() {
                     </div>
                   </div>
                 </div>
-              </motion.article>
+              </article>
             ))}
           </div>
         </section>

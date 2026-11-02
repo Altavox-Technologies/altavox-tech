@@ -31,7 +31,10 @@ import {
   Database,
   Terminal,
   Activity,
-  ArrowUpRight
+  ArrowUpRight,
+  Cpu,
+  Calculator,
+  Wifi
 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { AltavoxHeader } from '@/components/altavox-header'
@@ -42,6 +45,8 @@ import { CurriculumModal } from '@/components/curriculum-modal'
 import { CareerAdvisorModal } from '@/components/career-advisor-modal'
 import { ArchitectureCalculator } from '@/components/architecture-calculator'
 import { LiveTerminalSandbox } from '@/components/live-terminal-sandbox'
+import { MikroTikConfigGenerator } from '@/components/mikrotik-config-generator'
+import { EdgeLatencyProber } from '@/components/edge-latency-prober'
 import { TechStackTicker } from '@/components/tech-stack-ticker'
 import { coursesData, courseCategories, CourseItem } from '@/lib/courses-data'
 
@@ -53,6 +58,7 @@ export default function HomePage() {
   const [curriculumModalOpen, setCurriculumModalOpen] = useState(false)
   const [selectedCourseForCurriculum, setSelectedCourseForCurriculum] = useState<CourseItem | null>(null)
   const [advisorModalOpen, setAdvisorModalOpen] = useState(false)
+  const [suiteTab, setSuiteTab] = useState<'sandbox' | 'mikrotik' | 'edge-prober' | 'calculator'>('sandbox')
 
   // Filter systems & courses by category and search
   const filteredCourses = coursesData.filter((item) => {
@@ -163,6 +169,16 @@ export default function HomePage() {
                 className="lg:col-span-7 space-y-6"
               >
                 
+                {/* Launchpad Engineering Suite Badge */}
+                <Link
+                  href="/launchpad"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3.5 py-1 text-xs font-mono text-orange-300 hover:bg-white/20 hover:border-[#f26522] transition"
+                >
+                  <span className="size-2 rounded-full bg-emerald-400" />
+                  <span>Interactive Suite: MikroTik Script Forge & Regional Edge Prober</span>
+                  <ArrowRight className="size-3 text-[#f26522]" />
+                </Link>
+
                 {/* Main Hero Headline */}
                 <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl leading-[1.15]">
                   Technology Built for <span className="text-[#f26522]">Real Work.</span>
@@ -198,15 +214,23 @@ export default function HomePage() {
                   {/* Popular Pills */}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-300">
                     <span className="font-semibold text-slate-400">Featured:</span>
-                    {['Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'NetBill-NOC', 'Nexora Cloud', 'Tech Academy'].map((tag) => (
+                    {['Altavox WiFi', 'Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'NetBill-NOC', 'Nexora Cloud'].map((tag) => (
                       <button
                         key={tag}
                         onClick={() => {
+                          if (tag === 'Altavox WiFi') {
+                            window.location.href = '/wifi'
+                            return
+                          }
                           setSearchQuery(tag.includes('ISP') ? 'Jaslyn Net' : tag)
                           const el = document.getElementById('systems-section')
                           el?.scrollIntoView({ behavior: 'smooth' })
                         }}
-                        className="rounded-md bg-white/10 px-2.5 py-1 text-slate-200 hover:bg-[#f26522] hover:text-white transition cursor-pointer"
+                        className={`rounded-md px-2.5 py-1 transition cursor-pointer ${
+                          tag === 'Altavox WiFi'
+                            ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-bold hover:bg-emerald-500 hover:text-white'
+                            : 'bg-white/10 text-slate-200 hover:bg-[#f26522] hover:text-white'
+                        }`}
                       >
                         {tag}
                       </button>
@@ -217,10 +241,18 @@ export default function HomePage() {
                 {/* Action CTA Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-3">
                   <Link
-                    href="/projects"
-                    className="flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[#e05312] hover:scale-[1.02] active:scale-[0.98] transition"
+                    href="/wifi"
+                    className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-900/30 hover:bg-emerald-700 transition"
                   >
-                    <span>Explore Production Systems</span>
+                    <Wifi className="size-4" />
+                    <span>Launch Altavox WiFi</span>
+                  </Link>
+
+                  <Link
+                    href="/projects"
+                    className="flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[#e05312] transition"
+                  >
+                    <span>Production Systems</span>
                     <ArrowRight className="size-4" />
                   </Link>
 
@@ -254,10 +286,7 @@ export default function HomePage() {
                   {/* Floating Live Indicator */}
                   <div className="flex items-center justify-between pb-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
-                      <span className="relative flex size-3">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex size-3 rounded-full bg-emerald-500"></span>
-                      </span>
+                      <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
                       <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
                         Architecture Preview
                       </span>
@@ -350,7 +379,7 @@ export default function HomePage() {
         <TechStackTicker />
 
         {/* ======================================================== */}
-        {/* INTERACTIVE PRODUCTION COCKPIT & LIVE TERMINAL SANDBOX */}
+        {/* INTERACTIVE PRODUCTION COCKPIT & LIVE ENGINEERING SUITE */}
         {/* ======================================================== */}
         <section className="bg-[#030d17] py-16 border-b border-slate-800 text-white relative overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -359,33 +388,116 @@ export default function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8"
+              className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8"
             >
               <div>
-                <span className="inline-block rounded-full bg-[#f26522] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                  Live Interactive Sandbox
-                </span>
-                <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold text-white">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="inline-block rounded-full bg-[#f26522] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                    Live Engineering Suite
+                  </span>
+                  <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-emerald-400" />
+                    <span>Production Verified</span>
+                  </span>
+                </div>
+                <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
                   Test Altavox Engineering in Action
                 </h2>
                 <p className="mt-2 text-sm text-slate-300 max-w-2xl">
-                  Simulate real-time MikroTik RouterOS API queue execution, Sammena School SIMS academic batch compilation, and Nexora Cloud database diagnostics right in your browser.
+                  Select an interactive utility below to generate real MikroTik RouterOS deployment scripts, probe East African telecom edge latency, or run live socket terminal commands.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>Simulated Production Socket Connected</span>
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  href="/launchpad"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition cursor-pointer"
+                >
+                  <span>Open Dedicated Launchpad</span>
+                  <ArrowUpRight className="size-3.5 text-[#f26522]" />
+                </Link>
               </div>
             </motion.div>
 
+            {/* Interactive Tool Switcher Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-white/10 scrollbar-none">
+              <button
+                onClick={() => setSuiteTab('sandbox')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'sandbox'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Terminal className="size-4" />
+                <span>Live Socket Terminal</span>
+              </button>
+
+              <button
+                onClick={() => setSuiteTab('mikrotik')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'mikrotik'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Cpu className="size-4" />
+                <span>MikroTik Config Forge</span>
+              </button>
+
+              <button
+                onClick={() => setSuiteTab('edge-prober')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'edge-prober'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Network className="size-4" />
+                <span>East Africa Edge Prober</span>
+              </button>
+
+              <button
+                onClick={() => setSuiteTab('calculator')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'calculator'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Calculator className="size-4" />
+                <span>ISP Sizing & ROI Modeler</span>
+              </button>
+            </div>
+
+            {/* Active Tool View */}
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              key={suiteTab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <LiveTerminalSandbox />
+              {suiteTab === 'sandbox' && (
+                <LiveTerminalSandbox />
+              )}
+
+              {suiteTab === 'mikrotik' && (
+                <div className="text-slate-900">
+                  <MikroTikConfigGenerator onDeployConsultation={(summary) => handleOpenDemo(summary)} />
+                </div>
+              )}
+
+              {suiteTab === 'edge-prober' && (
+                <div className="text-slate-900">
+                  <EdgeLatencyProber onScheduleAssessment={() => handleOpenDemo('Edge Latency & Network Audit')} />
+                </div>
+              )}
+
+              {suiteTab === 'calculator' && (
+                <div className="text-slate-900 rounded-3xl bg-white p-6 sm:p-8 shadow-xl">
+                  <ArchitectureCalculator onSelectSetup={(summary) => handleOpenDemo(summary)} />
+                </div>
+              )}
             </motion.div>
           </div>
         </section>
@@ -449,20 +561,14 @@ export default function HomePage() {
 
             {/* Systems Grid */}
             <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCourses.map((item, idx) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.1 }}
-                  transition={{ duration: 0.5, delay: Math.min(idx * 0.08, 0.4), ease: [0.22, 1, 0.36, 1] }}
-                >
+              {filteredCourses.map((item) => (
+                <div key={item.id}>
                   <AltavoxCourseCard
                     course={item}
                     onViewCurriculum={handleOpenCurriculum}
                     onBookDemo={handleOpenDemo}
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -621,14 +727,7 @@ export default function HomePage() {
             <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               
               {/* Pillar 1 */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition duration-200"
-              >
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-[#f26522]">01</span>
                 </div>
@@ -638,17 +737,10 @@ export default function HomePage() {
                 <p className="mt-2 text-xs leading-6 text-slate-600">
                   Understand the real operation before choosing the technology stack. We diagnose workflow friction before writing a single line of production code.
                 </p>
-              </motion.div>
+              </div>
 
               {/* Pillar 2 */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition duration-200"
-              >
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-amber-400">02</span>
                 </div>
@@ -658,17 +750,10 @@ export default function HomePage() {
                 <p className="mt-2 text-xs leading-6 text-slate-600">
                   Prefer simple, observable systems over unnecessary complexity. Every network call, payment webhook, and database transaction is strictly auditable.
                 </p>
-              </motion.div>
+              </div>
 
               {/* Pillar 3 */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.5, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition duration-200"
-              >
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-cyan-300">03</span>
                 </div>
@@ -678,17 +763,10 @@ export default function HomePage() {
                 <p className="mt-2 text-xs leading-6 text-slate-600">
                   Build for the operators who will maintain the system daily. Intuitive cockpits, comprehensive documentation, and zero mysterious vendor lock-in.
                 </p>
-              </motion.div>
+              </div>
 
               {/* Pillar 4 */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -4 }}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition duration-200"
-              >
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-emerald-400">04</span>
                 </div>
@@ -698,7 +776,7 @@ export default function HomePage() {
                 <p className="mt-2 text-xs leading-6 text-slate-600">
                   Failover routing, sub-millisecond connection pools, and container isolation ensure that when the load spikes, your services stay responsive.
                 </p>
-              </motion.div>
+              </div>
 
             </div>
           </div>
@@ -741,15 +819,10 @@ export default function HomePage() {
 
             {/* Case Studies Grid */}
             <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {caseStudies.map((study, idx) => (
-                <motion.div
+              {caseStudies.map((study) => (
+                <div
                   key={study.name}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.5, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -4 }}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-slate-300 transition duration-200"
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col justify-between hover:border-[#f26522] transition-colors duration-150"
                 >
                   <div>
                     {/* Header with Outcome Badge */}
@@ -793,7 +866,7 @@ export default function HomePage() {
                       Read Case Study →
                     </Link>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -805,13 +878,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="py-20 bg-white border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col md:flex-row md:items-end md:justify-between gap-4"
-            >
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
                 <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                   Field Notes & Architecture
@@ -831,18 +898,13 @@ export default function HomePage() {
                 <span>Browse All Articles</span>
                 <ArrowRight className="size-4" />
               </Link>
-            </motion.div>
+            </div>
 
             <div className="mt-10 grid gap-6 sm:grid-cols-3">
               {articles.map((art, idx) => (
-                <motion.div
+                <div
                   key={idx}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ y: -4 }}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 p-6 flex flex-col justify-between hover:border-[#f26522] hover:bg-white hover:shadow-md transition duration-200"
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-6 flex flex-col justify-between hover:border-[#f26522] hover:bg-white transition-colors duration-150"
                 >
                   <div>
                     <div className="flex items-center justify-between text-xs">
@@ -864,7 +926,7 @@ export default function HomePage() {
                     <span>Read Full Note</span>
                     <ArrowUpRight className="size-3.5" />
                   </Link>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
