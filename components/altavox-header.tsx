@@ -449,7 +449,7 @@ export function AltavoxHeader() {
 
               <nav aria-label="Mobile main navigation" className="mt-4 grid grid-cols-1 gap-1 text-sm font-semibold text-slate-800">
                 {[
-                  { href: '/wifi', label: 'Altavox WiFi (UpesiLipa Engine)', detail: 'Hotspot billing, vouchers & M-Pesa' },
+                  { href: '/wifi', label: 'Altavox WiFi Cloud Portal', detail: 'Hotspot billing, vouchers & M-Pesa' },
                   { href: '/projects', label: 'Production Projects', detail: 'Products and platforms' },
                   { href: '/services', label: 'Engineering Services', detail: 'Software and infrastructure' },
                   { href: '/launchpad', label: 'Engineering Tools & Launchpad', detail: 'MikroTik script forge & edge prober' },

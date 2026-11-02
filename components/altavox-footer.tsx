@@ -139,7 +139,7 @@ export function AltavoxFooter() {
               <li>
                 <Link href="/wifi" className="text-emerald-400 font-bold hover:underline flex items-center gap-1.5">
                   <Wifi className="size-3" />
-                  <span>Altavox WiFi — UpesiLipa Hotspot Engine</span>
+                  <span>Altavox WiFi — Cloud Hotspot Platform</span>
                 </Link>
               </li>
               <li>
