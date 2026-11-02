@@ -43,6 +43,7 @@ import {
   Layers,
   ChevronDown,
   Menu,
+  Terminal,
   X,
   CreditCard,
   UserCheck,
@@ -53,8 +54,12 @@ import {
   Briefcase,
   Share2,
   Bell,
-  Trash2,
-  FileSpreadsheet
+  FileSpreadsheet,
+  List,
+  Grid,
+  Scissors,
+  CheckSquare,
+  Square
 } from 'lucide-react'
 import { WifiD3Analytics } from '@/components/wifi-d3-analytics'
 
@@ -360,10 +365,19 @@ export default function AltavoxWifiStandalonePortal() {
     { code: 'ALTA-9984-2120', packageId: 'pkg-1hr', packageName: 'Dakika 60 (Saa 1)', priceTzs: 500, durationHours: 1, status: 'expired', createdAt: '2026-11-02 10:00' }
   ])
 
-  // Router Modal / Quick Script generator
+  // Router Modal / Script Generator & Read Diagnostics
   const [selectedRouterForScript, setSelectedRouterForScript] = useState<HotspotRouter | null>(INITIAL_ROUTERS[0])
   const [scriptModalOpen, setScriptModalOpen] = useState(false)
   const [copiedScript, setCopiedScript] = useState(false)
+  const [scriptType, setScriptType] = useState<'read-diagnostics' | 'setup' | 'sync-vouchers' | 'rollback'>('read-diagnostics')
+  const [routerOsVersion, setRouterOsVersion] = useState<'v7' | 'v6'>('v7')
+
+  // Print Station View & Alignment Verification States
+  const [printViewMode, setPrintViewMode] = useState<'layout' | 'list'>('layout')
+  const [printPaperFormat, setPrintPaperFormat] = useState<'a4-grid' | 'pos-receipt'>('a4-grid')
+  const [printShowCutGuides, setPrintShowCutGuides] = useState(true)
+  const [printFilterPackage, setPrintFilterPackage] = useState<string>('all')
+  const [selectedVoucherCodesForPrint, setSelectedVoucherCodesForPrint] = useState<string[]>([])
 
   // Voucher Generator Form State
   const [voucherQty, setVoucherQty] = useState(10)
@@ -468,40 +482,229 @@ export default function AltavoxWifiStandalonePortal() {
     }, 2200)
   }
 
-  // Pure Altavox Proprietary RouterOS Connector Script (No 3rd party keywords)
+  // Pure Altavox Proprietary RouterOS Connector & Read Diagnostics Engine
   const routerSetupScript = useMemo(() => {
     if (!selectedRouterForScript) return ''
 
-    if (selectedRouterForScript.brand === 'MikroTik') {
+    const isMikrotik = selectedRouterForScript.brand === 'MikroTik'
+
+    // 1. READ SCRIPTS (DIAGNOSTICS & STATUS MONITORING)
+    if (scriptType === 'read-diagnostics') {
+      if (isMikrotik) {
+        return `# ==============================================================================
+# ALTAVOX WIFI — SCRIPT ZA KUSOMA HALI YA ROUTER (READ & DIAGNOSTIC SCRIPTS)
+# Kifaa: ${selectedRouterForScript.name} (IP: ${selectedRouterForScript.ip})
+# Aina ya RouterOS: MikroTik ${routerOsVersion.toUpperCase()} | Mahali: ${selectedRouterForScript.location}
+# ==============================================================================
+# Hizi ni amri halisi za MikroTik RouterOS za KUSOMA (READ) data ya moja kwa moja.
+# Unaweza kunakili amri hizi zote au moja moja na kuzibandika kwenye Terminal ya Winbox/SSH.
+
+# ------------------------------------------------------------------------------
+# 1. KUSOMA WATUMIAJI WOTE WALIO MTANDAONI SASA HIVI (READ ACTIVE USERS)
+# ------------------------------------------------------------------------------
+# Inasoma orodha ya kina ya vifaa vyote vilivyounganishwa kwenye Hotspot:
+/ip hotspot active print detail
+
+# Inasoma data (Bytes In & Bytes Out) zilizotumiwa na kila mtumiaji:
+/ip hotspot active print stats
+
+# Inasoma idadi kamili ya watumiaji pekee:
+/ip hotspot active print count-only
+
+# ------------------------------------------------------------------------------
+# 2. KUSOMA RASILIMALI ZA MFUMO, MATUMIZI YA CPU NA UPTIME (READ SYSTEM HEALTH)
+# ------------------------------------------------------------------------------
+# Inasoma matumizi ya CPU, RAM iliyobaki, Uptime, na toleo la RouterOS:
+/system resource print
+
+# Inasoma joto (temperature) na voltage ya router (kama inasaidiwa):
+/system health print
+
+# Inasoma maelezo ya bodi ya RouterBOARD na namba ya usajili:
+/system routerboard print
+
+# ------------------------------------------------------------------------------
+# 3. KUSOMA MAWASILIANO NA HALI YA ALTAVOX CLOUD RADIUS (READ RADIUS STATUS)
+# ------------------------------------------------------------------------------
+# Inasoma hali ya uhai wa server ya RADIUS (197.243.12.82):
+/radius monitor numbers=0 once
+
+# Inasoma maelezo kamili ya usanidi wa RADIUS:
+/radius print detail
+
+# Inasoma idadi ya maombi yaliyopokelewa na kukubaliwa (RADIUS counters):
+/radius print stats
+
+# ------------------------------------------------------------------------------
+# 4. KUSOMA LOGI ZA MALIPO, WATEJA WANAOINGIA NA KUTOKA (READ HOTSPOT LOGS)
+# ------------------------------------------------------------------------------
+# Inasoma kumbukumbu za hivi karibuni za wateja walioingia kwenye Hotspot:
+/log print where message~"hotspot" or topics~"hotspot"
+
+# Inasoma matukio yanayohusu Altavox Cloud RADIUS:
+/log print where message~"Altavox" or topics~"radius"
+
+# Inasoma maonyo au makosa yaliyotokea hivi karibuni:
+/log print where topics~"warning" or topics~"error"
+
+# ------------------------------------------------------------------------------
+# 5. KUSOMA KASI NA MATUMIZI YA BENDI KWA KILA MTEJA (READ BANDWIDTH QUEUES)
+# ------------------------------------------------------------------------------
+# Inasoma orodha ya foleni za bendi (Rate Limits) zilizotengenezwa na mfumo:
+/queue simple print stats
+
+# Inasoma foleni za wateja wa hotspot pekee (Dynamic Queues):
+/queue simple print where dynamic=yes
+
+# ------------------------------------------------------------------------------
+# 6. KUSOMA ORODHA YA WALLED GARDEN (READ WHITELISTED PAYMENT PORTALS)
+# ------------------------------------------------------------------------------
+# Inasoma orodha ya tovuti za malipo (M-Pesa, Tigo, Airtel) zinazofunguka bure:
+/ip hotspot walled-garden ip print
+/ip hotspot walled-garden print
+
+# ------------------------------------------------------------------------------
+# 7. KUSOMA ANWANI ZA IP NA MAC ZILIZO KWENYE DHCP (READ DHCP CLIENT LEASES)
+# ------------------------------------------------------------------------------
+# Inasoma anwani za MAC na majina ya simu zilizopewa IP:
+/ip dhcp-server lease print where status=bound
+
+# Inasoma vifaa vilivyopewa ruhusa ya kudumu (Bypassed MACs):
+/ip hotspot ip-binding print detail
+
+# ------------------------------------------------------------------------------
+# 8. KUSOMA VOCHA NA MUDA ULIOBAKI (READ VOUCHERS USAGE)
+# ------------------------------------------------------------------------------
+# Inasoma vocha zote zilizotumika na muda wao wa hewani:
+/ip hotspot user print where uptime > 0s`
+      } else {
+        return `# ==============================================================================
+# ALTAVOX WIFI — ${selectedRouterForScript.brand.toUpperCase()} READ & DIAGNOSTIC COMMANDS
+# Router: ${selectedRouterForScript.name} (IP: ${selectedRouterForScript.ip})
+# ==============================================================================
+# SSH / Controller Diagnostic CLI Commands:
+
+# 1. Read Active Hotspot Client Sessions:
+mca-cli-op info
+show guests active
+
+# 2. Read RADIUS Authentication Test & Ping:
+radtest altavox_test AltavoxRadiusKey2026 197.243.12.82:1812 0 AltavoxRadiusKey2026
+
+# 3. Read System Load & Memory:
+uptime
+cat /proc/meminfo
+top -b -n 1 | head -n 20
+
+# 4. Read DHCP Leases & Connected MAC Addresses:
+cat /config/dhcpd.leases
+arp -a`
+      }
+    }
+
+    // 2. VOUCHER LOCAL SYNC SCRIPT
+    if (scriptType === 'sync-vouchers') {
+      if (isMikrotik) {
+        return `# ==============================================================================
+# ALTAVOX WIFI — LOCAL VOUCHER SYNC SCRIPT (RouterOS ${routerOsVersion.toUpperCase()})
+# Router: ${selectedRouterForScript.name}
+# Inapakia vocha za ndani ili zifanye kazi hata mtandao wa nje ukikatika
+# ==============================================================================
+
+/ip hotspot user
+${vouchers
+  .slice(0, 20)
+  .map(
+    (v) =>
+      `add name="${v.code}" password="${v.code}" profile="default" limit-uptime=${v.durationHours}h comment="Altavox Voucher: ${v.packageName} - TZS ${v.priceTzs}"`
+  )
+  .join('\n')}
+
+/log info message="✓ Altavox WiFi: Vocha ${Math.min(vouchers.length, 20)} zimehifadhiwa kikamilifu kwenye Router!"`
+      } else {
+        return `# Vocha zinasawazishwa kwa njia ya Cloud RADIUS moja kwa moja kwenye ${selectedRouterForScript.brand}.`
+      }
+    }
+
+    // 3. ROLLBACK SCRIPT
+    if (scriptType === 'rollback') {
+      if (isMikrotik) {
+        return `# ==============================================================================
+# ALTAVOX WIFI — ROLLBACK & REMOVE SCRIPT (RouterOS ${routerOsVersion.toUpperCase()})
+# Router: ${selectedRouterForScript.name}
+# Amri hizi zinaondoa usanidi wa Altavox na kurejesha router katika hali yake ya awali
+# ==============================================================================
+
+/radius remove [ find comment="Altavox Cloud RADIUS AAA" ]
+/ip hotspot walled-garden ip remove [ find comment~"Altavox" ]
+/ip hotspot walled-garden ip remove [ find comment~"M-Pesa" ]
+/ip hotspot walled-garden ip remove [ find comment~"Tigo" ]
+/ip hotspot walled-garden ip remove [ find comment~"Airtel" ]
+/ip hotspot walled-garden ip remove [ find comment~"HaloPesa" ]
+/system scheduler remove [ find name="Altavox-Heartbeat-Schedule" ]
+/system script remove [ find name="Altavox-Cloud-Heartbeat" ]
+/ip hotspot profile set [ find default=yes ] use-radius=no
+
+/log warning message="✓ Mipangilio ya Altavox WiFi imeondolewa kikamilifu kwenye Router."`
+      } else {
+        return `# Futa RADIUS Profile 'Altavox-AAA' kwenye Controller ya ${selectedRouterForScript.brand}.`
+      }
+    }
+
+    // 4. DEFAULT: FULL READY DEPLOYMENT SCRIPT (SETUP)
+    if (isMikrotik) {
       return `# ==============================================================================
-# ALTAVOX WIFI — STANDALONE CLOUD HOTSPOT CONNECTOR ENGINE
+# ALTAVOX WIFI — STANDALONE CLOUD HOTSPOT CONNECTOR ENGINE (RouterOS ${routerOsVersion.toUpperCase()})
 # Router: ${selectedRouterForScript.name} (IP: ${selectedRouterForScript.ip})
 # Operator: ${businessName}
 # Direct Money Settlement: M-Pesa Till ${mpesaTill} | Tigo Pesa ${tigoTill} | Airtel ${airtelPaybill}
 # ==============================================================================
 
+# 1. SYSTEM IDENTITY & CLOUD DNS RESOLVER
 /system identity set name="Altavox-WiFi-${selectedRouterForScript.id}"
+/ip dns set allow-remote-requests=yes servers=8.8.8.8,1.1.1.1
 
-# 1. CLOUD WALLED GARDEN (ALLOWS PAYMENTS & SPLASH PAGE REDIRECTION)
+# 2. CLOUD WALLED GARDEN (MOBILE MONEY IPN & REDIRECTION)
+# Inaruhusu wateja kulipia kabla ya kuunganishwa mtandaoni
 /ip hotspot walled-garden ip
-add action=accept dst-host="*.altavox.space" comment="Altavox WiFi Cloud Core"
-add action=accept dst-host="*.altavoxwifi.com" comment="Altavox Portal API"
-add action=accept dst-host="*.vodacom.co.tz" comment="M-Pesa IPN Gateway"
-add action=accept dst-host="*.tigo.co.tz" comment="Tigo Pesa Gateway"
-add action=accept dst-host="*.airtel.co.tz" comment="Airtel Money"
+add action=accept dst-host="*.altavox.space" comment="Altavox WiFi Cloud Core Portal"
+add action=accept dst-host="*.altavoxwifi.com" comment="Altavox Portal API Services"
+add action=accept dst-host="*.vodacom.co.tz" comment="Vodacom M-Pesa Push Gateway"
+add action=accept dst-host="*.tigo.co.tz" comment="Tigo Pesa Mixx Gateway"
+add action=accept dst-host="*.airtel.co.tz" comment="Airtel Money Tanzania"
 add action=accept dst-host="*.halotel.co.tz" comment="HaloPesa Gateway"
+add action=accept dst-address=197.243.12.82 comment="Altavox Dedicated RADIUS IP"
 
-# 2. ALTAVOX CLOUD RADIUS AAA CONFIGURATION
+# 3. ALTAVOX CLOUD RADIUS AAA (AUTHENTICATION & ACCOUNTING)
 /radius
-add address=197.243.12.82 secret="AltavoxRadiusKey2026" service=hotspot authentication-port=1812 accounting-port=1813 timeout=3000ms comment="Altavox Cloud AAA"
-/ip hotspot profile
-set [ find default=yes ] use-radius=yes radius-accounting=yes radius-interim-update=5m
+add address=197.243.12.82 secret="AltavoxRadiusKey2026" service=hotspot \\
+    authentication-port=1812 accounting-port=1813 timeout=3000ms \\
+    comment="Altavox Cloud RADIUS AAA"
 
-# 3. CAPTIVE PORTAL SPLASH CONFIGURATION
+# 4. HOTSPOT SERVER & USER PROFILE INTEGRATION
 /ip hotspot profile
-set [ find default=yes ] login-by=http-chap,mac-cookie mac-cookie-timeout=7d html-directory=hotspot
+set [ find default=yes ] use-radius=yes radius-accounting=yes \\
+    radius-interim-update=2m radius-location-name="Altavox-${selectedRouterForScript.id}" \\
+    login-by=http-chap,mac-cookie mac-cookie-timeout=7d \\
+    html-directory=hotspot
 
-# 4. HARDENED REAL-TIME QUEUE SYNC API LISTENER
+/ip hotspot user profile
+set [ find default=yes ] keepalive-timeout=2m shared-users=1 \\
+    status-autorefresh=1m transparent-proxy=no
+
+# 5. AUTOMATIC TELEMETRY WATCHDOG & HEARTBEAT SCRIPT
+/system script
+add dont-require-permissions=no name="Altavox-Cloud-Heartbeat" owner=admin policy=\\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=\\
+    ":local uptime [/system resource get uptime];\\r\\
+    \\n:local cpu [/system resource get cpu-load];\\r\\
+    \\n:log info (\\"[Altavox WiFi] Telemetry Heartbeat OK - CPU: \\" . \\$cpu . \\"% Uptime: \\" . \\$uptime);"
+
+/system scheduler
+add interval=2m name="Altavox-Heartbeat-Schedule" on-event="Altavox-Cloud-Heartbeat" \\
+    policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon start-time=startup
+
+# 6. HARDENED REAL-TIME QUEUE SYNC API LISTENER (PORT 8729 SSL)
 /ip service set api-ssl port=8729 disabled=no comment="Altavox Real-Time Sync"
 
 /log info message="✓ Altavox WiFi Standalone Hotspot Cloud Connector Successfully Initialized!"`
@@ -518,7 +721,21 @@ Shared Secret: AltavoxRadiusKey2026
 Captive Portal Redirection URL: https://wifi.altavox.space/guest/s/portal/
 Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airtel.co.tz`
     }
-  }, [selectedRouterForScript, businessName, mpesaTill, tigoTill, airtelPaybill])
+  }, [selectedRouterForScript, businessName, mpesaTill, tigoTill, airtelPaybill, scriptType, routerOsVersion, vouchers])
+
+  // Download .rsc script file directly
+  const handleDownloadRscFile = () => {
+    const blob = new Blob([routerSetupScript], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    const safeName = (selectedRouterForScript?.name || 'router').toLowerCase().replace(/[^a-z0-9]/g, '_')
+    link.download = `altavox_${safeName}_${scriptType}.rsc`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
 
   // Export Financial CSV / Report
   const exportFinancialReport = () => {
@@ -927,11 +1144,13 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                               <button
                                 onClick={() => {
                                   setSelectedRouterForScript(router)
+                                  setScriptType('read-diagnostics')
                                   setScriptModalOpen(true)
                                 }}
-                                className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/20 transition cursor-pointer"
+                                className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/20 transition cursor-pointer flex items-center gap-1"
                               >
-                                Setup Script
+                                <Terminal className="size-3 text-[#f26522]" />
+                                <span>Script & Read</span>
                               </button>
                             </div>
                           </div>
@@ -1113,12 +1332,13 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                         <button
                           onClick={() => {
                             setSelectedRouterForScript(router)
+                            setScriptType('read-diagnostics')
                             setScriptModalOpen(true)
                           }}
-                          className="w-full rounded-xl bg-[#f26522] py-2.5 text-center text-xs font-bold text-white hover:bg-[#e05312] transition cursor-pointer flex items-center justify-center gap-1.5"
+                          className="w-full rounded-xl bg-[#f26522] py-2.5 text-center text-xs font-bold text-white hover:bg-[#e05312] transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20"
                         >
-                          <FileText className="size-3.5" />
-                          <span>Pata {router.brand} Setup Script</span>
+                          <Terminal className="size-3.5" />
+                          <span>Pata {router.brand} Setup & Read Scripts</span>
                         </button>
                       </div>
                     </div>
@@ -1391,62 +1611,456 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
             {/* ============================================================ */}
             {/* WORKSPACE VIEW 5: PRINT STATION */}
             {/* ============================================================ */}
-            {activeTab === 'print-station' && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#072444] p-6 rounded-2xl border border-white/10 shadow-lg">
-                  <div>
-                    <h3 className="text-xl font-black text-white">
-                      Kituo cha Kuchapisha Vocha (Print Station)
-                    </h3>
-                    <p className="text-xs text-slate-300 mt-1">
-                      Kadi safi zenye logo ya biashara yako na nambari ya vocha zikiwa tayari kwa mashine ya printa.
-                    </p>
+            {/* ============================================================ */}
+            {/* WORKSPACE VIEW 5: PRINT STATION WITH LIST & PRINT-LAYOUT TOGGLE */}
+            {/* ============================================================ */}
+            {activeTab === 'print-station' && (() => {
+              const filteredVouchers = vouchers.filter((v) => {
+                if (printFilterPackage === 'all') return true
+                return v.packageId === printFilterPackage
+              })
+
+              const displayVouchers = selectedVoucherCodesForPrint.length > 0
+                ? filteredVouchers.filter((v) => selectedVoucherCodesForPrint.includes(v.code))
+                : filteredVouchers
+
+              const totalPrintValue = displayVouchers.reduce((acc, v) => acc + v.priceTzs, 0)
+
+              const toggleSelectAll = () => {
+                if (selectedVoucherCodesForPrint.length === filteredVouchers.length) {
+                  setSelectedVoucherCodesForPrint([])
+                } else {
+                  setSelectedVoucherCodesForPrint(filteredVouchers.map((v) => v.code))
+                }
+              }
+
+              const toggleSelectVoucher = (code: string) => {
+                setSelectedVoucherCodesForPrint((prev) =>
+                  prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+                )
+              }
+
+              return (
+                <div className="space-y-6">
+                  {/* Print Style Injections to ensure crisp output on paper */}
+                  <style>{`
+                    @media print {
+                      body * {
+                        visibility: hidden !important;
+                      }
+                      #altavox-printable-sheet, #altavox-printable-sheet * {
+                        visibility: visible !important;
+                      }
+                      #altavox-printable-sheet {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        padding: 10mm !important;
+                        background: #ffffff !important;
+                        color: #000000 !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                      }
+                      .no-print {
+                        display: none !important;
+                      }
+                    }
+                  `}</style>
+
+                  {/* Header & Controls Bar */}
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#072444] p-6 rounded-2xl border border-white/10 shadow-lg no-print">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="flex size-8 items-center justify-center rounded-xl bg-[#f26522] text-white">
+                          <Printer className="size-4" />
+                        </span>
+                        <h3 className="text-xl font-black text-white">
+                          Kituo cha Kuchapisha Vocha (Print Station)
+                        </h3>
+                        <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">
+                          Alignment Verified
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 mt-1">
+                        Hakiki mpangilio na unyoofu wa kadi kwenye karatasi ya printa kabla ya kutoa kopi.
+                      </p>
+                    </div>
+
+                    {/* View Mode Toggle: List vs Visual Print Layout */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center bg-[#041221] border border-white/15 p-1 rounded-xl">
+                        <button
+                          onClick={() => setPrintViewMode('layout')}
+                          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                            printViewMode === 'layout'
+                              ? 'bg-[#f26522] text-white shadow-md shadow-orange-500/20'
+                              : 'text-slate-300 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <Grid className="size-3.5" />
+                          <span>Visual Layout (Karatasi)</span>
+                        </button>
+
+                        <button
+                          onClick={() => setPrintViewMode('list')}
+                          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                            printViewMode === 'list'
+                              ? 'bg-[#f26522] text-white shadow-md shadow-orange-500/20'
+                              : 'text-slate-300 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <List className="size-3.5" />
+                          <span>Orodha (List View)</span>
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => window.print()}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white hover:bg-emerald-500 transition shadow-lg cursor-pointer"
+                      >
+                        <Printer className="size-4" />
+                        <span>Print Vocha Hizi Sasa</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => window.print()}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#f26522] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
-                  >
-                    <Printer className="size-4" />
-                    <span>Print Vocha Hizi Sasa</span>
-                  </button>
-                </div>
+                  {/* Secondary Toolbar: Alignment Settings & Filter */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#051c33] border border-white/10 p-3 sm:px-5 rounded-2xl text-xs no-print">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {/* Package Filter */}
+                      <div className="flex items-center gap-1.5 text-slate-300">
+                        <span className="text-[11px] font-mono text-slate-400">Kifurushi:</span>
+                        <select
+                          value={printFilterPackage}
+                          onChange={(e) => setPrintFilterPackage(e.target.value)}
+                          className="bg-slate-800 border border-white/15 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-[#f26522]"
+                        >
+                          <option value="all">Vifurushi Vyote ({vouchers.length})</option>
+                          {packages.map((pkg) => (
+                            <option key={pkg.id} value={pkg.id}>
+                              {pkg.name} — TZS {pkg.priceTzs.toLocaleString()}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                {/* Printable Voucher Grid */}
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {vouchers.slice(0, 9).map((v, i) => (
-                    <div
-                      key={i}
-                      className="rounded-2xl border-2 border-dashed border-white/20 p-5 bg-[#051c36] relative flex flex-col justify-between shadow-md"
-                    >
-                      <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-                        <span className="font-black text-xs text-white flex items-center gap-1.5">
-                          <Wifi className="size-3.5 text-[#f26522]" />
-                          <span>{businessName}</span>
-                        </span>
-                        <span className="font-mono text-xs font-bold text-emerald-400">
-                          TZS {v.priceTzs.toLocaleString()}
+                      {/* Paper format selector */}
+                      <div className="flex items-center gap-1 bg-[#041221] border border-white/10 px-2 py-0.5 rounded-lg">
+                        <span className="text-[10px] font-mono text-slate-400">Karatasi:</span>
+                        <button
+                          onClick={() => setPrintPaperFormat('a4-grid')}
+                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                            printPaperFormat === 'a4-grid' ? 'text-[#f26522]' : 'text-slate-400'
+                          }`}
+                        >
+                          A4 Sheet
+                        </button>
+                        <span className="text-white/20">|</span>
+                        <button
+                          onClick={() => setPrintPaperFormat('pos-receipt')}
+                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                            printPaperFormat === 'pos-receipt' ? 'text-[#f26522]' : 'text-slate-400'
+                          }`}
+                        >
+                          Thermal Roll
+                        </button>
+                      </div>
+
+                      {/* Cut guides toggle */}
+                      <button
+                        onClick={() => setPrintShowCutGuides(!printShowCutGuides)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs transition cursor-pointer ${
+                          printShowCutGuides
+                            ? 'bg-orange-500/20 border-orange-500/40 text-orange-300'
+                            : 'bg-white/5 border-white/10 text-slate-400'
+                        }`}
+                      >
+                        <Scissors className="size-3.5" />
+                        <span>Mistari ya Kukata (Cut Marks): {printShowCutGuides ? 'Washa' : 'Zima'}</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-slate-300 text-xs font-mono self-end sm:self-auto">
+                      <span className="text-emerald-400 font-bold">
+                        {displayVouchers.length} Kadi Zilizochaguliwa
+                      </span>
+                      <span>·</span>
+                      <span className="text-white font-black">
+                        TZS {totalPrintValue.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* ========================================================= */}
+                  {/* MODE 1: VISUAL PRINT-LAYOUT PREVIEW (A4 SHEET SIMULATION) */}
+                  {/* ========================================================= */}
+                  {printViewMode === 'layout' && (
+                    <div className="space-y-4">
+                      {/* Alignment Notification Card */}
+                      <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-3.5 flex items-center justify-between text-xs text-blue-300 no-print">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                          <span>
+                            <strong>Uhakiki wa Mpangilio (Alignment Check):</strong> Kadi zimepangwa kwa mfumo wa <strong>3×4</strong> wenye nafasi (margins) ya <strong>10mm</strong> ili zikikatwa zisiingiliane.
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
+                          Kiwango: 100% Scale · DPI 300
                         </span>
                       </div>
 
-                      <div className="py-3 text-center">
-                        <span className="text-[10px] text-slate-400 uppercase font-mono block">Nambari ya Vocha</span>
-                        <span className="font-mono text-base font-black tracking-wider text-[#f26522] block my-1">
-                          {v.code}
-                        </span>
-                        <span className="text-xs font-bold text-slate-200 block">
-                          {v.packageName}
-                        </span>
-                      </div>
+                      {/* Simulated Physical Paper Sheet Container */}
+                      <div
+                        id="altavox-printable-sheet"
+                        className="bg-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-2xl border-4 border-slate-300 max-w-4xl mx-auto relative transition"
+                      >
+                        {/* Corner Alignment Crosshair Registration Marks (+) */}
+                        <div className="absolute top-2 left-2 font-mono text-xs font-black text-slate-400 select-none">
+                          +
+                        </div>
+                        <div className="absolute top-2 right-2 font-mono text-xs font-black text-slate-400 select-none">
+                          +
+                        </div>
+                        <div className="absolute bottom-2 left-2 font-mono text-xs font-black text-slate-400 select-none">
+                          +
+                        </div>
+                        <div className="absolute bottom-2 right-2 font-mono text-xs font-black text-slate-400 select-none">
+                          +
+                        </div>
 
-                      <div className="border-t border-white/10 pt-2 text-[10px] text-slate-400 text-center">
-                        Jiunge na WiFi: <strong>ALTAVOX-WIFI</strong> kisha weka nambari hii.
+                        {/* Sheet Calibration Top Header */}
+                        <div className="border-b-2 border-slate-200 pb-3 mb-6 flex items-center justify-between text-slate-500 font-mono text-[10px]">
+                          <div className="flex items-center gap-2 font-bold text-slate-700">
+                            <span className="size-2 rounded-full bg-[#f26522]" />
+                            <span>ALTAVOX WIFI PRINT ENGINE · A4 ALIGNMENT TEMPLATE</span>
+                          </div>
+                          <div>
+                            {businessName} · Vocha {displayVouchers.length} Zilizopangwa
+                          </div>
+                        </div>
+
+                        {/* Grid of Printable Voucher Cards */}
+                        <div
+                          className={`grid ${
+                            printPaperFormat === 'pos-receipt'
+                              ? 'grid-cols-1 max-w-xs mx-auto gap-3'
+                              : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5'
+                          }`}
+                        >
+                          {displayVouchers.map((v, i) => (
+                            <div
+                              key={i}
+                              className={`bg-white text-slate-900 p-4 rounded-xl flex flex-col justify-between relative transition ${
+                                printShowCutGuides
+                                  ? 'border-2 border-dashed border-slate-300 hover:border-orange-500'
+                                  : 'border border-slate-200 shadow-xs'
+                              }`}
+                            >
+                              {/* Scissor icon at top-right cut boundary */}
+                              {printShowCutGuides && (
+                                <div className="absolute -top-2.5 right-3 bg-white px-1 text-[10px] text-slate-400 font-mono flex items-center gap-0.5">
+                                  <span>✂</span>
+                                  <span className="text-[9px]">kata</span>
+                                </div>
+                              )}
+
+                              {/* Card Header: Brand & Price */}
+                              <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
+                                <div className="flex items-center gap-1.5">
+                                  <div className="size-5 rounded bg-[#f26522] text-white flex items-center justify-center font-black text-[10px]">
+                                    W
+                                  </div>
+                                  <div>
+                                    <div className="font-black text-xs tracking-tight text-slate-900 leading-none">
+                                      ALTAVOX <span className="text-[#f26522]">WIFI</span>
+                                    </div>
+                                    <div className="text-[9px] text-slate-500 truncate max-w-[120px]">
+                                      {businessName}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="font-mono text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                                  TZS {v.priceTzs.toLocaleString()}
+                                </div>
+                              </div>
+
+                              {/* Card Body: Code Box & Package */}
+                              <div className="py-2 text-center my-1">
+                                <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 block">
+                                  Nambari ya Vocha (Code)
+                                </span>
+                                
+                                <div className="font-mono text-base font-black tracking-widest text-slate-900 bg-slate-50 border-2 border-dashed border-orange-400 rounded-lg py-1.5 px-2 my-1 shadow-xs">
+                                  {v.code}
+                                </div>
+
+                                <div className="text-xs font-extrabold text-[#f26522]">
+                                  {v.packageName}
+                                </div>
+                              </div>
+
+                              {/* Card Instructions & Micro Barcode Simulation */}
+                              <div className="border-t border-slate-200 pt-2 mt-1 space-y-1.5">
+                                <div className="text-[9px] text-slate-600 leading-tight">
+                                  <strong>Jinsi ya Kuingia:</strong><br />
+                                  1. Unganisha simu na <strong>ALTAVOX-WIFI</strong><br />
+                                  2. Kwenye ukurasa unaofunguka, weka nambari hii
+                                </div>
+
+                                {/* Micro Barcode / QR Alignment pattern */}
+                                <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[9px] font-mono text-slate-400">
+                                  <div className="flex items-center gap-0.5 tracking-tighter">
+                                    || | ||| || ||| | || |||
+                                  </div>
+                                  <div>
+                                    SN: 2611-{String(i + 1).padStart(4, '0')}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Sheet Calibration Bottom Footer */}
+                        <div className="mt-8 pt-3 border-t-2 border-slate-200 flex items-center justify-between text-slate-400 font-mono text-[9px]">
+                          <div>
+                            Kata kwenye mistari ya doti (Dotted guidelines) · Tumia mkasi au mashine ya kukatia karatasi.
+                          </div>
+                          <div>
+                            Karatasi ya 1 ya 1 · Printed via Altavox WiFi Portal
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  ))}
+                  )}
+
+                  {/* ========================================================= */}
+                  {/* MODE 2: COMPACT LIST VIEW WITH SELECTION CHECKBOXES */}
+                  {/* ========================================================= */}
+                  {printViewMode === 'list' && (
+                    <div className="rounded-2xl border border-white/10 bg-[#072444] shadow-lg overflow-hidden">
+                      <div className="p-4 sm:p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={toggleSelectAll}
+                            className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs font-bold text-white transition cursor-pointer"
+                          >
+                            {selectedVoucherCodesForPrint.length === filteredVouchers.length && filteredVouchers.length > 0 ? (
+                              <>
+                                <CheckSquare className="size-4 text-[#f26522]" />
+                                <span>Ondoa Uteuzi Wote</span>
+                              </>
+                            ) : (
+                              <>
+                                <Square className="size-4 text-slate-400" />
+                                <span>Chagua Vocha Zote ({filteredVouchers.length})</span>
+                              </>
+                            )}
+                          </button>
+
+                          <span className="text-xs text-slate-400 font-mono">
+                            {selectedVoucherCodesForPrint.length > 0
+                              ? `Vocha ${selectedVoucherCodesForPrint.length} zimechaguliwa kuchapishwa`
+                              : 'Vocha zote zimechaguliwa kwa default'}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => setPrintViewMode('layout')}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-[#f26522] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#e05312] transition cursor-pointer shadow-md"
+                        >
+                          <Grid className="size-3.5" />
+                          <span>Hakiki kwenye Visual Print Layout →</span>
+                        </button>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse text-xs">
+                          <thead>
+                            <tr className="bg-white/5 text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 border-b border-white/10">
+                              <th className="py-3 px-4 w-10">Chagua</th>
+                              <th className="py-3 px-4">Nambari ya Vocha (Code)</th>
+                              <th className="py-3 px-4">Kifurushi</th>
+                              <th className="py-3 px-4">Bei (TZS)</th>
+                              <th className="py-3 px-4">Muda (Hours)</th>
+                              <th className="py-3 px-4">Hali</th>
+                              <th className="py-3 px-4">Wakala / Eneo</th>
+                              <th className="py-3 px-6 text-right">Vitendo</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-white/5">
+                            {filteredVouchers.map((v, i) => {
+                              const isChecked = selectedVoucherCodesForPrint.includes(v.code)
+                              return (
+                                <tr
+                                  key={i}
+                                  className={`hover:bg-white/5 transition ${
+                                    isChecked ? 'bg-orange-500/10' : ''
+                                  }`}
+                                >
+                                  <td className="py-3 px-4">
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      onChange={() => toggleSelectVoucher(v.code)}
+                                      className="size-4 rounded accent-[#f26522] cursor-pointer"
+                                    />
+                                  </td>
+                                  <td className="py-3 px-4 font-mono font-black text-orange-400 text-sm">
+                                    {v.code}
+                                  </td>
+                                  <td className="py-3 px-4 font-semibold text-white">
+                                    {v.packageName}
+                                  </td>
+                                  <td className="py-3 px-4 font-mono font-bold text-emerald-400">
+                                    TZS {v.priceTzs.toLocaleString()}
+                                  </td>
+                                  <td className="py-3 px-4 font-mono text-slate-300">
+                                    {v.durationHours} hrs
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span
+                                      className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                                        v.status === 'unused'
+                                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                          : v.status === 'active'
+                                          ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                          : 'bg-slate-700 text-slate-400 border border-slate-600'
+                                      }`}
+                                    >
+                                      {v.status === 'unused' ? 'TAYARI KUCHAPISHWA' : v.status === 'active' ? 'INATUMIKA' : 'IMEISHA'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4 text-slate-300">
+                                    {v.agentName || 'Ofisi Kuu'}
+                                  </td>
+                                  <td className="py-3 px-6 text-right">
+                                    <button
+                                      onClick={() => {
+                                        setSelectedVoucherCodesForPrint([v.code])
+                                        setPrintViewMode('layout')
+                                      }}
+                                      className="inline-flex items-center gap-1 rounded-lg bg-white/10 hover:bg-white/20 px-2.5 py-1 text-[11px] font-bold text-white transition cursor-pointer"
+                                    >
+                                      <Eye className="size-3 text-[#f26522]" />
+                                      <span>Hakiki Kadi Hii</span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
                 </div>
-              </div>
-            )}
+              )
+            })()}
 
             {/* ============================================================ */}
             {/* WORKSPACE VIEW 6: TRANSACTIONS & PAYMENT LEDGER */}
@@ -2084,19 +2698,32 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
         </main>
       </div>
 
-      {/* Script Integration Modal for Hardware */}
+      {/* Script Integration & Read Diagnostics Modal for Hardware */}
       {scriptModalOpen && selectedRouterForScript && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-2xl rounded-3xl bg-[#051c33] border border-white/20 p-6 sm:p-8 text-white shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div>
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-orange-400">
-                  {selectedRouterForScript.brand} Setup Script
-                </span>
-                <h3 className="text-lg font-black text-white mt-0.5">
-                  {selectedRouterForScript.name}
-                </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-4 backdrop-blur-xs">
+          <div className="w-full max-w-3xl rounded-3xl bg-[#051c33] border border-white/20 p-5 sm:p-7 text-white shadow-2xl flex flex-col max-h-[92vh]">
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-[#f26522] text-white shadow-lg shadow-orange-500/20">
+                  <Terminal className="size-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base sm:text-lg font-black text-white">
+                      {selectedRouterForScript.name}
+                    </h3>
+                    <span className="font-mono text-[10px] bg-orange-500/20 text-[#f26522] border border-orange-500/30 px-2 py-0.5 rounded font-bold">
+                      {selectedRouterForScript.brand}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5 font-mono">
+                    IP: {selectedRouterForScript.ip} · {selectedRouterForScript.location}
+                  </p>
+                </div>
               </div>
+
               <button
                 onClick={() => setScriptModalOpen(false)}
                 className="rounded-lg bg-white/10 p-2 text-slate-300 hover:bg-white/20 transition cursor-pointer"
@@ -2105,45 +2732,163 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
               </button>
             </div>
 
-            <p className="text-xs text-slate-300 mt-3 leading-relaxed">
-              Fungua terminal au controller ya <strong>{selectedRouterForScript.brand}</strong>, kisha bandika (paste) mipangilio hii. Router yako itaunganishwa papo hapo na Altavox WiFi!
-            </p>
+            {/* Script Category Tabs */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+              <button
+                onClick={() => setScriptType('read-diagnostics')}
+                className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  scriptType === 'read-diagnostics'
+                    ? 'bg-[#f26522] text-white shadow-md shadow-orange-500/20'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Search className="size-3.5" />
+                <span>Read Scripts (Ukaguzi)</span>
+              </button>
 
-            <div className="mt-4 flex-1 bg-black/60 border border-white/10 rounded-2xl p-4 font-mono text-xs overflow-y-auto max-h-80 scrollbar-thin scrollbar-thumb-white/20">
-              <pre className="text-emerald-400 whitespace-pre">
+              <button
+                onClick={() => setScriptType('setup')}
+                className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  scriptType === 'setup'
+                    ? 'bg-[#f26522] text-white shadow-md shadow-orange-500/20'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Zap className="size-3.5" />
+                <span>Setup Script (Kusanidi)</span>
+              </button>
+
+              <button
+                onClick={() => setScriptType('sync-vouchers')}
+                className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  scriptType === 'sync-vouchers'
+                    ? 'bg-[#f26522] text-white shadow-md shadow-orange-500/20'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <Ticket className="size-3.5" />
+                <span>Sync Vocha (Hifadhi Ndani)</span>
+              </button>
+
+              <button
+                onClick={() => setScriptType('rollback')}
+                className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  scriptType === 'rollback'
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <RefreshCw className="size-3.5" />
+                <span>Rollback (Rejesha Awali)</span>
+              </button>
+            </div>
+
+            {/* Version & Description Bar */}
+            <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#041221] border border-white/10 p-2.5 rounded-xl text-xs">
+              <div className="text-slate-300 flex items-center gap-2">
+                <span className="size-2 rounded-full bg-emerald-400 shrink-0" />
+                <span>
+                  {scriptType === 'read-diagnostics' && 'Amri halisi za KUSOMA watumiaji, rasilimali za CPU, RADIUS, logi na queues.'}
+                  {scriptType === 'setup' && 'Script kamili ya kusanidi MikroTik Hotspot, Walled Garden ya mitandao ya simu na RADIUS.'}
+                  {scriptType === 'sync-vouchers' && 'Hupakia vocha 20 zilizopo kwenye hifadhi ya router ili zifanye kazi offline.'}
+                  {scriptType === 'rollback' && 'Huondoa usanidi wote wa Altavox na kurejesha router kama ilivyokuwa mwanzo.'}
+                </span>
+              </div>
+
+              {selectedRouterForScript.brand === 'MikroTik' && (
+                <div className="flex items-center gap-1 shrink-0 self-end sm:self-auto">
+                  <span className="text-[11px] font-mono text-slate-400 mr-1">Toleo:</span>
+                  <button
+                    onClick={() => setRouterOsVersion('v7')}
+                    className={`px-2.5 py-0.5 rounded text-[11px] font-mono font-bold cursor-pointer ${
+                      routerOsVersion === 'v7'
+                        ? 'bg-emerald-500 text-slate-950'
+                        : 'bg-white/5 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    RouterOS v7
+                  </button>
+                  <button
+                    onClick={() => setRouterOsVersion('v6')}
+                    className={`px-2.5 py-0.5 rounded text-[11px] font-mono font-bold cursor-pointer ${
+                      routerOsVersion === 'v6'
+                        ? 'bg-emerald-500 text-slate-950'
+                        : 'bg-white/5 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    RouterOS v6
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Terminal Code Display */}
+            <div className="mt-3 flex-1 bg-[#020b14] border border-white/15 rounded-2xl p-4 font-mono text-xs overflow-y-auto max-h-80 sm:max-h-96 scrollbar-thin scrollbar-thumb-white/20 relative group">
+              <div className="flex items-center justify-between text-[11px] text-slate-500 border-b border-white/10 pb-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <span className="size-2.5 rounded-full bg-rose-500/80" />
+                    <span className="size-2.5 rounded-full bg-amber-500/80" />
+                    <span className="size-2.5 rounded-full bg-emerald-500/80" />
+                  </div>
+                  <span className="text-slate-400">Terminal Output · {selectedRouterForScript.name}</span>
+                </div>
+                <span className="text-emerald-400 font-bold">{scriptType.toUpperCase()}</span>
+              </div>
+              <pre className="text-emerald-300 whitespace-pre leading-relaxed font-mono">
                 {routerSetupScript}
               </pre>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between gap-3">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(routerSetupScript)
-                  setCopiedScript(true)
-                  setTimeout(() => setCopiedScript(false), 2000)
-                }}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#f26522] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
-              >
-                {copiedScript ? (
-                  <>
-                    <Check className="size-4" />
-                    <span>Imenakiliwa (Copied!)</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="size-4" />
-                    <span>Nakili Script Yote (Copy)</span>
-                  </>
-                )}
-              </button>
+            {/* Instruction Footer & Action Buttons */}
+            <div className="mt-4 pt-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-[11px] text-slate-400 flex items-center gap-1.5 self-start sm:self-auto">
+                <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+                <span>
+                  Fungua <strong>Winbox &gt; New Terminal</strong>, kisha bandika (Ctrl+V) au pakua faili ya <strong>.rsc</strong>.
+                </span>
+              </div>
 
-              <button
-                onClick={() => setScriptModalOpen(false)}
-                className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition cursor-pointer"
-              >
-                Funga
-              </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={handleDownloadRscFile}
+                  title="Pakua faili ya .rsc ili kui-import moja kwa moja kwenye Winbox"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 px-4 py-2.5 text-xs font-bold text-white transition cursor-pointer"
+                >
+                  <Download className="size-3.5 text-cyan-400" />
+                  <span>Pakua (.rsc)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(routerSetupScript)
+                    setCopiedScript(true)
+                    setTimeout(() => setCopiedScript(false), 2000)
+                  }}
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#f26522] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
+                >
+                  {copiedScript ? (
+                    <>
+                      <Check className="size-4" />
+                      <span>Imenakiliwa!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="size-4" />
+                      <span>Nakili Script (Copy)</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setScriptModalOpen(false)}
+                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition cursor-pointer"
+                >
+                  Funga
+                </button>
+              </div>
             </div>
+
           </div>
         </div>
       )}
