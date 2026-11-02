@@ -56,6 +56,7 @@ import {
   Trash2,
   FileSpreadsheet
 } from 'lucide-react'
+import { WifiD3Analytics } from '@/components/wifi-d3-analytics'
 
 // Interfaces
 interface WifiPackage {
@@ -874,6 +875,9 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     </div>
                   </div>
                 </div>
+
+                {/* D3.js Live Analytics Suite (Daily Revenue Trends, Peak Hours, Router Performance) */}
+                <WifiD3Analytics />
 
                 {/* Middle Grid: Routers Fleet + Recent Transactions */}
                 <div className="grid lg:grid-cols-12 gap-6">
