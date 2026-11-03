@@ -59,9 +59,11 @@ import {
   Grid,
   Scissors,
   CheckSquare,
-  Square
 } from 'lucide-react'
 import { WifiD3Analytics } from '@/components/wifi-d3-analytics'
+import { WifiMeshTopology } from '@/components/wifi-mesh-topology'
+import { WifiClientSessionsModal } from '@/components/wifi-client-sessions-modal'
+import { WifiAiNetworkAdvisor } from '@/components/wifi-ai-network-advisor'
 
 // Interfaces
 interface WifiPackage {
@@ -340,6 +342,7 @@ export default function AltavoxWifiStandalonePortal() {
   const [activeTab, setActiveTab] = useState<
     | 'overview'
     | 'routers'
+    | 'topology'
     | 'packages'
     | 'vouchers'
     | 'print-station'
@@ -352,6 +355,10 @@ export default function AltavoxWifiStandalonePortal() {
   >('overview')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
+  // Live Client Sessions Inspector State
+  const [clientSessionsModalOpen, setClientSessionsModalOpen] = useState(false)
+  const [selectedRouterForClients, setSelectedRouterForClients] = useState<HotspotRouter | null>(null)
 
   // Data states
   const [packages, setPackages] = useState<WifiPackage[]>(INITIAL_PACKAGES)
@@ -878,6 +885,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
             {[
               { id: 'overview', label: 'Dashboard (Muhtasari)', icon: LayoutDashboard },
               { id: 'routers', label: 'Vipanga Njia (Routers)', icon: Router, count: routers.length },
+              { id: 'topology', label: 'Ramani ya Mtandao (NOC)', icon: Radio },
               { id: 'packages', label: 'Vifurushi vya WiFi', icon: Zap, count: packages.length },
               { id: 'vouchers', label: 'Vocha za Karatasi', icon: Ticket },
               { id: 'print-station', label: 'Kituo cha Kuchapisha', icon: Printer },
@@ -970,6 +978,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 {[
                   { id: 'overview', label: 'Dashboard (Muhtasari)', icon: LayoutDashboard },
                   { id: 'routers', label: 'Vipanga Njia (Routers)', icon: Router },
+                  { id: 'topology', label: 'Ramani ya Mtandao (NOC)', icon: Radio },
                   { id: 'packages', label: 'Vifurushi vya WiFi', icon: Zap },
                   { id: 'vouchers', label: 'Vocha za Karatasi', icon: Ticket },
                   { id: 'print-station', label: 'Kituo cha Kuchapisha', icon: Printer },
@@ -1096,6 +1105,9 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 {/* D3.js Live Analytics Suite (Daily Revenue Trends, Peak Hours, Router Performance) */}
                 <WifiD3Analytics />
 
+                {/* Altavox AI Telemetry & Revenue Intelligence Advisor */}
+                <WifiAiNetworkAdvisor />
+
                 {/* Middle Grid: Routers Fleet + Recent Transactions */}
                 <div className="grid lg:grid-cols-12 gap-6">
                   {/* Left: Router Health Fleet */}
@@ -1132,15 +1144,22 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-4 text-xs font-mono">
-                              <div>
-                                <span className="text-slate-500 text-[10px] block">Wateja</span>
-                                <span className="font-bold text-white">{router.activeUsers}</span>
-                              </div>
+                            <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono flex-wrap">
                               <div>
                                 <span className="text-slate-500 text-[10px] block">Mauzo Leo</span>
                                 <span className="font-bold text-emerald-400">TZS {router.totalRevenueToday.toLocaleString()}</span>
                               </div>
+                              <button
+                                onClick={() => {
+                                  setSelectedRouterForClients(router)
+                                  setClientSessionsModalOpen(true)
+                                }}
+                                className="rounded-lg border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 px-2 py-1 text-[11px] font-bold text-cyan-300 transition cursor-pointer flex items-center gap-1"
+                                title="Chunguza wateja waliopo mtandaoni sasa"
+                              >
+                                <Users className="size-3 text-cyan-400" />
+                                <span>{router.activeUsers} Wateja</span>
+                              </button>
                               <button
                                 onClick={() => {
                                   setSelectedRouterForScript(router)
@@ -1150,7 +1169,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                                 className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/20 transition cursor-pointer flex items-center gap-1"
                               >
                                 <Terminal className="size-3 text-[#f26522]" />
-                                <span>Script & Read</span>
+                                <span>Script</span>
                               </button>
                             </div>
                           </div>
@@ -1328,23 +1347,41 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                         </div>
                       </div>
 
-                      <div className="mt-6 pt-4 border-t border-white/10 flex gap-2">
+                      <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedRouterForClients(router)
+                            setClientSessionsModalOpen(true)
+                          }}
+                          className="flex-1 rounded-xl bg-cyan-600/20 border border-cyan-500/30 py-2.5 text-center text-xs font-bold text-cyan-300 hover:bg-cyan-600/30 transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                        >
+                          <Users className="size-3.5 text-cyan-400" />
+                          <span>Chunguza Wateja ({router.activeUsers})</span>
+                        </button>
+
                         <button
                           onClick={() => {
                             setSelectedRouterForScript(router)
                             setScriptType('read-diagnostics')
                             setScriptModalOpen(true)
                           }}
-                          className="w-full rounded-xl bg-[#f26522] py-2.5 text-center text-xs font-bold text-white hover:bg-[#e05312] transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20"
+                          className="flex-1 rounded-xl bg-[#f26522] py-2.5 text-center text-xs font-bold text-white hover:bg-[#e05312] transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/20"
                         >
                           <Terminal className="size-3.5" />
-                          <span>Pata {router.brand} Setup & Read Scripts</span>
+                          <span>Setup & Read Scripts</span>
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* ============================================================ */}
+            {/* WORKSPACE VIEW: LIVE NETWORK MESH TOPOLOGY & NOC */}
+            {/* ============================================================ */}
+            {activeTab === 'topology' && (
+              <WifiMeshTopology />
             )}
 
             {/* ============================================================ */}
@@ -1902,12 +1939,36 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                                 </div>
                               </div>
 
-                              {/* Card Instructions & Micro Barcode Simulation */}
-                              <div className="border-t border-slate-200 pt-2 mt-1 space-y-1.5">
-                                <div className="text-[9px] text-slate-600 leading-tight">
-                                  <strong>Jinsi ya Kuingia:</strong><br />
-                                  1. Unganisha simu na <strong>ALTAVOX-WIFI</strong><br />
-                                  2. Kwenye ukurasa unaofunguka, weka nambari hii
+                              {/* Card Instructions & QR Auto-Connect */}
+                              <div className="border-t border-slate-200 pt-2 mt-1 space-y-2">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="text-[9px] text-slate-600 leading-tight flex-1">
+                                    <strong>Jinsi ya Kuingia:</strong><br />
+                                    1. Unganisha na <strong>ALTAVOX-WIFI</strong><br />
+                                    2. Weka vocha au scan QR kuingia papo hapo
+                                  </div>
+
+                                  {/* Dynamic QR Code Simulation for Auto-Login */}
+                                  <div className="size-11 bg-white border border-slate-300 p-0.5 rounded shrink-0 flex items-center justify-center shadow-xs" title="Scan kuunganishwa moja kwa moja">
+                                    <svg viewBox="0 0 25 25" className="size-full fill-slate-900">
+                                      <rect x="0" y="0" width="7" height="7" />
+                                      <rect x="1" y="1" width="5" height="5" fill="white" />
+                                      <rect x="2" y="2" width="3" height="3" />
+                                      <rect x="18" y="0" width="7" height="7" />
+                                      <rect x="19" y="1" width="5" height="5" fill="white" />
+                                      <rect x="20" y="2" width="3" height="3" />
+                                      <rect x="0" y="18" width="7" height="7" />
+                                      <rect x="1" y="19" width="5" height="5" fill="white" />
+                                      <rect x="2" y="20" width="3" height="3" />
+                                      <rect x="9" y="2" width="2" height="4" />
+                                      <rect x="13" y="1" width="3" height="2" />
+                                      <rect x="10" y="9" width="5" height="5" />
+                                      <rect x="18" y="10" width="4" height="2" />
+                                      <rect x="9" y="17" width="3" height="5" />
+                                      <rect x="15" y="18" width="5" height="2" />
+                                      <rect x="21" y="21" width="4" height="4" />
+                                    </svg>
+                                  </div>
                                 </div>
 
                                 {/* Micro Barcode / QR Alignment pattern */}
@@ -2891,6 +2952,16 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
 
           </div>
         </div>
+      )}
+
+      {/* Live Client Sessions Manager Modal */}
+      {clientSessionsModalOpen && selectedRouterForClients && (
+        <WifiClientSessionsModal
+          routerName={selectedRouterForClients.name}
+          routerIp={selectedRouterForClients.ip}
+          isOpen={clientSessionsModalOpen}
+          onClose={() => setClientSessionsModalOpen(false)}
+        />
       )}
 
     </div>
