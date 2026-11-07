@@ -29,13 +29,13 @@ export default function ProjectsPage() {
             >
               <div className="inline-flex items-center gap-2 rounded-full bg-[#f26522]/20 border border-[#f26522]/40 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-200 mb-4">
                 <Activity className="size-3.5 text-[#f26522]" />
-                <span>Production Deployments & Blueprints</span>
+                <span>Featured Projects & Engineering Blueprints</span>
               </div>
               
               <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
                 <div className="lg:col-span-8 space-y-4">
                   <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                    Production Systems. <span className="text-[#f26522]">Built for Real Operations.</span>
+                    Software Platforms. <span className="text-[#f26522]">Built for Real Operations.</span>
                   </h1>
                   <p className="max-w-2xl text-base sm:text-lg text-slate-200 leading-relaxed">
                     We focus our engineering work on connectivity infrastructure, ISP billing automation, and unified school information systems. Explore live architectures for Jaslyn Net and Sammena.
@@ -64,7 +64,7 @@ export default function ProjectsPage() {
                 Our Portfolio
               </span>
               <h2 className="mt-2 text-2xl sm:text-4xl font-extrabold text-[#07294d]">
-                Platforms in Production & Development
+                Featured Platforms & Engineering Work
               </h2>
             </div>
             <p className="max-w-md text-xs sm:text-sm text-slate-500">
@@ -125,7 +125,7 @@ export default function ProjectsPage() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 rounded-xl bg-[#f26522] px-5 py-3 text-xs font-bold text-white shadow-md hover:bg-[#e05312] transition cursor-pointer"
                         >
-                          <span>Visit Live Platform</span>
+                          <span>Open Project Website</span>
                           <ExternalLink className="size-3.5" />
                         </a>
                       )}
