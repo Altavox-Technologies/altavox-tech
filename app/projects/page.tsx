@@ -8,8 +8,10 @@ import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
 import { projects } from '@/lib/site-data'
 
-const screenshotUrl = (site: string) =>
-  'https://image.thum.io/get/width/1440/crop/1000/noanimate/' + site
+const projectScreenshots: Record<string, string> = {
+  'jaslyn-net': '/projects/jaslyn-net-live.png',
+  sammena: '/projects/sammena-live.png',
+}
 
 export default function ProjectsPage() {
   return (
@@ -150,7 +152,7 @@ export default function ProjectsPage() {
 
                     <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-100 shadow-lg group">
                       <Image
-                        src={screenshotUrl(project.url || '')}
+                        src={projectScreenshots[project.slug] ?? '/projects/jaslyn-net-live.png'}
                         alt={`${project.name} live platform screenshot`}
                         fill
                         unoptimized
