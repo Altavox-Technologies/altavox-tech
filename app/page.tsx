@@ -157,15 +157,10 @@ export default function HomePage() {
                 className="lg:col-span-7 space-y-6"
               >
                 
-                {/* Launchpad Engineering Suite Badge */}
-                <Link
-                  href="/launchpad"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3.5 py-1 text-xs font-mono text-orange-300 hover:bg-white/20 hover:border-[#f26522] transition"
-                >
-                  <span className="size-2 rounded-full bg-emerald-400" />
-                  <span>Interactive Suite: MikroTik Script Forge & Regional Edge Prober</span>
-                  <ArrowRight className="size-3 text-[#f26522]" />
-                </Link>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-mono text-orange-300">
+                  <span className="size-2 rounded-full bg-[#f26522]" />
+                  <span>Independent software engineering · Tanzania</span>
+                </div>
 
                 {/* Main Hero Headline */}
                 <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl leading-[1.15]">
