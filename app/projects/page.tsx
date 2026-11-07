@@ -75,6 +75,7 @@ export default function ProjectsPage() {
           <div className="space-y-16">
             {projects.map((project, index) => (
               <article
+                id={project.slug}
                 key={project.slug}
                 className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-sm hover:border-[#f26522] transition-colors duration-150"
               >
