@@ -97,18 +97,18 @@ export default function HomePage() {
       role: 'Regional ISP Provider',
       title: 'ISP billing workflows and MikroTik subscriber provisioning',
       outcome: 'Automated billing workflows',
-      previous: 'Manual bank slip verification & late-night reconnect tickets',
-      current: 'Payment-triggered provisioning workflows, subject to configured integrations',
-      quote: 'Jaslyn Net is presented as an ISP operations platform integrating billing, subscriber identity, and network automation.'
+      previous: 'Separate workflows for billing, subscriber identity, and network control',
+      current: 'A coordinated ISP operations platform for subscriber lifecycle, billing, AAA, and network automation, subject to enabled integrations',
+      quote: 'Jaslyn Net brings ISP billing, subscriber identity, AAA, and network automation into one operational platform.'
     },
     {
       name: 'Sammena Educational Complex',
       role: 'Pre & Primary School',
       title: 'School SIMS for student records and fee administration',
       outcome: 'School administration workflows',
-      previous: 'Physical ledger books, paper receipt booklets, lost student files',
-      current: 'Unified web portal for admissions, fee reconciliation, and PDF gradebooks',
-      quote: 'Sammena School uses a school information management platform for its public website and administration workflows.'
+      previous: 'School information and administration workflows handled across separate channels',
+      current: 'A school website and SIMS initiative for public information, admissions, announcements, and planned administration workflows',
+      quote: 'Sammena is a school website and SIMS initiative focused on connected school information and administration.'
     },
   ]
 
@@ -818,8 +818,8 @@ export default function HomePage() {
                     </h3>
 
                     {/* Review Quote */}
-                    <p className="mt-3 text-xs leading-6 text-slate-700 italic">
-                      &quot;{study.quote}&quot;
+                    <p className="mt-3 text-xs leading-6 text-slate-700">
+                      {study.quote}
                     </p>
 
                     {/* Operational Shift */}
@@ -840,10 +840,10 @@ export default function HomePage() {
                       <p className="text-[11px] text-slate-500">{study.role}</p>
                     </div>
                     <Link
-                      href="/case-studies"
+                      href="/projects"
                       className="text-xs font-bold text-[#f26522] hover:underline"
                     >
-                      Read Case Study →
+                      View Project →
                     </Link>
                   </div>
                 </div>
