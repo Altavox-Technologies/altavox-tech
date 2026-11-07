@@ -19,13 +19,13 @@ The public website is a Next.js App Router application. It uses React, TypeScrip
 
 Requirements:
 - Node.js 22 or newer
-- npm 10 or newer
+- Bun 1.2.22
 
-Install dependencies and start the development server:
+Install the exact locked dependencies and start the development server:
 
 ```bash
-npm install
-npm run dev
+bun install --frozen-lockfile
+bun run dev
 ```
 
 Open http://localhost:3000.
@@ -33,8 +33,8 @@ Open http://localhost:3000.
 ## Quality checks
 
 ```bash
-npm run typecheck
-npm run build
+bun run typecheck
+bun run build
 ```
 
 The `lint` script currently runs TypeScript's compiler in no-emit mode. It is a type-check, not an ESLint rule set.
