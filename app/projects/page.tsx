@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'motion/react'
-import { ArrowUpRight, Check, ExternalLink, Monitor, PhoneCall, Sparkles, Activity, ShieldCheck, ArrowRight } from 'lucide-react'
+import { ArrowUpRight, Check, ExternalLink, Monitor, PhoneCall, Sparkles, Activity, ShieldCheck, ArrowRight, LockKeyhole } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
 import { projects } from '@/lib/site-data'
@@ -143,23 +143,45 @@ export default function ProjectsPage() {
 
                   {/* Project Screenshot / Visual Preview */}
                   <div className="lg:col-span-7">
-                    <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-mono font-bold uppercase text-slate-400">Website Preview</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono text-slate-600 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
-                        <Monitor className="size-3" /> Responsive site capture
+                    <div className="mb-3 flex items-center justify-between gap-3 text-xs text-slate-500">
+                      <span className="font-mono font-bold uppercase text-slate-400">Live website preview</span>
+                      <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-mono text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                        <LockKeyhole className="size-3" /> Locked preview
                       </span>
                     </div>
 
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-100 shadow-lg group">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-100 shadow-lg">
                       <Image
                         src={projectScreenshots[project.slug] ?? '/projects/jaslyn-net-live.png'}
-                        alt={`${project.name} live platform screenshot`}
+                        alt={`${project.name} website preview fallback`}
                         fill
                         unoptimized
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 50vw"
-                        className="object-cover object-top group-hover:scale-[1.02] transition-transform duration-500"
+                        className="object-cover object-top"
                       />
+                      {project.url && (
+                        <iframe
+                          src={project.url}
+                          title={`${project.name} restricted website preview`}
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                          sandbox="allow-scripts"
+                          tabIndex={-1}
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 z-10 h-full w-full border-0 bg-white"
+                        />
+                      )}
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-3 py-2 text-[10px] font-semibold text-slate-600 backdrop-blur-sm">
+                        <span className="flex min-w-0 items-center gap-1.5">
+                          <LockKeyhole className="size-3 shrink-0 text-amber-700" />
+                          <span className="truncate">Read-only preview · navigation and forms disabled</span>
+                        </span>
+                        <span className="shrink-0 font-mono uppercase tracking-wide">Sandboxed</span>
+                      </div>
                     </div>
+                    <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+                      This embedded view is isolated from the Altavox website. It cannot submit forms, open popups, or navigate the parent page. If the project blocks embedding, the saved screenshot remains as the visual fallback.
+                    </p>
                   </div>
                 </div>
               </article>
