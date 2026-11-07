@@ -99,7 +99,6 @@ export default function HomePage() {
       outcome: 'Automated billing workflows',
       previous: 'Manual bank slip verification & late-night reconnect tickets',
       current: 'Payment-triggered provisioning workflows, subject to configured integrations',
-      image: '/public/projects/jaslyn-net-live.png',
       quote: 'Jaslyn Net is presented as an ISP operations platform integrating billing, subscriber identity, and network automation.'
     },
     {
@@ -109,19 +108,8 @@ export default function HomePage() {
       outcome: 'School administration workflows',
       previous: 'Physical ledger books, paper receipt booklets, lost student files',
       current: 'Unified web portal for admissions, fee reconciliation, and PDF gradebooks',
-      image: '/public/projects/sammena-live.png',
       quote: 'Sammena School uses a school information management platform for its public website and administration workflows.'
     },
-    {
-      name: 'Regional Telecom Operators',
-      role: 'Multi-Site Network Operations',
-      title: 'NetBill-NOC: Multi-Tenant RADIUS Accounting & Sub-10s Telemetry',
-      outcome: 'Network operations tooling',
-      previous: 'Uncoordinated tower alerts and delayed outage discovery',
-      current: 'Visual dynamic topology map with automated Telegram engineer dispatch',
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=160&h=160&q=80',
-      quote: 'Network operations capabilities include monitoring, incident visibility, and operational alerts when connected to live infrastructure.'
-    }
   ]
 
   const articles = [
@@ -214,7 +202,7 @@ export default function HomePage() {
                   {/* Popular Pills */}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-300">
                     <span className="font-semibold text-slate-400">Featured:</span>
-                    {['Altavox WiFi', 'Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'NetBill-NOC', 'Nexora Cloud'].map((tag) => (
+                    {['Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'School SIMS'].map((tag) => (
                       <button
                         key={tag}
                         onClick={() => {
@@ -381,7 +369,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* INTERACTIVE PRODUCTION COCKPIT & LIVE ENGINEERING SUITE */}
         {/* ======================================================== */}
-        <section className="bg-[#030d17] py-16 border-b border-slate-800 text-white relative overflow-hidden">
+        <section hidden className="bg-[#030d17] py-16 border-b border-slate-800 text-white relative overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -690,9 +678,9 @@ export default function HomePage() {
                   <div className="rounded-lg bg-black/20 p-2.5 flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-white">Carrier NOC Telemetry</p>
-                      <p className="text-[11px] text-slate-300">→ NetBill-NOC Multi-Site</p>
+                      <p className="text-[11px] text-slate-300">→ Network monitoring integrations</p>
                     </div>
-                    <span className="font-bold text-emerald-400">99.99% Uptime</span>
+                    <span className="font-bold text-emerald-400">Live status not connected</span>
                   </div>
                 </div>
               </div>
@@ -802,23 +790,15 @@ export default function HomePage() {
                   Real Operational Outcomes & Deployments
                 </h2>
                 <p className="mt-2 text-sm text-slate-600">
-                  Practical case studies from active ISP operations, school systems, and telecom network nodes.
+                  Project summaries for Jaslyn Net and Sammena. Operational performance figures are published only when verified data is available.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="flex text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <span className="text-sm font-bold text-slate-800">4.9 / 5.0 Reliability</span>
-                <span className="text-xs text-slate-500">(Verified Deployments)</span>
-              </div>
+
             </motion.div>
 
             {/* Case Studies Grid */}
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-8 sm:grid-cols-2">
               {caseStudies.map((study) => (
                 <div
                   key={study.name}
@@ -1012,7 +992,7 @@ export default function HomePage() {
                 },
                 {
                   q: 'Can Sammena School SIMS be deployed on self-hosted servers or the cloud?',
-                  a: 'Yes. Sammena is built on modern Next.js 16 and PostgreSQL, allowing deployment on dedicated local hardware or cloud environments like Nexora Cloud with automated encrypted backups and SSL.'
+                  a: 'Yes. Sammena is built on modern Next.js 16 and PostgreSQL, allowing deployment on dedicated local hardware or cloud environments with automated encrypted backups and SSL.'
                 },
                 {
                   q: 'How does Altavox handle payment gateway webhooks for mobile money?',
@@ -1020,7 +1000,7 @@ export default function HomePage() {
                 },
                 {
                   q: 'What is the Altavox Tech Academy?',
-                  a: 'The Altavox Tech Academy is our technical skill development wing, offering 100% live instructor-led tracks in AWS Cloud Architecture, Salesforce Platform Development, Cyber Security, and QA Automation to help engineering teams and career switchers gain practical certifications.'
+                  a: 'Altavox Academy offers ten practical learning paths covering software engineering, cloud and DevOps, ISP networking, cybersecurity, databases, applied AI, school information systems, FinTech, product design, and IT support. Course schedules and certification arrangements are confirmed directly with the Academy.'
                 }
               ].map((faq, idx) => (
                 <motion.div
