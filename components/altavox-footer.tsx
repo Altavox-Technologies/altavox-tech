@@ -117,23 +117,13 @@ export function AltavoxFooter() {
             <h4 className="font-bold uppercase tracking-wider text-white text-xs">Production Platforms</h4>
             <ul className="mt-4 space-y-2.5">
               <li>
-                <Link href="/courses/jaslyn-net" className="hover:text-[#f26522] transition">
+                <Link href="/projects#jaslyn-net" className="hover:text-[#f26522] transition">
                   Jaslyn Net — ISP Operations & Billing
                 </Link>
               </li>
               <li>
-                <Link href="/courses/sammena" className="hover:text-[#f26522] transition">
+                <Link href="/projects#sammena" className="hover:text-[#f26522] transition">
                   Sammena Pre & Primary — School SIMS
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses/netbill-noc" className="hover:text-[#f26522] transition">
-                  NetBill-NOC — Telecom RADIUS & SNMP
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses/nexora-cloud" className="hover:text-[#f26522] transition">
-                  Nexora Cloud — Deployment Engine
                 </Link>
               </li>
               <li>
