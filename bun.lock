@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "my-project",
+      "name": "altavox-tech",
       "dependencies": {
         "@base-ui/react": "^1.5.0",
         "better-auth": "^1.7.14",
