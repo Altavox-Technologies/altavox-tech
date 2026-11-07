@@ -1,12 +1,14 @@
 {
-  "name": "my-project",
-  "version": "0.1.0",
+  "name": "altavox-tech",
+  "version": "1.0.0",
   "private": true,
+  "description": "Altavox Tech company website, engineering portfolio, and learning platform.",
   "scripts": {
     "dev": "next dev -p 3000 -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
