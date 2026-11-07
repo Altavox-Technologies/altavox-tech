@@ -180,7 +180,7 @@ export default function ProjectsPage() {
                       </div>
                     </div>
                     <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                      This embedded view is isolated from the Altavox website. It cannot submit forms, open popups, or navigate the parent page. If the project blocks embedding, the saved screenshot remains as the visual fallback.
+                      This embedded view is isolated from the Altavox website. It cannot submit forms, open popups, or navigate the parent page. If the project blocks embedding, use the Open Project Website link to view it directly.
                     </p>
                   </div>
                 </div>
