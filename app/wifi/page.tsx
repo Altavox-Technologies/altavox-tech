@@ -59,6 +59,7 @@ import {
   Grid,
   Scissors,
   CheckSquare,
+  Square,
 } from 'lucide-react'
 import { WifiD3Analytics } from '@/components/wifi-d3-analytics'
 import { WifiMeshTopology } from '@/components/wifi-mesh-topology'
