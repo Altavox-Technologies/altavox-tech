@@ -93,34 +93,26 @@ export default function HomePage() {
 
   const caseStudies = [
     {
-      name: 'Jaslyn Internet Services',
-      role: 'Regional ISP Provider',
-      title: 'ISP billing workflows and MikroTik subscriber provisioning',
-      outcome: 'Automated billing workflows',
-      previous: 'Manual bank slip verification & late-night reconnect tickets',
-      current: 'Payment-triggered provisioning workflows, subject to configured integrations',
-      image: '/public/projects/jaslyn-net-live.png',
-      quote: 'Jaslyn Net is presented as an ISP operations platform integrating billing, subscriber identity, and network automation.'
+      name: 'Jaslyn Net',
+      role: 'Regional ISP & Network Operator',
+      title: 'ISP billing workflows, subscriber lifecycle & MikroTik provisioning',
+      outcome: 'Carrier ISP Automation',
+      previous: 'Manual voucher tracking, paper receipts, and delayed subscriber reconnection',
+      current: 'Automated mobile-money payment reconciliation, RADIUS AAA accounting, and dynamic queue shaping without session flap',
+      image: '/projects/jaslyn-net-live.png',
+      url: 'https://jaslyn-net.altavox.space',
+      quote: 'Jaslyn Net unites subscriber lifecycle, automated billing, and RouterOS automation into a coherent operational cockpit.'
     },
     {
-      name: 'Sammena Educational Complex',
-      role: 'Pre & Primary School',
-      title: 'School SIMS for student records and fee administration',
-      outcome: 'School administration workflows',
-      previous: 'Physical ledger books, paper receipt booklets, lost student files',
-      current: 'Unified web portal for admissions, fee reconciliation, and PDF gradebooks',
-      image: '/public/projects/sammena-live.png',
-      quote: 'Sammena School uses a school information management platform for its public website and administration workflows.'
-    },
-    {
-      name: 'Regional Telecom Operators',
-      role: 'Multi-Site Network Operations',
-      title: 'NetBill-NOC: Multi-Tenant RADIUS Accounting & Sub-10s Telemetry',
-      outcome: 'Network operations tooling',
-      previous: 'Uncoordinated tower alerts and delayed outage discovery',
-      current: 'Visual dynamic topology map with automated Telegram engineer dispatch',
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=160&h=160&q=80',
-      quote: 'Network operations capabilities include monitoring, incident visibility, and operational alerts when connected to live infrastructure.'
+      name: 'Sammena School',
+      role: 'Pre & Primary Educational Institution',
+      title: 'School SIMS for academic records, admissions & administration',
+      outcome: 'Unified School SIMS',
+      previous: 'Physical paper ledgers, fragmented receipt booklets, and manual report card calculation',
+      current: 'Centralized school information management system for admissions, student records, role-based staff access, and academic reports',
+      image: '/projects/sammena-live.png',
+      url: 'https://sammena.altavox.space',
+      quote: 'Sammena School connects public school communications with private administrative record-keeping under strict data governance.'
     }
   ]
 
@@ -807,64 +799,88 @@ export default function HomePage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="flex text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <span className="text-sm font-bold text-slate-800">4.9 / 5.0 Reliability</span>
-                <span className="text-xs text-slate-500">(Verified Deployments)</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
+                  Verified Production Platforms
+                </span>
               </div>
             </motion.div>
 
-            {/* Case Studies Grid */}
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Case Studies Grid - 2 Featured Projects */}
+            <div className="mt-12 grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
               {caseStudies.map((study) => (
                 <div
                   key={study.name}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col justify-between hover:border-[#f26522] transition-colors duration-150"
+                  className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#f26522] transition-colors duration-150"
                 >
-                  <div>
-                    {/* Header with Outcome Badge */}
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
-                        {study.outcome}
-                      </span>
-                      <span className="text-xs font-semibold text-slate-500">{study.role}</span>
-                    </div>
-
-                    <h3 className="mt-4 text-base font-bold text-[#07294d]">
-                      {study.title}
-                    </h3>
-
-                    {/* Review Quote */}
-                    <p className="mt-3 text-xs leading-6 text-slate-700 italic">
-                      &quot;{study.quote}&quot;
-                    </p>
-
-                    {/* Operational Shift */}
-                    <div className="mt-5 rounded-xl bg-slate-50 p-3 border border-slate-100 text-[11px] space-y-1">
-                      <div className="text-slate-500">
-                        <span className="font-semibold text-slate-600">Before:</span> {study.previous}
-                      </div>
-                      <div className="text-slate-800 font-semibold">
-                        <span className="text-emerald-600 font-bold">With Altavox:</span> {study.current}
-                      </div>
+                  <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden border-b border-slate-100">
+                    <Image
+                      src={study.image}
+                      alt={`${study.name} live platform interface`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover object-top transition duration-500 hover:scale-102"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute top-3 left-3 bg-[#07294d]/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                      {study.outcome}
                     </div>
                   </div>
 
-                  {/* Client Details */}
-                  <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>
-                      <p className="text-xs font-bold text-slate-900">{study.name}</p>
-                      <p className="text-[11px] text-slate-500">{study.role}</p>
+                      <div className="flex items-center justify-between text-xs text-slate-500">
+                        <span className="font-semibold text-slate-700">{study.role}</span>
+                        <a
+                          href={study.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-[#f26522] hover:underline flex items-center gap-1"
+                        >
+                          <span>Live Site</span>
+                          <ArrowUpRight className="size-3" />
+                        </a>
+                      </div>
+
+                      <h3 className="mt-3 text-lg font-bold text-[#07294d]">
+                        {study.name}
+                      </h3>
+                      <p className="mt-1 text-xs font-medium text-slate-600">
+                        {study.title}
+                      </p>
+
+                      {/* Review Quote */}
+                      <p className="mt-3 text-xs leading-6 text-slate-700 italic border-l-2 border-[#f26522] pl-3 py-0.5">
+                        &quot;{study.quote}&quot;
+                      </p>
+
+                      {/* Operational Shift */}
+                      <div className="mt-4 rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-[11px] space-y-1.5">
+                        <div className="text-slate-500">
+                          <span className="font-semibold text-slate-600">Challenge:</span> {study.previous}
+                        </div>
+                        <div className="text-slate-800 font-medium">
+                          <span className="text-[#f26522] font-bold">Engineering Solution:</span> {study.current}
+                        </div>
+                      </div>
                     </div>
-                    <Link
-                      href="/case-studies"
-                      className="text-xs font-bold text-[#f26522] hover:underline"
-                    >
-                      Read Case Study →
-                    </Link>
+
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <a
+                        href={study.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-[#07294d] hover:text-[#f26522] transition flex items-center gap-1"
+                      >
+                        <span>Visit {study.name}</span>
+                        <ArrowRight className="size-3.5" />
+                      </a>
+                      <Link
+                        href={`/projects/${study.name.toLowerCase().includes('jaslyn') ? 'jaslyn-net' : 'sammena'}`}
+                        className="text-xs font-bold text-[#f26522] hover:underline"
+                      >
+                        Architecture Spec →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1020,7 +1036,7 @@ export default function HomePage() {
                 },
                 {
                   q: 'What is the Altavox Tech Academy?',
-                  a: 'The Altavox Tech Academy is our technical skill development wing, offering 100% live instructor-led tracks in AWS Cloud Architecture, Salesforce Platform Development, Cyber Security, and QA Automation to help engineering teams and career switchers gain practical certifications.'
+                  a: 'The Altavox Tech Academy provides 10 practical engineering pathways spanning Full-Stack Web Development, Advanced TypeScript, React & Next.js, Node.js Backend, Databases & Supabase, Cloud & DevOps, Cybersecurity, Applied AI, ISP & Network Engineering, and Software Architecture.'
                 }
               ].map((faq, idx) => (
                 <motion.div

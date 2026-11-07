@@ -3,13 +3,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'motion/react'
-import { ArrowUpRight, Check, ExternalLink, Monitor, PhoneCall, Sparkles, Activity, ShieldCheck, ArrowRight } from 'lucide-react'
+import { Check, ExternalLink, Monitor, PhoneCall, Activity, ArrowRight, Cpu, ShieldCheck } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
 import { projects } from '@/lib/site-data'
-
-const screenshotUrl = (site: string) =>
-  'https://image.thum.io/get/width/1440/crop/1000/noanimate/' + site
 
 export default function ProjectsPage() {
   return (
@@ -38,17 +35,17 @@ export default function ProjectsPage() {
                     Production Systems. <span className="text-[#f26522]">Built for Real Operations.</span>
                   </h1>
                   <p className="max-w-2xl text-base sm:text-lg text-slate-200 leading-relaxed">
-                    We focus our engineering work on connectivity infrastructure, ISP billing automation, and unified school information systems. Explore live architectures for Jaslyn Net and Sammena.
+                    We focus our engineering work on connectivity infrastructure, ISP billing automation, and unified school information systems. Explore live architectures for Jaslyn Net and Sammena School.
                   </p>
                 </div>
                 
-                <div className="lg:col-span-4 border-l-2 border-[#f26522] pl-6 py-2 bg-white/5 rounded-r-2xl border border-white/10 backdrop-blur-md">
-                  <span className="block text-3xl font-extrabold text-white font-mono">03</span>
+                <div className="lg:col-span-4 border-l-2 border-[#f26522] pl-6 py-3 bg-white/5 rounded-r-2xl border border-white/10 backdrop-blur-md">
+                  <span className="block text-3xl font-extrabold text-white font-mono">02</span>
                   <span className="text-xs uppercase font-bold tracking-wider text-orange-300">
-                    Carrier-Grade Live Initiatives
+                    Verified Featured Platforms
                   </span>
                   <p className="text-[11px] text-slate-300 mt-1">
-                    Direct socket testing & real-time webhook reconciliation
+                    Live production systems with real-world infrastructure integrations
                   </p>
                 </div>
               </div>
@@ -79,24 +76,36 @@ export default function ProjectsPage() {
                 className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-sm hover:border-[#f26522] transition-colors duration-150"
               >
                 <div className="grid gap-8 lg:grid-cols-12 lg:gap-12 items-center">
-                  <div className="lg:col-span-5 space-y-4">
+                  <div className="lg:col-span-6 space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#f26522]">
                         0{index + 1} // {project.category}
                       </span>
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
-                        <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="size-1.5 rounded-full bg-emerald-500" />
                         Verified Active
                       </span>
                     </div>
 
                     <h3 className="text-2xl sm:text-3xl font-extrabold text-[#07294d]">{project.name}</h3>
                     <p className="text-sm font-semibold text-slate-700 leading-relaxed">{project.summary}</p>
-                    <p className="text-xs text-slate-500 leading-relaxed">{project.description}</p>
+                    <p className="text-xs text-slate-600 leading-relaxed">{project.description}</p>
+
+                    {/* Engineering Challenge & Solution */}
+                    <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 text-xs space-y-2">
+                      <div>
+                        <span className="font-bold text-[#07294d] uppercase text-[10px] tracking-wider block">Engineering Challenge:</span>
+                        <p className="text-slate-600 mt-0.5 leading-relaxed">{project.engineeringChallenge}</p>
+                      </div>
+                      <div className="pt-2 border-t border-slate-200/60">
+                        <span className="font-bold text-[#f26522] uppercase text-[10px] tracking-wider block">Engineering Solution:</span>
+                        <p className="text-slate-700 mt-0.5 leading-relaxed font-medium">{project.engineeringSolution}</p>
+                      </div>
+                    </div>
 
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {project.tags.map((tag) => (
-                        <span key={tag} className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-mono text-slate-700">
+                        <span key={tag} className="rounded-md border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-mono text-slate-700">
                           {tag}
                         </span>
                       ))}
@@ -104,9 +113,9 @@ export default function ProjectsPage() {
 
                     <div className="pt-2">
                       <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                        Core Platform Capabilities:
+                        Core Capabilities:
                       </p>
-                      <ul className="space-y-2 text-xs text-slate-700">
+                      <ul className="space-y-1.5 text-xs text-slate-700">
                         {project.keyFeatures.map((feature) => (
                           <li key={feature} className="flex items-start gap-2.5">
                             <Check className="mt-0.5 size-4 shrink-0 text-[#f26522]" />
@@ -124,37 +133,37 @@ export default function ProjectsPage() {
                           rel="noreferrer"
                           className="inline-flex items-center gap-2 rounded-xl bg-[#f26522] px-5 py-3 text-xs font-bold text-white shadow-md hover:bg-[#e05312] transition cursor-pointer"
                         >
-                          <span>Visit Live Platform</span>
+                          <span>Visit Production Website</span>
                           <ExternalLink className="size-3.5" />
                         </a>
                       )}
                       <Link
-                        href="/courses/jaslyn-net"
+                        href={`/projects/${project.slug}`}
                         className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-xs font-semibold text-[#07294d] hover:bg-slate-100 transition"
                       >
-                        <span>View Blueprint</span>
+                        <span>Architecture Spec</span>
                         <ArrowRight className="size-3.5" />
                       </Link>
                     </div>
                   </div>
 
                   {/* Project Screenshot / Visual Preview */}
-                  <div className="lg:col-span-7">
+                  <div className="lg:col-span-6">
                     <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-mono font-bold uppercase text-slate-400">Live Infrastructure Node</span>
+                      <span className="font-mono font-bold uppercase text-slate-400">Authentic System Screenshot</span>
                       <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                         <Monitor className="size-3" /> Production Verified
                       </span>
                     </div>
 
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-100 shadow-lg group">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-900 shadow-lg group">
                       <Image
-                        src={screenshotUrl(project.url || '')}
-                        alt={`${project.name} live platform screenshot`}
+                        src={project.screenshotUrl}
+                        alt={`${project.name} live platform interface`}
                         fill
-                        unoptimized
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 50vw"
                         className="object-cover object-top group-hover:scale-[1.02] transition-transform duration-500"
+                        referrerPolicy="no-referrer"
                       />
                     </div>
                   </div>

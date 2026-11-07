@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 const brandEmblem = '/capricorn_emblem_clean_black.svg'
-const appIcon = '/favicon.svg'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://altavox.space'),
@@ -10,7 +9,7 @@ export const metadata: Metadata = {
     default: 'Altavox Tech — Software Systems Engineering & IT Operations Platform',
     template: '%s | Altavox Tech',
   },
-  description: 'Technology company focused on software engineering, digital product development, ISP billing, infrastructure, and operational clarity.',
+  description: 'Altavox Tech engineers software platforms, ISP billing systems, cloud infrastructure, and operational tools designed for reliability and clarity.',
   applicationName: 'Altavox Tech',
   generator: 'Altavox Tech',
   alternates: { canonical: '/' },
@@ -28,6 +27,7 @@ export const metadata: Metadata = {
     siteName: 'Altavox Tech',
     title: 'Altavox Tech — Software Systems Engineering & IT Operations Platform',
     description: 'Software engineering, digital product development, ISP billing, infrastructure, and connected systems.',
+    url: 'https://altavox.space',
     images: [{ url: brandEmblem, alt: 'Altavox Tech Capricorn brand emblem' }],
   },
   twitter: {
@@ -43,6 +43,44 @@ export const viewport: Viewport = {
   themeColor: '#07294d',
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://altavox.space/#organization',
+      name: 'Altavox Tech',
+      url: 'https://altavox.space',
+      logo: 'https://altavox.space/capricorn_emblem_clean_black.svg',
+      description: 'Software systems engineering, ISP billing automation, educational SIMS platforms, and technical training.',
+      telephone: '+255750227073',
+      email: 'engineering@altavox.space',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Nduruma Road, Unguuni',
+        addressLocality: 'Arusha',
+        postalCode: '23219',
+        addressCountry: 'TZ'
+      },
+      sameAs: [
+        'https://github.com/yurian51/altavox-tech',
+        'https://jaslyn-net.altavox.space',
+        'https://sammena.altavox.space'
+      ]
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://altavox.space/#website',
+      url: 'https://altavox.space',
+      name: 'Altavox Tech',
+      publisher: {
+        '@id': 'https://altavox.space/#organization'
+      },
+      inLanguage: 'en-US'
+    }
+  ]
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,6 +88,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="antialiased">
         {children}
       </body>
