@@ -35,8 +35,8 @@ export function AltavoxFooter() {
               <Server className="size-6 text-emerald-400" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">99.9% Production SLA</p>
-              <p className="text-xs text-slate-400">Engineered for teams that cannot stop</p>
+              <p className="text-sm font-bold text-white">Operational Readiness</p>
+              <p className="text-xs text-slate-400">Health checks, release validation & recovery planning</p>
             </div>
           </div>
 
