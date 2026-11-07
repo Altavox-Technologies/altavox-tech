@@ -193,13 +193,6 @@ export function AltavoxHeader() {
                   >
                     Browse all courses →
                   </Link>
-                  <Link
-                    href="/courses"
-                    onClick={() => setSolutionsDropdownOpen(false)}
-                    className="text-[11px] font-bold text-slate-600 hover:text-slate-900"
-                  >
-                    Course catalogue →
-                  </Link>
                 </div>
               </div>
             )}
