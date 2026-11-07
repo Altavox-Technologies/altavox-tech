@@ -385,7 +385,7 @@ export default function HomePage() {
                   </span>
                   <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                     <span className="size-1.5 rounded-full bg-emerald-400" />
-                    <span>Production Verified</span>
+                    <span>Tools preview hidden from public homepage</span>
                   </span>
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
