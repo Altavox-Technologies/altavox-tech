@@ -32,7 +32,7 @@ export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectP
 
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-100 shadow-lg">
         {mode === 'screenshot' ? (
-          {screenshot ? (<Image
+          screenshot ? (<Image
             src={screenshot}
             alt={`${projectName} website screenshot`}
             fill
@@ -43,7 +43,7 @@ export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectP
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-orange-300">Altavox project preview</span>
             <span className="mt-3 text-2xl font-bold">{projectName}</span>
             <span className="mt-2 text-xs text-slate-300">Screenshot preview will be added after a verified capture.</span>
-          </div>)}
+          </div>)
         ) : projectUrl ? (
           <iframe
             key={projectUrl}
@@ -57,7 +57,7 @@ export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectP
             className="pointer-events-none absolute inset-0 h-full w-full border-0 bg-white"
           />
         ) : (
-          {screenshot ? (<Image
+          screenshot ? (<Image
             src={screenshot}
             alt={`${projectName} website screenshot`}
             fill
@@ -67,7 +67,7 @@ export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectP
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-orange-300">Altavox project preview</span>
             <span className="mt-3 text-2xl font-bold">{projectName}</span>
             <span className="mt-2 text-xs text-slate-300">Screenshot preview will be added after a verified capture.</span>
-          </div>)}
+          </div>)
         )}
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-3 py-2 text-[10px] font-semibold text-slate-600 backdrop-blur-sm">
