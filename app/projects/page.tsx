@@ -40,7 +40,7 @@ export default function ProjectsPage() {
                     Software Platforms. <span className="text-[#f26522]">Built for Real Operations.</span>
                   </h1>
                   <p className="max-w-2xl text-base sm:text-lg text-slate-200 leading-relaxed">
-                    We focus our engineering work on connectivity infrastructure, ISP billing automation, and unified school information systems. Explore the work behind Jaslyn Net and Sammena.
+                    We focus our engineering work on connectivity infrastructure, ISP billing automation, and unified school information systems. Explore the work behind Jaslyn Net, Sammena, and Mrisho Art Gallery.
                   </p>
                 </div>
                 
@@ -70,7 +70,7 @@ export default function ProjectsPage() {
               </h2>
             </div>
             <p className="max-w-md text-xs sm:text-sm text-slate-500">
-              Explore the two platforms currently featured by Altavox Tech. Status labels reflect the project lifecycle, not a live uptime check.
+              Explore the three projects currently featured by Altavox Tech. Status labels reflect the project lifecycle, not a live uptime check.
             </p>
           </div>
 
@@ -145,7 +145,7 @@ export default function ProjectsPage() {
                     <ProjectPreview
                       projectName={project.name}
                       projectUrl={project.url}
-                      screenshot={projectScreenshots[project.slug] ?? '/projects/jaslyn-net-live.png'}
+                      screenshot={projectScreenshots[project.slug]}
                     />
                   </div>
                 </div>
