@@ -7,7 +7,7 @@ import { ExternalLink, LockKeyhole, Monitor, Image as ImageIcon } from 'lucide-r
 type ProjectPreviewProps = {
   projectName: string
   projectUrl?: string
-  screenshot: string
+  screenshot?: string
 }
 
 export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectPreviewProps) {
@@ -32,14 +32,18 @@ export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectP
 
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-100 shadow-lg">
         {mode === 'screenshot' ? (
-          <Image
+          {screenshot ? (<Image
             src={screenshot}
             alt={`${projectName} website screenshot`}
             fill
             unoptimized
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 50vw"
             className="object-cover object-top"
-          />
+          />) : (<div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#07294d] via-[#0b365f] to-[#041a33] px-6 text-center text-white">
+            <span className="text-xs font-semibold uppercase tracking-[0.25em] text-orange-300">Altavox project preview</span>
+            <span className="mt-3 text-2xl font-bold">{projectName}</span>
+            <span className="mt-2 text-xs text-slate-300">Screenshot preview will be added after a verified capture.</span>
+          </div>)}
         ) : projectUrl ? (
           <iframe
             key={projectUrl}
@@ -53,13 +57,17 @@ export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectP
             className="pointer-events-none absolute inset-0 h-full w-full border-0 bg-white"
           />
         ) : (
-          <Image
+          {screenshot ? (<Image
             src={screenshot}
             alt={`${projectName} website screenshot`}
             fill
             unoptimized
             className="object-cover object-top"
-          />
+          />) : (<div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#07294d] via-[#0b365f] to-[#041a33] px-6 text-center text-white">
+            <span className="text-xs font-semibold uppercase tracking-[0.25em] text-orange-300">Altavox project preview</span>
+            <span className="mt-3 text-2xl font-bold">{projectName}</span>
+            <span className="mt-2 text-xs text-slate-300">Screenshot preview will be added after a verified capture.</span>
+          </div>)}
         )}
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-3 py-2 text-[10px] font-semibold text-slate-600 backdrop-blur-sm">
