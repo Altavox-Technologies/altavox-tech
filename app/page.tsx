@@ -110,6 +110,15 @@ export default function HomePage() {
       current: 'A school website and SIMS initiative for public information, admissions, announcements, and planned administration workflows',
       quote: 'Sammena is a school website and SIMS initiative focused on connected school information and administration.'
     },
+    {
+      name: 'Mrisho Art Gallery',
+      role: 'Art gallery · Arusha, Tanzania',
+      title: 'Digital gallery and artwork portfolio',
+      outcome: 'Gallery website and portfolio',
+      previous: 'Gallery discovery and artwork information shared across separate channels',
+      current: 'A dedicated online gallery presence for discovering featured artwork and contacting the gallery',
+      quote: 'Mrisho Art Gallery presents artwork and collections through a dedicated digital gallery experience.'
+    },
   ]
 
   const articles = [
@@ -785,7 +794,7 @@ export default function HomePage() {
                   Real Operational Outcomes & Deployments
                 </h2>
                 <p className="mt-2 text-sm text-slate-600">
-                  Project summaries for Jaslyn Net and Sammena. Operational performance figures are published only when verified data is available.
+                  Project summaries for Jaslyn Net, Sammena, and Mrisho Art Gallery. Operational performance figures are published only when verified data is available.
                 </p>
               </div>
 
