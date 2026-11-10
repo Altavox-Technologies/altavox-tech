@@ -40,6 +40,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session?.user || !isAdminEmail(session.user.email, session.user.emailVerified)) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503 })
   try {
     const body = await request.json()
     const id = String(body.id ?? '')
