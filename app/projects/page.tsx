@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'motion/react'
 import { Check, ExternalLink, Monitor, PhoneCall, Activity, ArrowRight, Cpu, ShieldCheck } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
+import { ProjectPreview } from '@/components/project-preview'
 import { projects } from '@/lib/site-data'
 
 export default function ProjectsPage() {
@@ -153,41 +153,14 @@ export default function ProjectsPage() {
                     </div>
                   </div>
 
-                  {/* Project Screenshot / Visual Preview */}
+                  {/* Locked, read-only embedded website preview */}
                   <div className="lg:col-span-6">
-                    <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-mono font-bold uppercase text-slate-400">Project Preview</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                        <Monitor className="size-3" /> {project.screenshotUrl ? 'Project screenshot' : 'Branded preview'}
-                      </span>
-                    </div>
-
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-900 shadow-lg group">
-                      {project.screenshotUrl ? (
-                        <Image
-                          src={project.screenshotUrl}
-                          alt={`${project.name} project screenshot`}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 50vw"
-                          className="object-cover object-top group-hover:scale-[1.02] transition-transform duration-500"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex flex-col justify-between bg-[radial-gradient(circle_at_80%_20%,rgba(242,101,34,0.28),transparent_38%),linear-gradient(135deg,#07294d,#051c36)] p-6 sm:p-8 text-white">
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-orange-300">Altavox Featured Project</span>
-                            <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px]">Arusha, Tanzania</span>
-                          </div>
-                          <div>
-                            <div className="mb-3 h-px w-16 bg-[#f26522]" />
-                            <p className="text-xs uppercase tracking-[0.25em] text-slate-300">Art · Culture · Creativity</p>
-                            <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">MRISHO ART GALLERY</h3>
-                            <p className="mt-2 text-xs text-slate-300">Digital gallery & artwork portfolio</p>
-                            <p className="mt-4 text-[10px] uppercase tracking-wider text-orange-200">Website screenshot pending</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <ProjectPreview
+                      projectName={project.name}
+                      projectUrl={project.url}
+                      screenshot={project.screenshotUrl}
+                      initialMode={project.slug === 'mrisho-art-gallery' ? 'iframe' : 'screenshot'}
+                    />
                   </div>
                 </div>
               </article>
