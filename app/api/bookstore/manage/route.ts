@@ -3,7 +3,6 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { isAdminEmail } from '@/lib/admin'
 import { pool } from '@/lib/db'
-import { isAltavoxAdmin } from '@/lib/admin'
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!isAltavoxAdmin(session?.user?.email)) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
+  if (!session?.user || !isAdminEmail(session.user.email, session.user.emailVerified)) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
   try {
     const body = await request.json()
     const id = String(body.id ?? '')
