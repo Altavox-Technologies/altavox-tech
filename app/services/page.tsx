@@ -92,7 +92,7 @@ export default function ServicesPage() {
                   key={service.title}
                   className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-xs hover:border-[#f26522] transition-colors duration-150"
                 >
-                  <div>
+                  <div id={service.slug}>
                     <div className="flex items-center justify-between">
                       <span className="flex size-11 items-center justify-center rounded-xl bg-orange-100 text-[#f26522]">
                         <Icon className="size-5" />
@@ -102,14 +102,24 @@ export default function ServicesPage() {
                       </span>
                     </div>
 
-                    <h3 className="mt-5 text-lg font-bold text-[#07294d]">{service.title}</h3>
+                    <div className="mt-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#f26522]">
+                        {service.category}
+                      </span>
+                      <h3 className="text-lg font-bold text-[#07294d] mt-1">{service.title}</h3>
+                    </div>
                     <p className="mt-2 text-xs leading-5 text-slate-600">{service.summary}</p>
 
-                    <div className="mt-6 border-t border-slate-100 pt-5">
+                    <div className="mt-4 rounded-xl bg-slate-50 p-3 border border-slate-100 text-[11px]">
+                      <span className="font-bold text-[#07294d] uppercase text-[9px] tracking-wider block">Engineering Approach</span>
+                      <p className="text-slate-600 mt-1 leading-relaxed">{service.engineeringApproach}</p>
+                    </div>
+
+                    <div className="mt-5 border-t border-slate-100 pt-4">
                       <p className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        Deliverables & Scope
+                        Scope & Deliverables
                       </p>
-                      <ul className="mt-3 space-y-2 text-xs text-slate-700">
+                      <ul className="mt-2.5 space-y-2 text-xs text-slate-700">
                         {service.deliverables.map((item) => (
                           <li key={item} className="flex items-start gap-2">
                             <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-[#f26522]" />
@@ -120,9 +130,9 @@ export default function ServicesPage() {
                     </div>
                   </div>
 
-                  <div className="mt-6 rounded-xl bg-orange-50 border border-orange-200/80 p-3 text-xs text-[#07294d] font-semibold flex items-center justify-between">
-                    <span>{service.highlight}</span>
-                    <ArrowRight className="size-3.5 text-[#f26522] shrink-0" />
+                  <div className="mt-6 rounded-xl bg-orange-50/80 border border-orange-200/80 p-3 text-xs text-[#07294d] flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#f26522]">Business Value</span>
+                    <span className="font-medium text-slate-700 leading-relaxed">{service.businessValue}</span>
                   </div>
                 </div>
               )

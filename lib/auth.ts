@@ -3,9 +3,13 @@ import { pool } from '@/lib/db'
 
 const baseURL = process.env.BETTER_AUTH_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.V0_RUNTIME_URL ?? 'http://localhost:3000')
 
+if (process.env.NODE_ENV === 'production' && (!process.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET.length < 32)) {
+  throw new Error('BETTER_AUTH_SECRET must be configured with at least 32 characters in production.')
+}
+
 export const auth = betterAuth({
-  database: pool,
-  secret: process.env.BETTER_AUTH_SECRET || 'altavox-auth-secret-key-min-32-chars-dev',
+  ...(pool ? { database: pool } : {}),
+  secret: process.env.BETTER_AUTH_SECRET ?? 'local-development-only-secret-change-before-deploy-123456',
   baseURL,
   emailAndPassword: { enabled: true, autoSignIn: true },
   trustedOrigins: [
@@ -20,4 +24,3 @@ export const auth = betterAuth({
     ...(process.env.NODE_ENV === 'development' ? { defaultCookieAttributes: { sameSite: 'none' as const, secure: true } } : {}),
   },
 })
-

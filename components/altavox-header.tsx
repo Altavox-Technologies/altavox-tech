@@ -92,6 +92,10 @@ export function AltavoxHeader() {
               <Mail className="size-3 text-[#f26522]" />
               <span>engineering@altavox.space</span>
             </a>
+            <div className="hidden xl:flex items-center gap-2 text-slate-300">
+              <span className="font-mono text-[10px] text-orange-400">HQ:</span>
+              <span>Dar es Salaam, Tanzania</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
@@ -163,26 +167,78 @@ export function AltavoxHeader() {
             {/* Solutions Dropdown Menu */}
             {solutionsDropdownOpen && (
               <div
-                className="absolute left-0 top-full mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150"
+                className="absolute left-0 top-full mt-2 w-84 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150"
                 onMouseLeave={() => setSolutionsDropdownOpen(false)}
               >
                 <div className="p-2 border-b border-slate-100 pb-2 mb-2">
                   <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
-                    Professional Training Programmes
+                    Altavox Academy Pathways (10 Tracks)
                   </p>
                 </div>
                 <div className="space-y-1">
-                  {coursesData.slice(0, 4).map((course) => (
-                    <Link
-                      key={course.id}
-                      href={`/courses/${course.slug}`}
-                      onClick={() => setSolutionsDropdownOpen(false)}
-                      className="block rounded-xl p-2.5 transition hover:bg-slate-50 group"
-                    >
-                      <p className="text-xs font-bold text-[#07294d] group-hover:text-[#f26522] transition">{course.title}</p>
-                      <p className="mt-1 text-[11px] text-slate-500">{course.category}</p>
-                    </Link>
-                  ))}
+                  <Link
+                    href="/courses/full-stack-web-development"
+                    onClick={() => setSolutionsDropdownOpen(false)}
+                    className="flex items-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition group"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-orange-100 text-[#f26522] group-hover:bg-[#f26522] group-hover:text-white transition shrink-0 mt-0.5">
+                      <Layers className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#07294d] group-hover:text-[#f26522] transition">
+                        Full-Stack Web Development
+                      </p>
+                      <p className="text-[11px] text-slate-500">React, Next.js, TypeScript & PostgreSQL</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/courses/cloud-infrastructure-devops"
+                    onClick={() => setSolutionsDropdownOpen(false)}
+                    className="flex items-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition group"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-blue-100 text-[#07294d] group-hover:bg-[#07294d] group-hover:text-white transition shrink-0 mt-0.5">
+                      <Server className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#07294d] group-hover:text-[#f26522] transition">
+                        Cloud Infrastructure & DevOps
+                      </p>
+                      <p className="text-[11px] text-slate-500">Linux, Docker, CI/CD pipelines & production ops</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/courses/isp-management-network-engineering"
+                    onClick={() => setSolutionsDropdownOpen(false)}
+                    className="flex items-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition group"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 group-hover:bg-emerald-700 group-hover:text-white transition shrink-0 mt-0.5">
+                      <Network className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#07294d] group-hover:text-[#f26522] transition">
+                        ISP Management & Network Engineering
+                      </p>
+                      <p className="text-[11px] text-slate-500">MikroTik RouterOS, RADIUS, AAA & hotspot billing</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/courses/cybersecurity-secure-software"
+                    onClick={() => setSolutionsDropdownOpen(false)}
+                    className="flex items-start gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition group"
+                  >
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-purple-100 text-purple-700 group-hover:bg-purple-700 group-hover:text-white transition shrink-0 mt-0.5">
+                      <ShieldCheck className="size-3.5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#07294d] group-hover:text-[#f26522] transition">
+                        Cybersecurity & Secure Software
+                      </p>
+                      <p className="text-[11px] text-slate-500">Defensive security, OWASP mitigation & SSDLC</p>
+                    </div>
+                  </Link>
                 </div>
 
                 <div className="mt-2 pt-2 border-t border-slate-100 flex justify-between items-center px-2">
@@ -191,7 +247,14 @@ export function AltavoxHeader() {
                     onClick={() => setSolutionsDropdownOpen(false)}
                     className="text-[11px] font-bold text-[#f26522] hover:underline"
                   >
-                    Browse all courses →
+                    View all 10 courses →
+                  </Link>
+                  <Link
+                    href="/projects"
+                    onClick={() => setSolutionsDropdownOpen(false)}
+                    className="text-[11px] font-bold text-[#f26522] hover:underline"
+                  >
+                    Featured projects →
                   </Link>
                 </div>
               </div>
@@ -211,6 +274,7 @@ export function AltavoxHeader() {
                 onFocus={() => {
                   if (searchQuery.length > 0) setSearchOpen(true)
                 }}
+                aria-label="Search Altavox systems and courses"
                 placeholder="Search systems, ISP billing, MikroTik, SIMS, Cloud..."
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-[#f26522] focus:bg-white focus:outline-none transition shadow-inner"
               />

@@ -31,8 +31,8 @@ const statuses: Record<string, string> = {
 }
 
 export async function POST(request: Request) {
-  if (!configured) {
-    return NextResponse.json({ error: 'Online service booking is temporarily unavailable. Please contact the support desk directly.' }, { status: 503 })
+  if (!configured || !pool) {
+    return NextResponse.json({ error: 'Online service booking is temporarily unavailable. Please contact the support desk directly.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
   }
 
   const body = await request.json().catch(() => null)
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  if (!configured) return NextResponse.json({ error: 'Repair tracking is temporarily unavailable.' }, { status: 503 })
+  if (!configured || !pool) return NextResponse.json({ error: 'Repair tracking is temporarily unavailable.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
 
   const url = new URL(request.url)
   const code = (url.searchParams.get('code') || '').trim().toUpperCase()

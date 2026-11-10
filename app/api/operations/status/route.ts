@@ -1,8 +1,17 @@
 import { NextResponse } from 'next/server'
 import { sql } from 'drizzle-orm'
 import { getDb } from '@/lib/db'
+import { auth } from '@/lib/auth'
+import { isAdminEmail } from '@/lib/admin'
+import { headers } from 'next/headers'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user || !isAdminEmail(session.user.email, session.user.emailVerified)) {
+    return NextResponse.json({ error: 'Administrator access required' }, { status: 403, headers: { 'Cache-Control': 'no-store' } })
+  }
   const requestId = crypto.randomUUID()
   const db = getDb()
   if (!db) return NextResponse.json({ error: 'Operations database is unavailable', requestId }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
