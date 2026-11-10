@@ -65,7 +65,7 @@ export function CareerAdvisorModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden border border-slate-200 max-h-[90vh] flex flex-col">
-        {/* Header in JanBask Navy & Orange */}
+        {/* Header in Altavox Navy & Orange */}
         <div className="bg-[#07294d] px-6 py-5 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <span className="flex size-9 items-center justify-center rounded-xl bg-[#f26522] text-white">
