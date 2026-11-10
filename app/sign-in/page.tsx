@@ -29,16 +29,25 @@ export default function SignInPage() {
     <main className="min-h-screen bg-[#07294d] px-6 py-16 flex items-center justify-center font-sans">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#093563] p-8 shadow-2xl text-white">
         <div className="flex items-center justify-between border-b border-white/10 pb-5">
-          <Link href="/" className="inline-block group" aria-label="Altavox Tech Home">
+          <Link href="/" className="inline-flex items-center gap-2.5 group" aria-label="Altavox Tech Home">
             <Image
-              src="/altavox-logo.svg"
+              src="/Black%20Ibex%20Horns%20Emblem.png"
               alt="Altavox Tech"
-              width={160}
+              width={40}
               height={40}
-              className="h-9 w-auto rounded-lg shadow-xs"
+              className="h-9 w-9 object-contain brightness-125 transition group-hover:scale-105"
               priority
               referrerPolicy="no-referrer"
             />
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1 leading-none">
+                <span className="text-base font-black tracking-tight text-white">ALTAVOX</span>
+                <span className="text-base font-black tracking-tight text-[#f26522]">TECH</span>
+              </div>
+              <span className="text-[9px] font-semibold tracking-[0.16em] uppercase text-slate-300 mt-0.5">
+                Portal Authentication
+              </span>
+            </div>
           </Link>
           <Link href="/" className="text-xs text-slate-300 hover:text-[#f26522] flex items-center gap-1 transition">
             <ArrowLeft className="size-3.5" /> Back to Site

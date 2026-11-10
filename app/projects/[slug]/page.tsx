@@ -150,22 +150,22 @@ export default async function Project({ params }: { params: Promise<{ slug: stri
               </div>
             )}
 
-            {/* Operational Metrics */}
-            {project.metrics && (
-              <div className="rounded-2xl border border-orange-200 bg-orange-50/70 p-6 shadow-xs">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#f26522]">
-                  Operational Metrics
-                </span>
-                <div className="mt-4 space-y-3">
-                  {project.metrics.map((m) => (
-                    <div key={m.label} className="border-b border-orange-200/60 pb-2.5 last:border-0 last:pb-0">
-                      <p className="text-2xl font-extrabold text-[#07294d]">{m.value}</p>
-                      <p className="text-xs text-slate-600 font-medium">{m.label}</p>
-                    </div>
-                  ))}
+            {/* Operational Challenge & Solution */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#f26522]">
+                Engineering Details
+              </span>
+              <div className="mt-4 space-y-3 text-xs">
+                <div>
+                  <p className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Operational Challenge</p>
+                  <p className="mt-1 text-slate-600 leading-relaxed">{project.engineeringChallenge}</p>
+                </div>
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="font-bold text-[#f26522] uppercase tracking-wider text-[10px]">Engineering Solution</p>
+                  <p className="mt-1 text-slate-700 leading-relaxed font-medium">{project.engineeringSolution}</p>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Tags */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">

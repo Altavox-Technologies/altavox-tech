@@ -28,34 +28,38 @@ export function CareerAdvisorModal({
     setTimeout(() => {
       setAnalyzing(false)
 
-      let recommendedCourse = coursesData[0] // Jaslyn Net default
-      if (interest.includes('School') || interest.includes('SIMS') || interest.includes('Education')) {
-        recommendedCourse = coursesData[1] // Sammena
-      } else if (interest.includes('NOC') || interest.includes('RADIUS') || interest.includes('Telecom')) {
-        recommendedCourse = coursesData[2] // NetBill-NOC
-      } else if (interest.includes('Cloud') || interest.includes('Docker') || interest.includes('Container')) {
-        recommendedCourse = coursesData[3] // Nexora Cloud
-      } else if (interest.includes('Salesforce')) {
-        recommendedCourse = coursesData[4] // Salesforce
-      } else if (interest.includes('AWS')) {
-        recommendedCourse = coursesData[5] // AWS
+      let recommendedCourse = coursesData[0]
+      if (interest.includes('ISP') || interest.includes('Network') || interest.includes('MikroTik') || interest.includes('RADIUS')) {
+        recommendedCourse = coursesData.find((c) => c.slug === 'isp-management-network-engineering') || coursesData[0]
+      } else if (interest.includes('Cloud') || interest.includes('DevOps') || interest.includes('Docker')) {
+        recommendedCourse = coursesData.find((c) => c.slug === 'cloud-infrastructure-devops') || coursesData[0]
       } else if (interest.includes('Cyber') || interest.includes('Security')) {
-        recommendedCourse = coursesData[6] // Cyber Security
+        recommendedCourse = coursesData.find((c) => c.slug === 'cybersecurity-secure-software') || coursesData[0]
+      } else if (interest.includes('AI') || interest.includes('Local')) {
+        recommendedCourse = coursesData.find((c) => c.slug === 'ai-engineering-local-systems') || coursesData[0]
+      } else if (interest.includes('Database') || interest.includes('Supabase')) {
+        recommendedCourse = coursesData.find((c) => c.slug === 'database-engineering-supabase') || coursesData[0]
+      } else if (interest.includes('Architecture') || interest.includes('System Design')) {
+        recommendedCourse = coursesData.find((c) => c.slug === 'software-architecture-system-design') || coursesData[0]
+      } else if (interest.includes('Next.js') || interest.includes('React')) {
+        recommendedCourse = coursesData.find((c) => c.slug === 'react-nextjs-engineering') || coursesData[0]
+      } else {
+        recommendedCourse = coursesData.find((c) => c.slug === 'full-stack-web-development') || coursesData[0]
       }
 
       setResult({
         course: recommendedCourse,
-        matchScore: '99% Compatibility',
-        targetRole: recommendedCourse.careerRoles[0],
-        projectedSalary: recommendedCourse.averageSalary,
+        matchScore: 'High Compatibility',
+        targetRole: recommendedCourse.careerRoles[0] || 'Software Engineer',
+        projectedSalary: 'Focus on production skills and demonstrable projects',
         timeline: recommendedCourse.duration,
         steps: [
-          `Phase 1: Architecture review and schema setup tailored for ${background}`,
-          `Phase 2: Live sandbox testing, API reconciliation and queue tuning`,
-          `Phase 3: Production rollout with automated failover and 99.9% SLA governance`
+          `Phase 1: Foundations and architecture review tailored for ${background}`,
+          `Phase 2: Live lab exercises, code implementation, and testing`,
+          `Phase 3: Capstone defense and production deployment runbook`
         ]
       })
-    }, 600)
+    }, 500)
   }
 
   return (
@@ -133,13 +137,14 @@ export function CareerAdvisorModal({
                   onChange={(e) => setInterest(e.target.value)}
                   className="mt-1 w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 outline-none focus:border-[#f26522]"
                 >
-                  <option>ISP Billing & MikroTik Queue Automation (Jaslyn Net)</option>
-                  <option>School Information Management System & Fees (Sammena SIMS)</option>
-                  <option>Telecom RADIUS AAA & Multi-Site NOC (NetBill-NOC)</option>
-                  <option>Self-Hosted Container Deployment & SSL (Nexora Cloud)</option>
-                  <option>Salesforce CRM Platform Developer Certification</option>
-                  <option>AWS Cloud Solutions Architect Associate</option>
-                  <option>Cyber Security & Threat Defense Specialist</option>
+                  <option>ISP Management & Network Engineering (MikroTik RouterOS, RADIUS)</option>
+                  <option>Full-Stack Web Development (Next.js, TypeScript, PostgreSQL)</option>
+                  <option>React and Next.js Engineering (App Router & SSR)</option>
+                  <option>Cloud Infrastructure and DevOps (Linux, Docker, CI/CD)</option>
+                  <option>Cybersecurity and Secure Software Development</option>
+                  <option>AI Engineering and Local AI Systems (Ollama, RAG)</option>
+                  <option>Database Engineering and Supabase</option>
+                  <option>Software Architecture and System Design</option>
                 </select>
               </div>
 

@@ -19,8 +19,25 @@ export default async function AdminInquiriesPage() {
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
           <div className="flex items-center gap-4">
-            <Link href="/" className="inline-block group" aria-label="Altavox Technologies Home">
-              <Image src="/altavox-logo.svg" alt="Altavox Technologies" width={160} height={40} className="h-9 w-auto rounded-lg shadow-xs" priority />
+            <Link href="/" className="inline-flex items-center gap-2.5 group" aria-label="Altavox Tech Home">
+              <Image
+                src="/Black%20Ibex%20Horns%20Emblem.png"
+                alt="Altavox Tech"
+                width={40}
+                height={40}
+                className="h-9 w-9 object-contain brightness-125 transition group-hover:scale-105"
+                priority
+                referrerPolicy="no-referrer"
+              />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1 leading-none">
+                  <span className="text-base font-black tracking-tight text-white">ALTAVOX</span>
+                  <span className="text-base font-black tracking-tight text-[#f26522]">TECH</span>
+                </div>
+                <span className="text-[9px] font-semibold tracking-[0.16em] uppercase text-slate-300 mt-0.5">
+                  Operations Console
+                </span>
+              </div>
             </Link>
             <div className="h-6 w-px bg-white/20 hidden sm:block" />
             <span className="rounded-full bg-[#f26522] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Control Plane</span>
