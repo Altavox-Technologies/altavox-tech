@@ -4,6 +4,7 @@ import { pool } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  if (!pool) return NextResponse.json({ error: 'Blog database is unavailable.' }, { status: 503 })
   try {
     const slug = request.nextUrl.searchParams.get('slug')
     if (slug) {
