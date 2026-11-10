@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { isAdminEmail } from '@/lib/admin'
 import { pool } from '@/lib/db'
+import { isAltavoxAdmin } from '@/lib/admin'
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -34,5 +35,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ product: result.rows[0] }, { status: 201, headers: { 'Cache-Control': 'no-store' } })
   } catch {
     return NextResponse.json({ error: 'Could not save the book. Check the database migration and make sure its slug is unique.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
+  }
+}
+
+export async function PATCH(request: Request) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!isAltavoxAdmin(session?.user?.email)) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
+  try {
+    const body = await request.json()
+    const id = String(body.id ?? '')
+    const status = String(body.status ?? '')
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) || !['draft','published','archived'].includes(status)) {
+      return NextResponse.json({ error: 'A valid book ID and publishing status are required.' }, { status: 400 })
+    }
+    if (status === 'published') {
+      const found = await pool.query('SELECT id,format,digital_price,print_price,stock_quantity,digital_file_key FROM book_products WHERE id=$1 LIMIT 1',[id])
+      const book = found.rows[0]
+      if (!book) return NextResponse.json({ error: 'Book not found.' }, { status: 404 })
+      if ((book.format === 'ebook' || book.format === 'both') && (!book.digital_file_key || Number(book.digital_price) <= 0)) {
+        return NextResponse.json({ error: 'Digital books need a configured price and private uploaded file before publication.' }, { status: 409 })
+      }
+      if ((book.format === 'print' || book.format === 'both') && (Number(book.print_price) <= 0 || Number(book.stock_quantity) < 1)) {
+        return NextResponse.json({ error: 'Printed books need a configured price and at least one copy in stock before publication.' }, { status: 409 })
+      }
+    }
+    const result = await pool.query(
+      'UPDATE book_products SET status=$1, updated_at=now() WHERE id=$2 RETURNING id,slug,title,status',
+      [status,id],
+    )
+    if (!result.rows[0]) return NextResponse.json({ error: 'Book not found.' }, { status: 404 })
+    return NextResponse.json({ product: result.rows[0] })
+  } catch {
+    return NextResponse.json({ error: 'Could not update the book status.' }, { status: 503 })
   }
 }

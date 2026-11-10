@@ -344,9 +344,9 @@ export function AltavoxHeader() {
             <Link href="/courses" className="hover:text-[#f26522] transition">
               Academy
             </Link>
-            <Link href="/store" className="font-bold text-[#f26522] hover:text-[#d94f12] transition">
-              Bookstore
-            </Link>
+            <Link href="/store" className="font-bold text-[#f26522] hover:text-[#d94f12] transition">Bookstore</Link>
+            <Link href="/blog" className="hover:text-[#f26522] transition">Insights</Link>
+            <Link href="/cart" className="rounded-lg border border-slate-200 px-3 py-2 text-[#07294d] hover:border-[#f26522] hover:text-[#f26522] transition">Cart</Link>
             <Link href="/about" className="hover:text-[#f26522] transition">
               About
             </Link>
@@ -452,6 +452,8 @@ export function AltavoxHeader() {
                   { href: '/deployments', label: 'Deployments & Architecture', detail: 'Live systems and delivery' },
                   { href: '/courses', label: 'Tech Academy', detail: 'Learning and technical tracks' },
                   { href: '/store', label: 'Altavox Bookstore', detail: 'Browse digital and printed books' },
+                  { href: '/cart', label: 'Shopping Cart', detail: 'Review selected books' },
+                  { href: '/blog', label: 'Insights & Blog', detail: 'Technology and company insights' },
                   { href: '/about', label: 'About Altavox', detail: 'Company and capabilities' },
                   { href: '/contact', label: 'Contact & Inquiries', detail: 'Talk to our team' },
                   { href: '/computer', label: 'Computer Console', detail: 'Open the technical console' },

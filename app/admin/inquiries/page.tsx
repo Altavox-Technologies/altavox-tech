@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { AdminSignOut } from '@/components/admin-sign-out'
+import { isAltavoxAdmin } from '@/lib/admin'
 
 export default async function AdminInquiriesPage() {
   const session = await auth.api.getSession({ headers: await headers() })

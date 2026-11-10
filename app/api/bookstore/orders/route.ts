@@ -45,6 +45,10 @@ export async function POST(request: Request) {
     if (!order) throw new Error('The database did not confirm the order.')
     for (const item of orderItems) {
       await client.query('INSERT INTO book_order_items (order_id,product_id,title_snapshot,format,quantity,unit_price,line_total) VALUES ($1,$2,$3,$4,$5,$6,$7)', [order.id,item.id,item.title,item.format,item.quantity,item.price,item.price*item.quantity])
+      if (item.format === 'print') {
+        const stockUpdate = await client.query('UPDATE book_products SET stock_quantity = stock_quantity - $1, updated_at = now() WHERE id = $2 AND stock_quantity >= $1', [item.quantity,item.id])
+        if (stockUpdate.rowCount !== 1) throw new Error('Printed stock changed while this order was being placed. Please review your cart.')
+      }
     }
     await client.query('COMMIT')
     return NextResponse.json({ order }, { status: 201 })
@@ -54,5 +58,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Could not create the order. Check your selections and try again.' }, { status: 400, headers: { 'Cache-Control': 'no-store' } })
   } finally {
     client?.release()
+  }
+}
+
+export async function GET(request: Request) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user?.id) return NextResponse.json({ error: 'Sign in to view your order.' }, { status: 401 })
+  const orderId = new URL(request.url).searchParams.get('id')
+  if (!orderId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId)) return NextResponse.json({ error: 'Valid order ID required.' }, { status: 400 })
+  try {
+    const result = await pool.query('SELECT id,order_number,total,currency,payment_status,order_status,created_at FROM book_orders WHERE id=$1 AND customer_id=$2 LIMIT 1', [orderId,session.user.id])
+    if (!result.rows[0]) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
+    return NextResponse.json({ order: result.rows[0] })
+  } catch {
+    return NextResponse.json({ error: 'Order status is temporarily unavailable.' }, { status: 503 })
   }
 }
