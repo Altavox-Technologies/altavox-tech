@@ -8,7 +8,6 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { AdminSignOut } from '@/components/admin-sign-out'
-import { isAltavoxAdmin } from '@/lib/admin'
 
 export default async function AdminInquiriesPage() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -57,11 +56,11 @@ export default async function AdminInquiriesPage() {
           <span className="text-xs font-mono text-[#f26522] font-bold bg-[#f26522]/10 px-3 py-1 rounded-full border border-[#f26522]/30">{rows.length} Total Records</span>
         </div>
         <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10 bg-[#093563] shadow-xl">
-          <table className="w-full min-w-[860px] text-left text-xs">
-            <thead className="border-b border-white/10 bg-black/20 text-[11px] uppercase tracking-wider text-slate-300"><tr><th className="p-4">Received</th><th className="p-4">Client Name</th><th className="p-4">Email</th><th className="p-4">Phone</th><th className="p-4">Service Track</th><th className="p-4">Status</th></tr></thead>
+          <table className="w-full min-w-[760px] text-left text-xs">
+            <thead className="border-b border-white/10 bg-black/20 text-[11px] uppercase tracking-wider text-slate-300"><tr><th className="p-4">Received</th><th className="p-4">Client Name</th><th className="p-4">Email</th><th className="p-4">Service Track</th><th className="p-4">Status</th></tr></thead>
             <tbody className="divide-y divide-white/5">
-              {rows.map((row) => <tr key={row.id} className="hover:bg-white/[0.02] transition"><td className="p-4 text-slate-300">{row.createdAt.toLocaleString()}</td><td className="p-4 font-bold text-white">{row.name}</td><td className="p-4 text-slate-300">{row.email}</td><td className="p-4 text-slate-300">{row.phone ? <a href={`tel:${row.phone}`} className="hover:text-[#f26522]">{row.phone}</a> : '—'}</td><td className="p-4 text-slate-300">{row.service ?? 'General Enterprise'}</td><td className="p-4"><span className="rounded-full bg-emerald-400/10 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">{row.status}</span></td></tr>)}
-              {rows.length === 0 && <tr><td colSpan={6} className="p-12 text-center text-slate-400">No enterprise inquiries recorded yet.</td></tr>}
+              {rows.map((row) => <tr key={row.id} className="hover:bg-white/[0.02] transition"><td className="p-4 text-slate-300">{row.createdAt.toLocaleString()}</td><td className="p-4 font-bold text-white">{row.name}</td><td className="p-4 text-slate-300">{row.email}</td><td className="p-4 text-slate-300">{row.service ?? 'General Enterprise'}</td><td className="p-4"><span className="rounded-full bg-emerald-400/10 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">{row.status}</span></td></tr>)}
+              {rows.length === 0 && <tr><td colSpan={5} className="p-12 text-center text-slate-400">No enterprise inquiries recorded yet.</td></tr>}
             </tbody>
           </table>
         </div>
