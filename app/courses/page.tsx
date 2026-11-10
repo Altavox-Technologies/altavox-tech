@@ -44,9 +44,9 @@ export default function CoursesPage() {
             <p className="text-xs font-bold uppercase tracking-[.25em] text-orange-400">Altavox Academy · Technology Engineering & Professional Skills</p>
             <div className="mt-5 grid gap-8 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
               <div>
-                <h1 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">Learn technology by building things that work.</h1>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300">Explore ten practical learning paths spanning software, cloud infrastructure, ISP networking, cybersecurity, databases, applied AI, education systems, FinTech, product design and IT support. Each course includes a clear overview, learning outcomes and project-focused syllabus.</p>
-                <a href="#course-catalogue" className="mt-7 inline-flex min-h-11 items-center gap-2 bg-[#f26522] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#d95113]">Explore all 10 courses <ArrowRight className="size-4" /></a>
+                <h1 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">Learn. Build. Solve real-world challenges.</h1>
+                <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300">Build skills to address real challenges across Africa and the world: food security, accessible healthcare and education, clean energy and water, financial inclusion, reliable connectivity, digital safety, useful software and stronger local industry. Every pathway is designed around practical projects, responsible technology and measurable outcomes.</p>
+                <a href="#course-catalogue" className="mt-7 inline-flex min-h-11 items-center gap-2 bg-[#f26522] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#d95113]">Explore all 10 pathways <ArrowRight className="size-4" /></a>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[{icon:Code2,label:'Build software'},{icon:Network,label:'Run infrastructure'},{icon:ShieldCheck,label:'Secure systems'}].map(({icon:Icon,label})=><div key={label} className="border border-white/15 bg-white/5 p-4"><Icon className="size-5 text-orange-400"/><p className="mt-3 text-xs font-semibold leading-5 text-slate-200">{label}</p></div>)}
@@ -61,7 +61,7 @@ export default function CoursesPage() {
               <div>
                 <p className="text-xs font-bold uppercase tracking-[.2em] text-[#f26522]">Course catalogue</p>
                 <h2 className="mt-1 text-xl font-semibold text-[#071d34]">Find your learning path</h2>
-                <p className="mt-1 text-xs text-slate-500">Ten specialist pathways. Clear course information. Practical learning outcomes.</p>
+                <p className="mt-1 text-xs text-slate-500">Ten challenge-led pathways. Practical skills. Projects grounded in real needs.</p>
               </div>
               <div className="relative w-full md:max-w-md">
                 <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
