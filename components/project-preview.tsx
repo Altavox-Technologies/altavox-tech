@@ -8,10 +8,11 @@ type ProjectPreviewProps = {
   projectName: string
   projectUrl?: string
   screenshot?: string
+  initialMode?: 'screenshot' | 'iframe'
 }
 
-export function ProjectPreview({ projectName, projectUrl, screenshot }: ProjectPreviewProps) {
-  const [mode, setMode] = useState<'screenshot' | 'iframe'>('screenshot')
+export function ProjectPreview({ projectName, projectUrl, screenshot, initialMode = 'screenshot' }: ProjectPreviewProps) {
+  const [mode, setMode] = useState<'screenshot' | 'iframe'>(initialMode)
 
   return (
     <section aria-label={`${projectName} website preview`} className="min-w-0">
