@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { ArrowLeft, ArrowUpRight, CheckCircle2, Cpu, ExternalLink, Globe, Layers, Server, ShieldCheck } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { PageFrame } from '@/components/site-shell'
 import { projects } from '@/lib/site-data'
+import { ProjectPreview } from '@/components/project-preview'
 
 export function generateStaticParams() {
   return projects.map(({ slug }) => ({ slug }))
@@ -13,8 +13,6 @@ export default async function Project({ params }: { params: Promise<{ slug: stri
   const { slug } = await params
   const project = projects.find((item) => item.slug === slug)
   if (!project) notFound()
-
-  const hasScreenshot = ['sammena', 'jaslyn-net'].includes(project.slug)
 
   return (
     <PageFrame
@@ -34,34 +32,13 @@ export default async function Project({ params }: { params: Promise<{ slug: stri
 
         <div className="grid gap-10 lg:grid-cols-[1.3fr_0.7fr]">
           <div>
-            {/* System Visual Preview */}
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-slate-200 bg-[#07294d] shadow-sm">
-              {hasScreenshot ? (
-                <Image
-                  src={`/projects/${project.slug}-live.png`}
-                  alt={`${project.name} live system screenshot`}
-                  fill
-                  className="object-cover object-top"
-                  sizes="(min-width: 1024px) 70vw, 100vw"
-                  priority
-                />
-              ) : (
-                <div className="flex h-full w-full flex-col justify-between p-8 bg-gradient-to-br from-[#07294d] via-[#093563] to-[#051c36]">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs uppercase tracking-wider text-[#f26522] font-bold">
-                      {project.category}
-                    </span>
-                    <span className="rounded-full bg-white/10 px-3 py-1 font-mono text-xs text-white border border-white/20">
-                      {project.status}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-extrabold text-white">{project.name}</h3>
-                    <p className="mt-2 text-sm text-slate-300">{project.description}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Locked, read-only embedded website preview */}
+            <ProjectPreview
+              projectName={project.name}
+              projectUrl={project.url}
+              screenshot={project.screenshotUrl}
+              initialMode={project.slug === 'mrisho-art-gallery' ? 'iframe' : 'screenshot'}
+            />
 
             {/* Problem & Context */}
             <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-7 sm:p-8 shadow-xs">
