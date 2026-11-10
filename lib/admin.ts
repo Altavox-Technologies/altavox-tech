@@ -1,14 +1,8 @@
-/**
- * Centralized administrator allowlist.
- * An empty or missing allowlist intentionally grants no administrator access.
- */
-const adminEmails = new Set(
-  (process.env.BOOKSTORE_ADMIN_EMAILS ?? '')
+export function isAdminEmail(email: string | null | undefined, emailVerified = false): boolean {
+  if (!email || !emailVerified) return false
+  const allowed = (process.env.ADMIN_EMAILS ?? '')
     .split(',')
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean),
-)
-
-export function isAltavoxAdmin(email: string | null | undefined): boolean {
-  return Boolean(email && adminEmails.has(email.trim().toLowerCase()))
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean)
+  return allowed.includes(email.trim().toLowerCase())
 }

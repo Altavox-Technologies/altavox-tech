@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import {
   Sliders,
   Calculator,
@@ -14,10 +15,19 @@ import {
   ShieldCheck,
   Building2,
   PhoneCall,
-  DollarSign
+  DollarSign,
+  Radio,
+  Boxes,
+  Cpu,
+  HardDrive,
+  Copy,
+  Check,
+  Layers,
+  Coins
 } from 'lucide-react'
 
 type SectorType = 'isp' | 'school' | 'enterprise' | 'cloud'
+type CurrencyType = 'TZS' | 'USD'
 
 export function ArchitectureCalculator({
   onSelectSetup
@@ -27,59 +37,91 @@ export function ArchitectureCalculator({
   const [sector, setSector] = useState<SectorType>('isp')
   const [scale, setScale] = useState<number>(1200)
   const [tier, setTier] = useState<'standard' | 'high_availability' | 'carrier'>('high_availability')
+  const [currency, setCurrency] = useState<CurrencyType>('TZS')
   const [includeMPesa, setIncludeMPesa] = useState<boolean>(true)
   const [includeSMSAlerts, setIncludeSMSAlerts] = useState<boolean>(true)
-  const [activeCopied, setActiveCopied] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // USD to TZS conversion factor (realistic exchange rate)
+  const TZS_RATE = 2650
 
   // Dynamic calculations based on scale and sector
   const calculations = {
     isp: {
       hoursSavedPerMonth: Math.round(scale * 0.12 + (includeMPesa ? 45 : 15)),
       reconciliationAccuracy: '99.98%',
-      estimatedAnnualSavings: Math.round(scale * 14.5 + (tier === 'carrier' ? 4500 : 2200)),
-      recommendedEngine: tier === 'carrier' ? 'MikroTik CCR2116 Dual-Socket Cloud Core' : 'MikroTik CCR2004 Cluster + Altavox Sync',
+      annualSavingsUSD: Math.round(scale * 14.5 + (tier === 'carrier' ? 4500 : 2200)),
+      recommendedEngine: tier === 'carrier' ? 'MikroTik CCR2116 Dual-Socket Cloud Core' : 'MikroTik CCR2004 Cluster + Altavox Sync Engine',
+      hardwareSpecs: {
+        cpu: tier === 'carrier' ? '16 Cores ARM64 (CCR2116)' : '4 Cores 64-bit AL32400',
+        ram: tier === 'carrier' ? '16 GB ECC High-Throughput' : '4 GB DDR4 Low-Latency',
+        storage: '256 GB NVMe Gen4 Isolated Write Log',
+        network: '2x 10G SFP+ Dual-Homed Uplink'
+      },
       specs: [
         'Sub-second M-Pesa IPN Webhook queue provision',
-        'Automatic rate-limit burst enforcement',
-        'RADIUS multi-NAS failover sync'
+        'Automatic rate-limit burst enforcement without VoIP drop',
+        'RADIUS multi-NAS failover sync & automated disconnect'
       ]
     },
     school: {
       hoursSavedPerMonth: Math.round(scale * 0.09 + (includeSMSAlerts ? 35 : 10)),
       reconciliationAccuracy: '100%',
-      estimatedAnnualSavings: Math.round(scale * 11.2 + 1800),
+      annualSavingsUSD: Math.round(scale * 11.2 + 1800),
       recommendedEngine: 'Sammena SIMS Cloud Instance + Automated Ledger Engine',
+      hardwareSpecs: {
+        cpu: '8 Cores Dedicated Cloud Compute',
+        ram: '16 GB High-Concurrency Memory Pool',
+        storage: '500 GB Automated Encrypted Daily Backup Vault',
+        network: 'Gigabit Cloudflare TLS Edge Protected'
+      },
       specs: [
-        'Single-click terminal report card compilation',
-        'Automated parent fee arrears SMS broadcast',
-        'Multi-term academic audit trail'
+        'Single-click terminal report card compilation (42 PDFs/sec)',
+        'Automated parent fee arrears SMS broadcast with M-Pesa ref',
+        'Multi-term academic audit trail & transcript seal'
       ]
     },
     enterprise: {
       hoursSavedPerMonth: Math.round(scale * 0.15 + 60),
       reconciliationAccuracy: '99.99%',
-      estimatedAnnualSavings: Math.round(scale * 22.0 + 5000),
+      annualSavingsUSD: Math.round(scale * 22.0 + 5000),
       recommendedEngine: 'Altavox Enterprise API Gateway & Relational Vault',
+      hardwareSpecs: {
+        cpu: '16 Cores Dedicated Bare-Metal',
+        ram: '32 GB DDR5 Error-Correcting Memory',
+        storage: '1 TB NVMe RAID-10 (40,000 IOPS)',
+        network: 'Dual Anycast Edge Redundant Mesh'
+      },
       specs: [
-        'Zero-downtime blue/green schema migration',
-        'Strict PostgreSQL RBAC security boundaries',
-        'Sub-5ms median API endpoint latency'
+        'Zero-downtime blue/green schema migration with Drizzle ORM',
+        'Strict PostgreSQL RBAC security boundaries & audit log',
+        'Sub-5ms median API endpoint latency across Africa nodes'
       ]
     },
     cloud: {
       hoursSavedPerMonth: Math.round(scale * 0.18 + 50),
       reconciliationAccuracy: '99.95%',
-      estimatedAnnualSavings: Math.round(scale * 18.0 + 3500),
+      annualSavingsUSD: Math.round(scale * 18.0 + 3500),
       recommendedEngine: 'Nexora Container Fabric & Edge Router Proxy',
+      hardwareSpecs: {
+        cpu: '32 Virtual CPU Threads across 4 Node Clusters',
+        ram: '64 GB High-Speed Workload Allocation',
+        storage: '2 TB Distributed Block Storage with Snapshots',
+        network: '10 Gbps Private VPC Interconnect'
+      },
       specs: [
-        'Isolated customer sandbox environments',
-        'Encrypted environment variable vault',
-        'Automated TLS rotation & edge firewall'
+        'Isolated customer sandbox environments with rootless Docker',
+        'Encrypted environment variable vault with automated rotation',
+        'Automated TLS rotation & edge DDoS mitigation firewall'
       ]
     }
   }
 
   const current = calculations[sector]
+
+  const formattedSavings = currency === 'TZS'
+    ? `TZS ${(current.annualSavingsUSD * TZS_RATE).toLocaleString()}`
+    : `$${current.annualSavingsUSD.toLocaleString()}`
 
   const sectorLabels = [
     { id: 'isp' as SectorType, label: 'ISP & MikroTik Billing', icon: Network, desc: 'Hotspots, PPPoE & M-Pesa' },
@@ -88,7 +130,7 @@ export function ArchitectureCalculator({
     { id: 'cloud' as SectorType, label: 'Cloud & Container DevOps', icon: ShieldCheck, desc: 'Docker, Microservices & SLA' },
   ]
 
-  const setupSummary = `Sector: ${sector.toUpperCase()} · Scale: ${scale.toLocaleString()} active entities · Tier: ${tier} · M-Pesa: ${includeMPesa ? 'Yes' : 'No'} · SMS: ${includeSMSAlerts ? 'Yes' : 'No'} · Engine: ${current.recommendedEngine}`
+  const setupSummary = `Sector: ${sector.toUpperCase()} · Scale: ${scale.toLocaleString()} active entities · Tier: ${tier} · Savings: ${formattedSavings}/year · Engine: ${current.recommendedEngine}`
 
   function handleAction() {
     if (onSelectSetup) {
@@ -99,8 +141,15 @@ export function ArchitectureCalculator({
     }
   }
 
+  function handleCopySummary() {
+    navigator.clipboard.writeText(setupSummary)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl">
+      {/* Header with Title and Currency Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
         <div>
           <div className="flex items-center gap-2">
@@ -116,9 +165,37 @@ export function ArchitectureCalculator({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl shrink-0">
-          <Zap className="size-3.5 text-emerald-600" />
-          <span>Real-time Verified Model</span>
+        <div className="flex items-center gap-3">
+          {/* Currency Switcher */}
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+            <button
+              type="button"
+              onClick={() => setCurrency('TZS')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
+                currency === 'TZS'
+                  ? 'bg-[#07294d] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              TZS (TSh)
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrency('USD')}
+              className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
+                currency === 'USD'
+                  ? 'bg-[#07294d] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              USD ($)
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl shrink-0">
+            <Zap className="size-3.5 text-emerald-600" />
+            <span>Real-time Verified Model</span>
+          </div>
         </div>
       </div>
 
@@ -138,7 +215,7 @@ export function ArchitectureCalculator({
                 onClick={() => setSector(s.id)}
                 className={`flex flex-col text-left p-3.5 rounded-xl border transition cursor-pointer ${
                   active
-                    ? 'border-[#f26522] bg-orange-50/40 shadow-xs'
+                    ? 'border-[#f26522] bg-orange-50/40 shadow-xs ring-1 ring-[#f26522]'
                     : 'border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300'
                 }`}
               >
@@ -156,8 +233,71 @@ export function ArchitectureCalculator({
         </div>
       </div>
 
+      {/* Dynamic Interactive System Topology Visualizer (Godlevel Feature) */}
+      <div className="mt-6 rounded-2xl bg-[#030d17] p-5 text-white border border-slate-800">
+        <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
+            <span className="text-xs font-bold font-mono uppercase tracking-wider text-orange-300">
+              Live Topology Schematic · {sector.toUpperCase()} Infrastructure
+            </span>
+          </div>
+          <span className="text-[11px] font-mono text-cyan-300">
+            {scale.toLocaleString()} Active Nodes
+          </span>
+        </div>
+
+        {/* Dynamic Topology Node Flow */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-center text-xs">
+          {/* Node 1: Ingestion / Clients */}
+          <div className="rounded-xl bg-white/5 border border-white/10 p-3 text-center">
+            <p className="text-[10px] font-mono uppercase text-slate-400">Endpoint Tier</p>
+            <p className="font-bold text-white mt-1">
+              {sector === 'isp' ? 'Towers & Subscribers' : sector === 'school' ? 'Students & Parents' : sector === 'enterprise' ? 'Web & Mobile Clients' : 'Edge Traffic Ingress'}
+            </p>
+            <span className="mt-2 inline-block rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-mono text-cyan-300">
+              {scale.toLocaleString()} entities
+            </span>
+          </div>
+
+          {/* Node 2: Gateway */}
+          <div className="rounded-xl bg-white/5 border border-white/10 p-3 text-center relative">
+            <span className="hidden sm:block absolute -left-2 top-1/2 -translate-y-1/2 text-orange-400 text-xs font-bold font-mono">→</span>
+            <p className="text-[10px] font-mono uppercase text-slate-400">Core Gateway</p>
+            <p className="font-bold text-white mt-1">
+              {sector === 'isp' ? 'MikroTik CCR2004' : sector === 'school' ? 'Sammena Next.js Edge' : sector === 'enterprise' ? 'API Gateway & Auth' : 'Nexora Reverse Proxy'}
+            </p>
+            <span className="mt-2 inline-block rounded-md bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+              {tier === 'carrier' ? 'Dual-Homed Failover' : 'Zero-Loss Sync'}
+            </span>
+          </div>
+
+          {/* Node 3: Real-Time Engine */}
+          <div className="rounded-xl bg-white/5 border border-white/10 p-3 text-center relative">
+            <span className="hidden sm:block absolute -left-2 top-1/2 -translate-y-1/2 text-orange-400 text-xs font-bold font-mono">→</span>
+            <p className="text-[10px] font-mono uppercase text-slate-400">Real-Time Engine</p>
+            <p className="font-bold text-white mt-1">
+              {sector === 'isp' ? 'M-Pesa IPN & FreeRADIUS' : sector === 'school' ? 'PDF Compiler & SMS Hub' : sector === 'enterprise' ? 'Drizzle RBAC Pipeline' : 'Docker Isolated Sandboxes'}
+            </p>
+            <span className="mt-2 inline-block rounded-md bg-orange-950/80 border border-orange-500/30 px-2 py-0.5 text-[10px] font-mono text-orange-300">
+              {includeMPesa ? 'M-Pesa Instant' : 'Direct Pipe'}
+            </span>
+          </div>
+
+          {/* Node 4: Database / Persistence */}
+          <div className="rounded-xl bg-white/5 border border-white/10 p-3 text-center relative">
+            <span className="hidden sm:block absolute -left-2 top-1/2 -translate-y-1/2 text-orange-400 text-xs font-bold font-mono">→</span>
+            <p className="text-[10px] font-mono uppercase text-slate-400">Relational Vault</p>
+            <p className="font-bold text-white mt-1">PostgreSQL 16 Multi-AZ</p>
+            <span className="mt-2 inline-block rounded-md bg-cyan-950/80 border border-cyan-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-300">
+              {current.reconciliationAccuracy} ACID Safe
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Step 2: Scale Slider & Toggles */}
-      <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-center border-t border-slate-100 pt-6">
+      <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-start border-t border-slate-100 pt-6">
         <div className="lg:col-span-7 space-y-6">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -200,7 +340,7 @@ export function ArchitectureCalculator({
                   key={t.id}
                   type="button"
                   onClick={() => setTier(t.id)}
-                  className={`p-2.5 rounded-xl border text-center transition ${
+                  className={`p-2.5 rounded-xl border text-center transition cursor-pointer ${
                     tier === t.id
                       ? 'border-[#07294d] bg-[#07294d] text-white shadow-xs'
                       : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
@@ -216,13 +356,13 @@ export function ArchitectureCalculator({
           </div>
 
           {/* Optional Automation Toggles */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-4 pt-1">
             <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
               <input
                 type="checkbox"
                 checked={includeMPesa}
                 onChange={(e) => setIncludeMPesa(e.target.checked)}
-                className="size-4 accent-[#f26522] rounded"
+                className="size-4 accent-[#f26522] rounded cursor-pointer"
               />
               <span>Instant M-Pesa Payment IPN Webhooks</span>
             </label>
@@ -232,26 +372,60 @@ export function ArchitectureCalculator({
                 type="checkbox"
                 checked={includeSMSAlerts}
                 onChange={(e) => setIncludeSMSAlerts(e.target.checked)}
-                className="size-4 accent-[#f26522] rounded"
+                className="size-4 accent-[#f26522] rounded cursor-pointer"
               />
               <span>Automated SMS Alert Notifications</span>
             </label>
           </div>
+
+          {/* Recommended Hardware Allocation Blueprint (Godlevel Feature) */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                <Cpu className="size-3.5 text-[#f26522]" />
+                Recommended Hardware Allocation
+              </span>
+              <span className="text-[10px] font-mono text-slate-400">Calculated for {scale.toLocaleString()} units</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-lg bg-white p-2 border border-slate-200">
+                <span className="text-[10px] text-slate-400 block font-mono">CPU Core Budget</span>
+                <span className="font-bold text-slate-800">{current.hardwareSpecs.cpu}</span>
+              </div>
+              <div className="rounded-lg bg-white p-2 border border-slate-200">
+                <span className="text-[10px] text-slate-400 block font-mono">Memory Pool</span>
+                <span className="font-bold text-slate-800">{current.hardwareSpecs.ram}</span>
+              </div>
+              <div className="rounded-lg bg-white p-2 border border-slate-200">
+                <span className="text-[10px] text-slate-400 block font-mono">Storage Tier</span>
+                <span className="font-bold text-slate-800">{current.hardwareSpecs.storage}</span>
+              </div>
+              <div className="rounded-lg bg-white p-2 border border-slate-200">
+                <span className="text-[10px] text-slate-400 block font-mono">Network Interface</span>
+                <span className="font-bold text-slate-800">{current.hardwareSpecs.network}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Output Metrics Panel in JanBask Style */}
+        {/* Output Metrics Panel in Altavox Executive Navy */}
         <div className="lg:col-span-5 rounded-2xl bg-[#07294d] text-white p-6 shadow-xl space-y-5">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-orange-300">
               Projected Operational Output
             </span>
-            <span className="text-xs font-mono bg-white/10 px-2 py-0.5 rounded text-slate-200">
-              Estimated Monthly
-            </span>
+            <button
+              onClick={handleCopySummary}
+              className="text-xs font-mono bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded text-slate-200 flex items-center gap-1 transition cursor-pointer"
+              title="Copy setup summary"
+            >
+              {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+              <span>{copied ? 'Copied' : 'Copy Sizing'}</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl bg-white/5 p-3 border border-white/10">
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
               <div className="flex items-center gap-1.5 text-orange-400 mb-1">
                 <Clock3 className="size-3.5" />
                 <span className="text-[11px] font-semibold text-slate-300">Labor Saved</span>
@@ -262,15 +436,15 @@ export function ArchitectureCalculator({
               <p className="text-[10px] text-slate-400 mt-1">Manual ticketing eliminated</p>
             </div>
 
-            <div className="rounded-xl bg-white/5 p-3 border border-white/10">
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
               <div className="flex items-center gap-1.5 text-emerald-400 mb-1">
-                <CheckCircle2 className="size-3.5" />
-                <span className="text-[11px] font-semibold text-slate-300">Accuracy</span>
+                <TrendingUp className="size-3.5" />
+                <span className="text-[11px] font-semibold text-slate-300">Annual Return</span>
               </div>
-              <p className="text-2xl font-black text-emerald-400 font-mono">
-                {current.reconciliationAccuracy}
+              <p className="text-xl sm:text-2xl font-black text-emerald-400 font-mono truncate" title={formattedSavings}>
+                {formattedSavings}
               </p>
-              <p className="text-[10px] text-slate-400 mt-1">Direct database integrity</p>
+              <p className="text-[10px] text-slate-400 mt-1">Operational savings</p>
             </div>
           </div>
 
@@ -281,10 +455,10 @@ export function ArchitectureCalculator({
             <p className="text-xs font-bold text-white">
               {current.recommendedEngine}
             </p>
-            <ul className="space-y-1 text-[11px] text-slate-300">
+            <ul className="space-y-1.5 text-[11px] text-slate-300 pt-1">
               {current.specs.map((spec, idx) => (
-                <li key={idx} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="size-3 text-[#f26522] shrink-0" />
+                <li key={idx} className="flex items-start gap-1.5">
+                  <CheckCircle2 className="size-3 text-[#f26522] shrink-0 mt-0.5" />
                   <span>{spec}</span>
                 </li>
               ))}
@@ -299,9 +473,10 @@ export function ArchitectureCalculator({
               <span>Request Deployment Specs for this Setup</span>
               <ArrowRight className="size-4" />
             </button>
-            <p className="mt-2 text-center text-[10px] text-slate-300">
-              Or call Direct Desk at <strong>+255 750 227 073</strong> for instant review.
-            </p>
+            <div className="mt-3 flex items-center justify-center gap-2 text-[11px] text-slate-300">
+              <PhoneCall className="size-3 text-[#f26522]" />
+              <span>Direct Desk: <strong>+255 750 227 073 / +255 708 227 073</strong></span>
+            </div>
           </div>
         </div>
       </div>

@@ -1,14 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Phone, Mail, MapPin, ShieldCheck, Award, Star, CheckCircle2, Terminal, Network, Server, Layers } from 'lucide-react'
-import { coursesData } from '@/lib/courses-data'
+import { Phone, Mail, MapPin, ShieldCheck, Terminal, Network, Server, Layers, Wifi, ArrowUpRight } from 'lucide-react'
 
 export function AltavoxFooter() {
   return (
     <footer className="bg-[#051c36] text-slate-300 pt-16 pb-12 border-t-4 border-[#f26522]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
-        {/* Top Trust Strip in Altavox Tech */}
+        {/* Top Trust Strip */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 pb-12 border-b border-white/10">
           <div className="flex items-center gap-3">
             <span className="flex size-11 items-center justify-center rounded-xl bg-white/5 text-[#f26522] border border-white/10">
@@ -16,7 +15,7 @@ export function AltavoxFooter() {
             </span>
             <div>
               <p className="text-sm font-bold text-white">Carrier ISP Automation</p>
-              <p className="text-xs text-slate-400">MikroTik RouterOS & M-Pesa reconciliation</p>
+              <p className="text-xs text-slate-400">MikroTik RouterOS & M-Pesa billing</p>
             </div>
           </div>
 
@@ -26,7 +25,7 @@ export function AltavoxFooter() {
             </span>
             <div>
               <p className="text-sm font-bold text-white">Unified School SIMS</p>
-              <p className="text-xs text-slate-400">Student registry & automated fee tracking</p>
+              <p className="text-xs text-slate-400">Student registry & academic records</p>
             </div>
           </div>
 
@@ -35,8 +34,8 @@ export function AltavoxFooter() {
               <Server className="size-6 text-emerald-400" />
             </span>
             <div>
-              <p className="text-sm font-bold text-white">99.9% Production SLA</p>
-              <p className="text-xs text-slate-400">Engineered for teams that cannot stop</p>
+              <p className="text-sm font-bold text-white">Reliable Infrastructure</p>
+              <p className="text-xs text-slate-400">Observable codebases & automated backups</p>
             </div>
           </div>
 
@@ -46,7 +45,7 @@ export function AltavoxFooter() {
             </span>
             <div>
               <p className="text-sm font-bold text-white">System Governance</p>
-              <p className="text-xs text-slate-400">Database constraints & strict RBAC security</p>
+              <p className="text-xs text-slate-400">Strict database constraints & RBAC security</p>
             </div>
           </div>
         </div>
@@ -70,7 +69,7 @@ export function AltavoxFooter() {
               </span>
             </Link>
             <p className="mt-3 text-slate-400 leading-relaxed text-xs">
-              Altavox Tech designs software platforms, ISP billing systems, and connected operational tools that help organizations run smoothly, reliably, and without guesswork.
+              Altavox Tech builds production software platforms, ISP billing systems, cloud infrastructure, and technical learning programs for organizations that demand reliability.
             </p>
 
             <div className="mt-5 space-y-2.5 text-slate-300">
@@ -107,90 +106,114 @@ export function AltavoxFooter() {
               </div>
               <div className="flex items-start gap-2 pt-1 text-slate-400">
                 <MapPin className="size-3.5 text-[#f26522] shrink-0 mt-0.5" />
-                <span><span className="block text-slate-300">Nduruma Road, Unguuni</span><span className="block">23219 Nduruma, Arusha, Tanzania</span><a href="https://www.google.com/maps/search/?api=1&query=Nduruma+Road%2C+Unguuni%2C+Nduruma%2C+Arusha%2C+Tanzania" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-[#f26522] hover:underline">View on Google Maps</a></span>
+                <span>
+                  <span className="block text-slate-300">Dar es Salaam & Arusha Operations</span>
+                  <span className="block">Nduruma Road, Unguuni, Tanzania</span>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Nduruma+Road%2C+Unguuni%2C+Nduruma%2C+Arusha%2C+Tanzania"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-block text-[#f26522] hover:underline"
+                  >
+                    View on Google Maps
+                  </a>
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Col 2: Production Systems & Platforms */}
+          {/* Col 2: Featured Platforms */}
           <div>
-            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Production Platforms</h4>
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Featured Platforms</h4>
             <ul className="mt-4 space-y-2.5">
               <li>
-                <Link href="/courses/jaslyn-net" className="hover:text-[#f26522] transition">
-                  Jaslyn Net — ISP Operations & Billing
+                <Link href="/projects/jaslyn-net" className="hover:text-[#f26522] transition flex items-center justify-between">
+                  <span>Jaslyn Net — ISP Operations</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
                 </Link>
               </li>
               <li>
-                <Link href="/courses/sammena" className="hover:text-[#f26522] transition">
-                  Sammena Pre & Primary — School SIMS
+                <Link href="/projects/sammena" className="hover:text-[#f26522] transition flex items-center justify-between">
+                  <span>Sammena School — Educational SIMS</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
                 </Link>
               </li>
               <li>
-                <Link href="/courses/netbill-noc" className="hover:text-[#f26522] transition">
-                  NetBill-NOC — Telecom RADIUS & SNMP
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses/nexora-cloud" className="hover:text-[#f26522] transition">
-                  Nexora Cloud — Deployment Engine
+                <Link href="/wifi" className="text-emerald-400 font-bold hover:underline flex items-center gap-1.5">
+                  <Wifi className="size-3" />
+                  <span>Altavox WiFi — Cloud Hotspot Platform</span>
                 </Link>
               </li>
               <li>
                 <Link href="/store" className="text-[#f26522] font-semibold hover:underline">
-                  Altavox Bookstore — Digital & Printed Books
+                  Altavox Bookstore — Digital & Print
                 </Link>
               </li>
               <li>
                 <Link href="/computer" className="text-[#f26522] font-semibold hover:underline flex items-center gap-1">
                   <Terminal className="size-3" />
-                  <span>Open Computer Console</span>
+                  <span>Computer Service Console</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/launchpad" className="hover:text-[#f26522] transition">
+                  Engineering Tools & Launchpad
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Engineering Services */}
+          {/* Col 3: Professional Services */}
           <div>
             <h4 className="font-bold uppercase tracking-wider text-white text-xs">Engineering Services</h4>
             <ul className="mt-4 space-y-2.5">
               <li>
-                <Link href="/services" className="hover:text-[#f26522] transition">
+                <Link href="/services#custom-software-development" className="hover:text-[#f26522] transition">
                   Custom Software Development
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-[#f26522] transition">
-                  ISP Billing & MikroTik Integrations
+                <Link href="/services#enterprise-web-applications" className="hover:text-[#f26522] transition">
+                  Enterprise Web Applications
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-[#f26522] transition">
-                  Cloud Deployment & Infrastructure
+                <Link href="/services#mobile-application-development" className="hover:text-[#f26522] transition">
+                  Mobile Application Development
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-[#f26522] transition">
-                  Network Engineering & NOC Automation
+                <Link href="/services#saas-product-development" className="hover:text-[#f26522] transition">
+                  SaaS Product Development
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-[#f26522] transition">
-                  Database Architecture & Data Pipelines
+                <Link href="/services#isp-network-management" className="hover:text-[#f26522] transition">
+                  ISP & Network Management Systems
                 </Link>
               </li>
               <li>
-                <Link href="/courses" className="text-cyan-300 font-semibold hover:underline">
-                  Altavox Tech Academy & Master Tracks →
+                <Link href="/services#cloud-infrastructure" className="hover:text-[#f26522] transition">
+                  Cloud Infrastructure & DevOps
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#database-architecture" className="hover:text-[#f26522] transition">
+                  Database Architecture & APIs
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Operational Governance & Company */}
+          {/* Col 4: Altavox Academy & Governance */}
           <div>
-            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Altavox Governance</h4>
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Academy & Company</h4>
             <ul className="mt-4 space-y-2.5">
+              <li>
+                <Link href="/courses" className="text-orange-400 font-semibold hover:underline">
+                  Altavox Academy (10 Tracks) →
+                </Link>
+              </li>
               <li>
                 <Link href="/about" className="hover:text-[#f26522] transition">
                   About Altavox & Principles
@@ -198,7 +221,7 @@ export function AltavoxFooter() {
               </li>
               <li>
                 <Link href="/projects" className="hover:text-[#f26522] transition">
-                  Launchpad & Live Projects
+                  Projects & Systems Architecture
                 </Link>
               </li>
               <li>
@@ -208,17 +231,17 @@ export function AltavoxFooter() {
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-[#f26522] transition">
-                  Privacy Notice & Data Security
+                  Privacy Policy & Data Security
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="hover:text-[#f26522] transition">
-                  Terms & Service SLA
+                  Terms of Service & SLAs
                 </Link>
               </li>
               <li>
-                <Link href="/admin/inquiries" className="text-slate-400 hover:text-white transition">
-                  Protected Operations Admin
+                <Link href="/contact" className="hover:text-[#f26522] transition">
+                  Contact & Inquiries
                 </Link>
               </li>
             </ul>
@@ -226,9 +249,9 @@ export function AltavoxFooter() {
 
         </div>
 
-        {/* Bottom Copyright & Disclaimer */}
+        {/* Bottom Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
-          <p>© {new Date().getFullYear()} Altavox Tech, Inc. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Altavox Tech. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="hover:text-slate-200 transition">Privacy</Link>
             <span>·</span>

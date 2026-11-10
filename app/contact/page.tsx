@@ -27,7 +27,7 @@ export default function ContactPage() {
     email: '',
     phone: '',
     systemInterest: coursesData[0].title,
-    preferredTime: 'Morning (10:00 AM EST)',
+    preferredTime: 'Morning (10:00 AM–12:00 PM, East Africa Time)',
     message: ''
   })
 
@@ -42,6 +42,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          phone: formData.phone,
           description: formData.message.trim(),
           service: formData.systemInterest,
           timeline: formData.preferredTime,
@@ -96,7 +97,7 @@ export default function ContactPage() {
                   </span>
                   <div>
                     <h3 className="text-sm font-bold text-[#07294d]">Direct Phone Lines</h3>
-                    <p className="text-xs text-slate-500">Available 24/7 for operational systems</p>
+                    <p className="text-xs text-slate-500">Contact us to discuss support availability</p>
                   </div>
                 </div>
                 <div className="mt-4 space-y-2 text-xs text-slate-700">
@@ -115,7 +116,7 @@ export default function ContactPage() {
                   </span>
                   <div>
                     <h3 className="text-sm font-bold text-[#07294d]">Engineering Inquiries</h3>
-                    <p className="text-xs text-slate-500">Fast response directly from technical leads</p>
+                    <p className="text-xs text-slate-500">Send your inquiry to the engineering team</p>
                   </div>
                 </div>
                 <div className="mt-4 space-y-2 text-xs text-slate-700">
@@ -136,7 +137,7 @@ export default function ContactPage() {
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-slate-700 leading-relaxed">
-                  <p className="font-semibold text-slate-900">Altavox Tech, Inc.</p>
+                  <p className="font-semibold text-slate-900">Altavox Technologies</p>
                   <p>Nduruma Road, Unguuni</p>
                   <p>23219 Nduruma</p>
                   <p>Arusha, Tanzania</p>

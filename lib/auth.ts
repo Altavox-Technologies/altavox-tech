@@ -8,9 +8,13 @@ if (process.env.NODE_ENV === 'production' && !authSecret) {
   throw new Error('BETTER_AUTH_SECRET must be configured before starting Altavox in production.')
 }
 
+if (process.env.NODE_ENV === 'production' && (!process.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET.length < 32)) {
+  throw new Error('BETTER_AUTH_SECRET must be configured with at least 32 characters in production.')
+}
+
 export const auth = betterAuth({
-  database: pool,
-  secret: authSecret || 'altavox-local-development-secret-only-change-before-deploy',
+  ...(pool ? { database: pool } : {}),
+  secret: process.env.BETTER_AUTH_SECRET ?? 'local-development-only-secret-change-before-deploy-123456',
   baseURL,
   emailAndPassword: { enabled: true, autoSignIn: true },
   trustedOrigins: [
@@ -19,10 +23,9 @@ export const auth = betterAuth({
   ],
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
   advanced: {
-    defaultCookieAttributes: {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+    database: {
+      validateSchema: false,
     },
+    ...(process.env.NODE_ENV === 'development' ? { defaultCookieAttributes: { sameSite: 'none' as const, secure: true } } : {}),
   },
 })

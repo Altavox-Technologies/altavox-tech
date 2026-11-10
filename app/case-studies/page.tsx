@@ -8,7 +8,7 @@ export default function CaseStudies() {
     <PageFrame
       eyebrow="Case Studies & Results"
       title="Evidence Over Exaggeration."
-      intro="Detailed architectural breakdowns and operational outcomes from our production deployments across East Africa."
+      intro="Selected project contexts, engineering decisions, and implementation approaches across digital platforms and operational systems."
     >
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid gap-8 md:grid-cols-2">
@@ -24,16 +24,16 @@ export default function CaseStudies() {
                 <h2 className="mt-3 text-2xl font-bold text-[#07294d]">{project.name}</h2>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">{project.description}</p>
 
-                {project.metrics && (
-                  <div className="mt-6 grid grid-cols-3 gap-3 border-y border-slate-100 py-4 bg-slate-50/70 rounded-xl px-4">
-                    {project.metrics.map((m) => (
-                      <div key={m.label}>
-                        <p className="text-xl font-extrabold text-[#07294d]">{m.value}</p>
-                        <p className="text-[11px] text-slate-500 font-medium leading-4 mt-0.5">{m.label}</p>
-                      </div>
-                    ))}
+                <div className="mt-6 rounded-xl bg-slate-50 p-4 border border-slate-200/80 text-xs space-y-2">
+                  <div>
+                    <span className="font-bold text-[#07294d] uppercase text-[10px] tracking-wider block">Operational Challenge</span>
+                    <p className="text-slate-600 mt-0.5 leading-relaxed">{project.engineeringChallenge}</p>
                   </div>
-                )}
+                  <div className="pt-2 border-t border-slate-200/60">
+                    <span className="font-bold text-[#f26522] uppercase text-[10px] tracking-wider block">Engineering Solution</span>
+                    <p className="text-slate-700 mt-0.5 leading-relaxed font-medium">{project.engineeringSolution}</p>
+                  </div>
+                </div>
               </div>
 
               <div className="mt-8 flex items-center justify-between pt-4 border-t border-slate-100">

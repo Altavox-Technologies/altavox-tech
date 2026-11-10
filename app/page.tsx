@@ -31,8 +31,12 @@ import {
   Database,
   Terminal,
   Activity,
-  ArrowUpRight
+  ArrowUpRight,
+  Cpu,
+  Calculator,
+  Wifi
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
 import { AltavoxCourseCard } from '@/components/altavox-course-card'
@@ -41,6 +45,9 @@ import { CurriculumModal } from '@/components/curriculum-modal'
 import { CareerAdvisorModal } from '@/components/career-advisor-modal'
 import { ArchitectureCalculator } from '@/components/architecture-calculator'
 import { LiveTerminalSandbox } from '@/components/live-terminal-sandbox'
+import { MikroTikConfigGenerator } from '@/components/mikrotik-config-generator'
+import { EdgeLatencyProber } from '@/components/edge-latency-prober'
+import { TechStackTicker } from '@/components/tech-stack-ticker'
 import { coursesData, courseCategories, CourseItem } from '@/lib/courses-data'
 
 export default function HomePage() {
@@ -51,6 +58,7 @@ export default function HomePage() {
   const [curriculumModalOpen, setCurriculumModalOpen] = useState(false)
   const [selectedCourseForCurriculum, setSelectedCourseForCurriculum] = useState<CourseItem | null>(null)
   const [advisorModalOpen, setAdvisorModalOpen] = useState(false)
+  const [suiteTab, setSuiteTab] = useState<'sandbox' | 'mikrotik' | 'edge-prober' | 'calculator'>('sandbox')
 
   // Filter systems & courses by category and search
   const filteredCourses = coursesData.filter((item) => {
@@ -85,34 +93,26 @@ export default function HomePage() {
 
   const caseStudies = [
     {
-      name: 'Jaslyn Internet Services',
-      role: 'Regional ISP Provider',
-      title: 'ISP billing workflows and MikroTik subscriber provisioning',
-      outcome: 'Automated billing workflows',
-      previous: 'Manual bank slip verification & late-night reconnect tickets',
-      current: 'Payment-triggered provisioning workflows, subject to configured integrations',
-      image: '/public/projects/jaslyn-net-live.png',
-      quote: 'Jaslyn Net is presented as an ISP operations platform integrating billing, subscriber identity, and network automation.'
+      name: 'Jaslyn Net',
+      role: 'Regional ISP & Network Operator',
+      title: 'ISP billing workflows, subscriber lifecycle & MikroTik provisioning',
+      outcome: 'Carrier ISP Automation',
+      previous: 'Manual voucher tracking, paper receipts, and delayed subscriber reconnection',
+      current: 'Automated mobile-money payment reconciliation, RADIUS AAA accounting, and dynamic queue shaping without session flap',
+      image: '/projects/jaslyn-net-live.png',
+      url: 'https://jaslyn-net.altavox.space',
+      quote: 'Jaslyn Net unites subscriber lifecycle, automated billing, and RouterOS automation into a coherent operational cockpit.'
     },
     {
-      name: 'Sammena Educational Complex',
-      role: 'Pre & Primary School',
-      title: 'School SIMS for student records and fee administration',
-      outcome: 'School administration workflows',
-      previous: 'Physical ledger books, paper receipt booklets, lost student files',
-      current: 'Unified web portal for admissions, fee reconciliation, and PDF gradebooks',
-      image: '/public/projects/sammena-live.png',
-      quote: 'Sammena School uses a school information management platform for its public website and administration workflows.'
-    },
-    {
-      name: 'Regional Telecom Operators',
-      role: 'Multi-Site Network Operations',
-      title: 'NetBill-NOC: Multi-Tenant RADIUS Accounting & Sub-10s Telemetry',
-      outcome: 'Network operations tooling',
-      previous: 'Uncoordinated tower alerts and delayed outage discovery',
-      current: 'Visual dynamic topology map with automated Telegram engineer dispatch',
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=160&h=160&q=80',
-      quote: 'Network operations capabilities include monitoring, incident visibility, and operational alerts when connected to live infrastructure.'
+      name: 'Sammena School',
+      role: 'Pre & Primary Educational Institution',
+      title: 'School SIMS for academic records, admissions & administration',
+      outcome: 'Unified School SIMS',
+      previous: 'Physical paper ledgers, fragmented receipt booklets, and manual report card calculation',
+      current: 'Centralized school information management system for admissions, student records, role-based staff access, and academic reports',
+      image: '/projects/sammena-live.png',
+      url: 'https://sammena.altavox.space',
+      quote: 'Sammena School connects public school communications with private administrative record-keeping under strict data governance.'
     }
   ]
 
@@ -154,8 +154,18 @@ export default function HomePage() {
             <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
               
               {/* Left Column: Mission & Core Value */}
-              <div className="lg:col-span-7 space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                className="lg:col-span-7 space-y-6"
+              >
                 
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-mono text-orange-300">
+                  <span className="size-2 rounded-full bg-[#f26522]" />
+                  <span>Independent software engineering · Tanzania</span>
+                </div>
+
                 {/* Main Hero Headline */}
                 <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl leading-[1.15]">
                   Technology Built for <span className="text-[#f26522]">Real Work.</span>
@@ -174,6 +184,7 @@ export default function HomePage() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="Search Altavox systems and services"
                       placeholder="Search systems (e.g. Jaslyn Net, MikroTik, Sammena SIMS, Cloud)..."
                       className="w-full rounded-xl border border-white/20 bg-white/10 pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-300 outline-none backdrop-blur-md focus:border-[#f26522] focus:bg-white/15 transition"
                     />
@@ -182,7 +193,7 @@ export default function HomePage() {
                         const el = document.getElementById('systems-section')
                         el?.scrollIntoView({ behavior: 'smooth' })
                       }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-[#f26522] px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-[#e05312] transition"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-[#f26522] px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-[#e05312] transition cursor-pointer"
                     >
                       Find System
                     </button>
@@ -191,15 +202,23 @@ export default function HomePage() {
                   {/* Popular Pills */}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-300">
                     <span className="font-semibold text-slate-400">Featured:</span>
-                    {['Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'NetBill-NOC', 'Nexora Cloud', 'Tech Academy'].map((tag) => (
+                    {['Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'School SIMS'].map((tag) => (
                       <button
                         key={tag}
                         onClick={() => {
+                          if (tag === 'Altavox WiFi') {
+                            window.location.href = '/wifi'
+                            return
+                          }
                           setSearchQuery(tag.includes('ISP') ? 'Jaslyn Net' : tag)
                           const el = document.getElementById('systems-section')
                           el?.scrollIntoView({ behavior: 'smooth' })
                         }}
-                        className="rounded-md bg-white/10 px-2.5 py-1 text-slate-200 hover:bg-[#f26522] hover:text-white transition"
+                        className={`rounded-md px-2.5 py-1 transition cursor-pointer ${
+                          tag === 'Altavox WiFi'
+                            ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-bold hover:bg-emerald-500 hover:text-white'
+                            : 'bg-white/10 text-slate-200 hover:bg-[#f26522] hover:text-white'
+                        }`}
                       >
                         {tag}
                       </button>
@@ -210,16 +229,24 @@ export default function HomePage() {
                 {/* Action CTA Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-3">
                   <Link
-                    href="/projects"
-                    className="flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[#e05312] hover:scale-[1.02] active:scale-[0.98] transition"
+                    href="/wifi"
+                    className="flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-900/30 hover:bg-emerald-700 transition"
                   >
-                    <span>Explore Production Systems</span>
+                    <Wifi className="size-4" />
+                    <span>Launch Altavox WiFi</span>
+                  </Link>
+
+                  <Link
+                    href="/projects"
+                    className="flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[#e05312] transition"
+                  >
+                    <span>Production Systems</span>
                     <ArrowRight className="size-4" />
                   </Link>
 
                   <button
                     onClick={() => handleOpenDemo()}
-                    className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-md hover:bg-white/20 transition"
+                    className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-md hover:bg-white/20 transition cursor-pointer"
                   >
                     <Calendar className="size-4 text-[#f26522]" />
                     <span>Book Live Technical Demo</span>
@@ -227,25 +254,27 @@ export default function HomePage() {
 
                   <button
                     onClick={() => setAdvisorModalOpen(true)}
-                    className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3.5 text-xs font-semibold text-cyan-200 hover:text-white hover:bg-white/5 transition"
+                    className="flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3.5 text-xs font-semibold text-cyan-200 hover:text-white hover:bg-white/5 transition cursor-pointer"
                   >
                     <Sparkles className="size-3.5" />
                     <span>AI Systems Advisor</span>
                   </button>
                 </div>
 
-              </div>
+              </motion.div>
 
               {/* Right Column: Interactive Hero Live Cockpit Preview Card */}
-              <div className="lg:col-span-5">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.65, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="lg:col-span-5"
+              >
                 <div className="relative rounded-2xl border border-white/15 bg-white/[0.08] p-6 backdrop-blur-xl shadow-2xl">
                   {/* Floating Live Indicator */}
                   <div className="flex items-center justify-between pb-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
-                      <span className="relative flex size-3">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex size-3 rounded-full bg-emerald-500"></span>
-                      </span>
+                      <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
                       <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
                         Architecture Preview
                       </span>
@@ -313,7 +342,7 @@ export default function HomePage() {
                     <div className="pt-2 flex gap-3">
                       <button
                         onClick={() => handleOpenDemo('Jaslyn Net — Carrier-Grade ISP Billing & MikroTik Automation Platform')}
-                        className="flex-1 rounded-xl bg-[#f26522] py-3 text-center text-xs font-bold text-white shadow-md hover:bg-[#e05312] transition"
+                        className="flex-1 rounded-xl bg-[#f26522] py-3 text-center text-xs font-bold text-white shadow-md hover:bg-[#e05312] transition cursor-pointer"
                       >
                         Reserve System Demo
                       </button>
@@ -326,57 +355,138 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
             </div>
           </div>
         </section>
 
         {/* ======================================================== */}
-        {/* CORE TECHNOLOGIES & INFRASTRUCTURE STRIP */}
+        {/* CORE TECHNOLOGIES & INFRASTRUCTURE STRIP (NOW IN MOTION) */}
         {/* ======================================================== */}
-        <section className="bg-white border-b border-slate-200 py-8">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-xs font-bold uppercase tracking-wider text-slate-500">
-              Technologies used across Altavox engineering work
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-6 opacity-90">
-              {techPartners.map((tech) => (
-                <div key={tech.name} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3.5 py-2 border border-slate-200 shadow-xs">
-                  <Server className="size-3.5 text-[#07294d]" />
-                  <span className="text-xs font-bold text-slate-800">{tech.name}</span>
-                  <span className="text-[10px] text-slate-400 font-mono">({tech.tag})</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <TechStackTicker />
 
         {/* ======================================================== */}
-        {/* INTERACTIVE PRODUCTION COCKPIT & LIVE TERMINAL SANDBOX */}
+        {/* INTERACTIVE PRODUCTION COCKPIT & LIVE ENGINEERING SUITE */}
         {/* ======================================================== */}
-        <section className="bg-[#030d17] py-16 border-b border-slate-800 text-white">
+        <section hidden className="bg-[#030d17] py-16 border-b border-slate-800 text-white relative overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8"
+            >
               <div>
-                <span className="inline-block rounded-full bg-[#f26522] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                  Live Interactive Sandbox
-                </span>
-                <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold text-white">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="inline-block rounded-full bg-[#f26522] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                    Live Engineering Suite
+                  </span>
+                  <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-emerald-400" />
+                    <span>Tools preview hidden from public homepage</span>
+                  </span>
+                </div>
+                <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
                   Test Altavox Engineering in Action
                 </h2>
                 <p className="mt-2 text-sm text-slate-300 max-w-2xl">
-                  Simulate real-time MikroTik RouterOS API queue execution, Sammena School SIMS academic batch compilation, and Nexora Cloud database diagnostics right in your browser.
+                  Select an interactive utility below to generate real MikroTik RouterOS deployment scripts, probe East African telecom edge latency, or run live socket terminal commands.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>Simulated Production Socket Connected</span>
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  href="/launchpad"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition cursor-pointer"
+                >
+                  <span>Open Dedicated Launchpad</span>
+                  <ArrowUpRight className="size-3.5 text-[#f26522]" />
+                </Link>
               </div>
+            </motion.div>
+
+            {/* Interactive Tool Switcher Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-white/10 scrollbar-none">
+              <button
+                onClick={() => setSuiteTab('sandbox')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'sandbox'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Terminal className="size-4" />
+                <span>Live Socket Terminal</span>
+              </button>
+
+              <button
+                onClick={() => setSuiteTab('mikrotik')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'mikrotik'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Cpu className="size-4" />
+                <span>MikroTik Config Forge</span>
+              </button>
+
+              <button
+                onClick={() => setSuiteTab('edge-prober')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'edge-prober'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Network className="size-4" />
+                <span>East Africa Edge Prober</span>
+              </button>
+
+              <button
+                onClick={() => setSuiteTab('calculator')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                  suiteTab === 'calculator'
+                    ? 'bg-[#f26522] text-white shadow-md'
+                    : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                <Calculator className="size-4" />
+                <span>ISP Sizing & ROI Modeler</span>
+              </button>
             </div>
 
-            <LiveTerminalSandbox />
+            {/* Active Tool View */}
+            <motion.div
+              key={suiteTab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {suiteTab === 'sandbox' && (
+                <LiveTerminalSandbox />
+              )}
+
+              {suiteTab === 'mikrotik' && (
+                <div className="text-slate-900">
+                  <MikroTikConfigGenerator onDeployConsultation={(summary) => handleOpenDemo(summary)} />
+                </div>
+              )}
+
+              {suiteTab === 'edge-prober' && (
+                <div className="text-slate-900">
+                  <EdgeLatencyProber onScheduleAssessment={() => handleOpenDemo('Edge Latency & Network Audit')} />
+                </div>
+              )}
+
+              {suiteTab === 'calculator' && (
+                <div className="text-slate-900 rounded-3xl bg-white p-6 sm:p-8 shadow-xl">
+                  <ArchitectureCalculator onSelectSetup={(summary) => handleOpenDemo(summary)} />
+                </div>
+              )}
+            </motion.div>
           </div>
         </section>
 
@@ -386,7 +496,13 @@ export default function HomePage() {
         <section id="systems-section" className="py-16 sm:py-24 bg-slate-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col md:flex-row md:items-end md:justify-between gap-4"
+            >
               <div>
                 <span className="inline-block rounded bg-orange-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                   Altavox Platforms & Tracks
@@ -406,15 +522,21 @@ export default function HomePage() {
                 <span>View Full Projects Registry</span>
                 <ArrowRight className="size-4" />
               </Link>
-            </div>
+            </motion.div>
 
             {/* Category Filter Tabs */}
-            <div className="mt-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"
+            >
               {courseCategories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full px-4 py-2 text-xs font-bold whitespace-nowrap transition-all ${
+                  className={`rounded-full px-4 py-2 text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                     selectedCategory === category
                       ? 'bg-[#07294d] text-white shadow-md'
                       : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
@@ -423,17 +545,18 @@ export default function HomePage() {
                   {category}
                 </button>
               ))}
-            </div>
+            </motion.div>
 
             {/* Systems Grid */}
             <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {filteredCourses.map((item) => (
-                <AltavoxCourseCard
-                  key={item.id}
-                  course={item}
-                  onViewCurriculum={handleOpenCurriculum}
-                  onBookDemo={handleOpenDemo}
-                />
+                <div key={item.id}>
+                  <AltavoxCourseCard
+                    course={item}
+                    onViewCurriculum={handleOpenCurriculum}
+                    onBookDemo={handleOpenDemo}
+                  />
+                </div>
               ))}
             </div>
 
@@ -460,7 +583,13 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="bg-gradient-to-b from-white to-slate-50 py-16 sm:py-20 border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center max-w-3xl mx-auto mb-10"
+            >
               <span className="inline-block rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                 Enterprise Planning & ROI Tool
               </span>
@@ -470,11 +599,18 @@ export default function HomePage() {
               <p className="mt-2 text-sm sm:text-base text-slate-600">
                 Model your organization&apos;s workload across ISP billing, education SIMS, or enterprise cloud platforms to estimate monthly labor saved and recommended deployment hardware.
               </p>
-            </div>
+            </motion.div>
 
-            <ArchitectureCalculator
-              onSelectSetup={(summary) => handleOpenDemo(summary)}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <ArchitectureCalculator
+                onSelectSetup={(summary) => handleOpenDemo(summary)}
+              />
+            </motion.div>
           </div>
         </section>
 
@@ -483,7 +619,13 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="bg-gradient-to-r from-[#07294d] to-[#0d3b66] text-white py-14 border-y border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="grid gap-8 lg:grid-cols-12 lg:items-center"
+            >
               
               <div className="lg:col-span-8 space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-full bg-[#f26522]/20 border border-[#f26522]/40 px-3 py-1 text-xs font-bold text-orange-200">
@@ -499,14 +641,14 @@ export default function HomePage() {
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   <button
                     onClick={() => setAdvisorModalOpen(true)}
-                    className="flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#e05312] transition"
+                    className="flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#e05312] transition cursor-pointer"
                   >
                     <Sparkles className="size-4" />
                     <span>Launch AI Systems Advisor</span>
                   </button>
                   <button
                     onClick={() => handleOpenDemo()}
-                    className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition"
+                    className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition cursor-pointer"
                   >
                     <span>Talk to a Systems Engineer</span>
                   </button>
@@ -536,14 +678,14 @@ export default function HomePage() {
                   <div className="rounded-lg bg-black/20 p-2.5 flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-white">Carrier NOC Telemetry</p>
-                      <p className="text-[11px] text-slate-300">→ NetBill-NOC Multi-Site</p>
+                      <p className="text-[11px] text-slate-300">→ Network monitoring integrations</p>
                     </div>
-                    <span className="font-bold text-emerald-400">99.99% Uptime</span>
+                    <span className="font-bold text-emerald-400">Network monitoring design</span>
                   </div>
                 </div>
               </div>
 
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -552,7 +694,13 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="py-20 bg-white border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center max-w-3xl mx-auto"
+            >
               <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                 Our Guiding Principles
               </span>
@@ -562,12 +710,12 @@ export default function HomePage() {
               <p className="mt-3 text-base text-slate-600">
                 We approach technology as a working part of the organization, not a layer of decoration. That means listening carefully, defining the real problem, and building the smallest dependable system that can carry the work forward.
               </p>
-            </div>
+            </motion.div>
 
             <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               
               {/* Pillar 1 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-[#f26522]">01</span>
                 </div>
@@ -580,7 +728,7 @@ export default function HomePage() {
               </div>
 
               {/* Pillar 2 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-amber-400">02</span>
                 </div>
@@ -593,7 +741,7 @@ export default function HomePage() {
               </div>
 
               {/* Pillar 3 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-cyan-300">03</span>
                 </div>
@@ -606,7 +754,7 @@ export default function HomePage() {
               </div>
 
               {/* Pillar 4 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] hover:shadow-lg transition">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 hover:border-[#f26522] transition-colors duration-150">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#07294d] text-white">
                   <span className="font-mono text-sm font-bold text-emerald-400">04</span>
                 </div>
@@ -627,7 +775,13 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="py-20 bg-slate-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col md:flex-row md:items-end md:justify-between gap-4"
+            >
               <div>
                 <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                   Evidence Over Exaggeration
@@ -636,69 +790,93 @@ export default function HomePage() {
                   Real Operational Outcomes & Deployments
                 </h2>
                 <p className="mt-2 text-sm text-slate-600">
-                  Practical case studies from active ISP operations, school systems, and telecom network nodes.
+                  Project summaries for Jaslyn Net, Sammena, and Mrisho Art Gallery. Operational performance figures are published only when verified data is available.
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="flex text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <span className="text-sm font-bold text-slate-800">4.9 / 5.0 Reliability</span>
-                <span className="text-xs text-slate-500">(Verified Deployments)</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
+                  Verified Production Platforms
+                </span>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Case Studies Grid */}
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Case Studies Grid - 2 Featured Projects */}
+            <div className="mt-12 grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
               {caseStudies.map((study) => (
                 <div
                   key={study.name}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition"
+                  className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#f26522] transition-colors duration-150"
                 >
-                  <div>
-                    {/* Header with Outcome Badge */}
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
-                        {study.outcome}
-                      </span>
-                      <span className="text-xs font-semibold text-slate-500">{study.role}</span>
-                    </div>
-
-                    <h3 className="mt-4 text-base font-bold text-[#07294d]">
-                      {study.title}
-                    </h3>
-
-                    {/* Review Quote */}
-                    <p className="mt-3 text-xs leading-6 text-slate-700 italic">
-                      &quot;{study.quote}&quot;
-                    </p>
-
-                    {/* Operational Shift */}
-                    <div className="mt-5 rounded-xl bg-slate-50 p-3 border border-slate-100 text-[11px] space-y-1">
-                      <div className="text-slate-500">
-                        <span className="font-semibold text-slate-600">Before:</span> {study.previous}
-                      </div>
-                      <div className="text-slate-800 font-semibold">
-                        <span className="text-emerald-600 font-bold">With Altavox:</span> {study.current}
-                      </div>
+                  <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden border-b border-slate-100">
+                    <Image
+                      src={study.image}
+                      alt={`${study.name} live platform interface`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover object-top transition duration-500 hover:scale-102"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute top-3 left-3 bg-[#07294d]/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                      {study.outcome}
                     </div>
                   </div>
 
-                  {/* Client Details */}
-                  <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="p-6 flex-1 flex flex-col justify-between">
                     <div>
-                      <p className="text-xs font-bold text-slate-900">{study.name}</p>
-                      <p className="text-[11px] text-slate-500">{study.role}</p>
+                      <div className="flex items-center justify-between text-xs text-slate-500">
+                        <span className="font-semibold text-slate-700">{study.role}</span>
+                        <a
+                          href={study.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-[#f26522] hover:underline flex items-center gap-1"
+                        >
+                          <span>Live Site</span>
+                          <ArrowUpRight className="size-3" />
+                        </a>
+                      </div>
+
+                      <h3 className="mt-3 text-lg font-bold text-[#07294d]">
+                        {study.name}
+                      </h3>
+                      <p className="mt-1 text-xs font-medium text-slate-600">
+                        {study.title}
+                      </p>
+
+                      {/* Review Quote */}
+                      <p className="mt-3 text-xs leading-6 text-slate-700 italic border-l-2 border-[#f26522] pl-3 py-0.5">
+                        &quot;{study.quote}&quot;
+                      </p>
+
+                      {/* Operational Shift */}
+                      <div className="mt-4 rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-[11px] space-y-1.5">
+                        <div className="text-slate-500">
+                          <span className="font-semibold text-slate-600">Challenge:</span> {study.previous}
+                        </div>
+                        <div className="text-slate-800 font-medium">
+                          <span className="text-[#f26522] font-bold">Engineering Solution:</span> {study.current}
+                        </div>
+                      </div>
                     </div>
-                    <Link
-                      href="/case-studies"
-                      className="text-xs font-bold text-[#f26522] hover:underline"
-                    >
-                      Read Case Study →
-                    </Link>
+
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <a
+                        href={study.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-[#07294d] hover:text-[#f26522] transition flex items-center gap-1"
+                      >
+                        <span>Visit {study.name}</span>
+                        <ArrowRight className="size-3.5" />
+                      </a>
+                      <Link
+                        href={`/projects/${study.name.toLowerCase().includes('jaslyn') ? 'jaslyn-net' : 'sammena'}`}
+                        className="text-xs font-bold text-[#f26522] hover:underline"
+                      >
+                        Architecture Spec →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -738,7 +916,7 @@ export default function HomePage() {
               {articles.map((art, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 p-6 flex flex-col justify-between hover:border-[#f26522] hover:bg-white hover:shadow-md transition"
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-6 flex flex-col justify-between hover:border-[#f26522] hover:bg-white transition-colors duration-150"
                 >
                   <div>
                     <div className="flex items-center justify-between text-xs">
@@ -771,7 +949,13 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="bg-slate-50 py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="rounded-3xl bg-gradient-to-br from-[#07294d] to-[#041a33] text-white p-8 sm:p-12 lg:p-16 shadow-xl relative overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="rounded-3xl bg-gradient-to-br from-[#07294d] to-[#041a33] text-white p-8 sm:p-12 lg:p-16 shadow-xl relative overflow-hidden"
+            >
               <div className="max-w-2xl space-y-4">
                 <span className="rounded-md bg-[#f26522] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
                   Engage Altavox Engineering
@@ -808,7 +992,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
@@ -817,14 +1001,20 @@ export default function HomePage() {
         {/* ======================================================== */}
         <section className="py-20 bg-white border-t border-slate-200">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center"
+            >
               <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f26522]">
                 Technical Inquiries
               </span>
               <h2 className="mt-3 text-3xl font-extrabold text-[#07294d]">
                 Frequently Asked Technical Questions
               </h2>
-            </div>
+            </motion.div>
 
             <div className="mt-10 space-y-4">
               {[
@@ -834,7 +1024,7 @@ export default function HomePage() {
                 },
                 {
                   q: 'Can Sammena School SIMS be deployed on self-hosted servers or the cloud?',
-                  a: 'Yes. Sammena is built on modern Next.js 16 and PostgreSQL, allowing deployment on dedicated local hardware or cloud environments like Nexora Cloud with automated encrypted backups and SSL.'
+                  a: 'Yes. Sammena is built on modern Next.js 16 and PostgreSQL, allowing deployment on dedicated local hardware or cloud environments with automated encrypted backups and SSL.'
                 },
                 {
                   q: 'How does Altavox handle payment gateway webhooks for mobile money?',
@@ -842,10 +1032,17 @@ export default function HomePage() {
                 },
                 {
                   q: 'What is the Altavox Tech Academy?',
-                  a: 'The Altavox Tech Academy is our technical skill development wing, offering 100% live instructor-led tracks in AWS Cloud Architecture, Salesforce Platform Development, Cyber Security, and QA Automation to help engineering teams and career switchers gain practical certifications.'
+                  a: 'The Altavox Tech Academy provides 10 practical engineering pathways spanning Full-Stack Web Development, Advanced TypeScript, React & Next.js, Node.js Backend, Databases & Supabase, Cloud & DevOps, Cybersecurity, Applied AI, ISP & Network Engineering, and Software Architecture.'
                 }
               ].map((faq, idx) => (
-                <div key={idx} className="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-xs">
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.45, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-xs"
+                >
                   <h4 className="text-sm font-bold text-[#07294d] flex items-center gap-2">
                     <HelpCircle className="size-4 text-[#f26522] shrink-0" />
                     <span>{faq.q}</span>
@@ -853,23 +1050,29 @@ export default function HomePage() {
                   <p className="mt-2 text-xs leading-6 text-slate-600 pl-6">
                     {faq.a}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </div>
 
-            <div className="mt-12 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-12 text-center"
+            >
               <p className="text-sm text-slate-600">
                 Have specific architectural or integration requirements?
               </p>
               <div className="mt-4 flex justify-center gap-4">
                 <Link
                   href="/contact"
-                  className="rounded-xl bg-[#07294d] px-6 py-3 text-xs font-bold text-white hover:bg-[#051c36] transition"
+                  className="rounded-xl bg-[#07294d] px-6 py-3 text-xs font-bold text-white hover:bg-[#051c36] transition cursor-pointer"
                 >
                   Contact Altavox Engineering Desk
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 

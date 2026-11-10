@@ -26,13 +26,13 @@ export default function PrivacyPage() {
             <div>
               <h2 className="text-sm font-bold text-[#07294d]">2. How We Protect Operational & Client Data</h2>
               <p className="mt-2">
-                We implement industry-standard 256-bit SSL encryption, automated TLS certificates, database constraint security, and strict role-based access control (RBAC). We never sell, lease, or monetize client data, subscriber lists, or proprietary network topologies.
+                We use appropriate technical and organizational safeguards for information handled through our services. The specific controls depend on the system, hosting environment, access requirements, and agreed project scope. We do not sell client information. Please avoid submitting passwords, payment credentials, or other highly sensitive secrets through public website forms.
               </p>
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#07294d]">3. Production Telemetry & Confidentiality</h2>
               <p className="mt-2">
-                Telemetry and performance logs gathered from ISP billing gateways, SIMS databases, or container runtimes remain strictly isolated to the operating client. Mutual NDAs are executed prior to code and infrastructure audits.
+                Where a project involves operational logs or telemetry, the permitted collection, access, retention, and sharing arrangements should be defined with the client before implementation. Confidentiality terms and any required non-disclosure agreement are handled as part of the relevant engagement.
               </p>
             </div>
             <div>

@@ -4,6 +4,7 @@ import { pool } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
   try {
     const query = request.nextUrl.searchParams.get('q')?.trim()
     const values: string[] = []
