@@ -66,6 +66,7 @@ export async function GET(request: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: 'Sign in to view your order.' }, { status: 401 })
   const orderId = new URL(request.url).searchParams.get('id')
   if (!orderId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId)) return NextResponse.json({ error: 'Valid order ID required.' }, { status: 400 })
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503 })
   try {
     const result = await pool.query('SELECT id,order_number,total,currency,payment_status,order_status,created_at FROM book_orders WHERE id=$1 AND customer_id=$2 LIMIT 1', [orderId,session.user.id])
     if (!result.rows[0]) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
