@@ -5,14 +5,14 @@ export interface ProjectItem {
   client: string
   summary: string
   description: string
-  engineeringChallenge: string
-  engineeringSolution: string
+  engineeringChallenge?: string
+  engineeringSolution?: string
   status: 'In development' | 'Production' | 'Exploration'
   url: string
-  screenshotUrl: string
+  screenshotUrl?: string
   tags: string[]
   metrics?: { label: string; value: string }[]
-  architecture: {
+  architecture?: {
     frontend: string
     backend: string
     database: string
