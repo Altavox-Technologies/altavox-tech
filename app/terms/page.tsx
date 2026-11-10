@@ -24,9 +24,9 @@ export default function TermsPage() {
               </p>
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[#07294d]">2. Operational Continuity & Uptime SLA</h2>
+              <h2 className="text-sm font-bold text-[#07294d]">2. Operations, Maintenance & Availability</h2>
               <p className="mt-2">
-                Managed deployments on Altavox Cloud or on-premise MikroTik carrier infrastructure are maintained for continuous operations. Critical patch rollouts and database schema migrations follow zero-downtime blue-green strategies.
+                Availability targets, maintenance windows, incident response, backup arrangements, and recovery commitments must be agreed in writing for each engagement. Deployment and migration methods are selected according to the system architecture and the level of service contracted; uninterrupted or zero-downtime operation is not guaranteed unless expressly agreed.
               </p>
             </div>
             <div>

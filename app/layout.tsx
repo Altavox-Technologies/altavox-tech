@@ -6,8 +6,8 @@ const brandEmblem = '/capricorn_emblem_clean_black.svg'
 export const metadata: Metadata = {
   metadataBase: new URL('https://altavox.space'),
   title: {
-    default: 'Altavox Tech — Software Systems Engineering & IT Operations Platform',
-    template: '%s | Altavox Tech',
+    default: 'Altavox Technologies | Software, AI & Digital Systems',
+    template: '%s | Altavox Technologies',
   },
   description: 'Altavox Tech engineers software platforms, ISP billing systems, cloud infrastructure, and operational tools designed for reliability and clarity.',
   applicationName: 'Altavox Tech',
@@ -24,15 +24,15 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: 'Altavox Tech',
-    title: 'Altavox Tech — Software Systems Engineering & IT Operations Platform',
+    siteName: 'Altavox Technologies',
+    title: 'Altavox Technologies | Software, AI & Digital Systems',
     description: 'Software engineering, digital product development, ISP billing, infrastructure, and connected systems.',
     url: 'https://altavox.space',
     images: [{ url: brandEmblem, alt: 'Altavox Tech Capricorn brand emblem' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Altavox Tech',
+    title: 'Altavox Technologies',
     description: 'Software engineering, digital product development, ISP billing, infrastructure, and connected systems.',
     images: [brandEmblem],
   },

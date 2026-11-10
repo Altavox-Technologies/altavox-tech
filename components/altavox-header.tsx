@@ -274,6 +274,7 @@ export function AltavoxHeader() {
                 onFocus={() => {
                   if (searchQuery.length > 0) setSearchOpen(true)
                 }}
+                aria-label="Search Altavox systems and courses"
                 placeholder="Search systems, ISP billing, MikroTik, SIMS, Cloud..."
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-[#f26522] focus:bg-white focus:outline-none transition shadow-inner"
               />

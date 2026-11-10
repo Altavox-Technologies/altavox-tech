@@ -189,6 +189,7 @@ export default function HomePage() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="Search Altavox systems and services"
                       placeholder="Search systems (e.g. Jaslyn Net, MikroTik, Sammena SIMS, Cloud)..."
                       className="w-full rounded-xl border border-white/20 bg-white/10 pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-300 outline-none backdrop-blur-md focus:border-[#f26522] focus:bg-white/15 transition"
                     />
@@ -684,7 +685,7 @@ export default function HomePage() {
                       <p className="font-semibold text-white">Carrier NOC Telemetry</p>
                       <p className="text-[11px] text-slate-300">→ NetBill-NOC Multi-Site</p>
                     </div>
-                    <span className="font-bold text-emerald-400">99.99% Uptime</span>
+                    <span className="font-bold text-emerald-400">Network monitoring design</span>
                   </div>
                 </div>
               </div>

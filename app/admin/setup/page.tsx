@@ -1,13 +1,7 @@
-'use client'
+import { redirect } from 'next/navigation'
+import AdminSetupForm from './setup-form'
 
-import { FormEvent, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft } from 'lucide-react'
-import { signUp } from '@/lib/auth-client'
-
-const allowedAdminEmail = 'yurianarshad@gmail.com'
+export const dynamic = 'force-dynamic'
 
 export default function AdminSetupPage() {
   const router = useRouter()

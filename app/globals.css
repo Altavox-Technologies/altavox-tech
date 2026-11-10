@@ -78,3 +78,50 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Altavox global quality layer */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  color: #ffffff;
+  background: #f26522;
+}
+
+:focus-visible {
+  outline: 3px solid #f26522;
+  outline-offset: 3px;
+}
+
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img, svg, video {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

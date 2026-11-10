@@ -8,7 +8,7 @@ export default function CaseStudies() {
     <PageFrame
       eyebrow="Case Studies & Results"
       title="Evidence Over Exaggeration."
-      intro="Detailed architectural breakdowns and operational outcomes from our production deployments across East Africa."
+      intro="Selected project contexts, engineering decisions, and implementation approaches across digital platforms and operational systems."
     >
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid gap-8 md:grid-cols-2">
