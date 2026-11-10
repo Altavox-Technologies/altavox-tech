@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
-import { isAltavoxAdmin } from '@/lib/admin'
+import { isAdminEmail } from '@/lib/admin'
 import { pool } from '@/lib/db'
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() })
-  return isAltavoxAdmin(session?.user?.email)
+  return isAdminEmail(session?.user?.email, session?.user?.emailVerified)
 }
 
 export async function GET() {
