@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'motion/react'
 import { Check, ExternalLink, Monitor, PhoneCall, Activity, ArrowRight, Cpu, ShieldCheck } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
 import { projects } from '@/lib/site-data'
-import { ProjectPreview } from '@/components/project-preview'
 
 export default function ProjectsPage() {
   return (
@@ -35,17 +35,17 @@ export default function ProjectsPage() {
                     Software Platforms. <span className="text-[#f26522]">Built for Real Operations.</span>
                   </h1>
                   <p className="max-w-2xl text-base sm:text-lg text-slate-200 leading-relaxed">
-                    We focus our engineering work on connectivity infrastructure, ISP billing automation, and unified school information systems. Explore live architectures for Jaslyn Net and Sammena School.
+                    We focus our engineering work on connectivity infrastructure, education technology, and creative digital experiences. Explore Jaslyn Net, Sammena School, and Mrisho Art Gallery.
                   </p>
                 </div>
                 
                 <div className="lg:col-span-4 border-l-2 border-[#f26522] pl-6 py-3 bg-white/5 rounded-r-2xl border border-white/10 backdrop-blur-md">
-                  <span className="block text-3xl font-extrabold text-white font-mono">02</span>
+                  <span className="block text-3xl font-extrabold text-white font-mono">{String(projects.length).padStart(2, '0')}</span>
                   <span className="text-xs uppercase font-bold tracking-wider text-orange-300">
-                    Verified Featured Platforms
+                    Featured Projects
                   </span>
                   <p className="text-[11px] text-slate-300 mt-1">
-                    Live production systems with real-world infrastructure integrations
+                    A growing portfolio of digital products and platforms
                   </p>
                 </div>
               </div>
@@ -65,7 +65,7 @@ export default function ProjectsPage() {
               </h2>
             </div>
             <p className="max-w-md text-xs sm:text-sm text-slate-500">
-              Explore the three projects currently featured by Altavox Tech. Status labels reflect the project lifecycle, not a live uptime check.
+              Explore the projects built and presented by Altavox Tech. Status labels reflect the project lifecycle, not a live uptime check.
             </p>
           </div>
 
@@ -82,9 +82,8 @@ export default function ProjectsPage() {
                       <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#f26522]">
                         0{index + 1} // {project.category}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
-                        <span className="size-1.5 rounded-full bg-emerald-500" />
-                        Verified Active
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">
+                        {project.status}
                       </span>
                     </div>
 
@@ -93,16 +92,22 @@ export default function ProjectsPage() {
                     <p className="text-xs text-slate-600 leading-relaxed">{project.description}</p>
 
                     {/* Engineering Challenge & Solution */}
-                    <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 text-xs space-y-2">
-                      <div>
-                        <span className="font-bold text-[#07294d] uppercase text-[10px] tracking-wider block">Engineering Challenge:</span>
-                        <p className="text-slate-600 mt-0.5 leading-relaxed">{project.engineeringChallenge}</p>
+                    {(project.engineeringChallenge || project.engineeringSolution) && (
+                      <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200 text-xs space-y-2">
+                        {project.engineeringChallenge && (
+                          <div>
+                            <span className="font-bold text-[#07294d] uppercase text-[10px] tracking-wider block">Engineering Challenge:</span>
+                            <p className="text-slate-600 mt-0.5 leading-relaxed">{project.engineeringChallenge}</p>
+                          </div>
+                        )}
+                        {project.engineeringSolution && (
+                          <div className="pt-2 border-t border-slate-200/60">
+                            <span className="font-bold text-[#f26522] uppercase text-[10px] tracking-wider block">Engineering Solution:</span>
+                            <p className="text-slate-700 mt-0.5 leading-relaxed font-medium">{project.engineeringSolution}</p>
+                          </div>
+                        )}
                       </div>
-                      <div className="pt-2 border-t border-slate-200/60">
-                        <span className="font-bold text-[#f26522] uppercase text-[10px] tracking-wider block">Engineering Solution:</span>
-                        <p className="text-slate-700 mt-0.5 leading-relaxed font-medium">{project.engineeringSolution}</p>
-                      </div>
-                    </div>
+                    )}
 
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {project.tags.map((tag) => (
@@ -151,21 +156,37 @@ export default function ProjectsPage() {
                   {/* Project Screenshot / Visual Preview */}
                   <div className="lg:col-span-6">
                     <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-mono font-bold uppercase text-slate-400">Authentic System Screenshot</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        <Monitor className="size-3" /> Production Verified
+                      <span className="font-mono font-bold uppercase text-slate-400">Project Preview</span>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        <Monitor className="size-3" /> {project.screenshotUrl ? 'Project screenshot' : 'Branded preview'}
                       </span>
                     </div>
 
                     <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-300 bg-slate-900 shadow-lg group">
-                      <Image
-                        src={project.screenshotUrl}
-                        alt={`${project.name} live platform interface`}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 50vw"
-                        className="object-cover object-top group-hover:scale-[1.02] transition-transform duration-500"
-                        referrerPolicy="no-referrer"
-                      />
+                      {project.screenshotUrl ? (
+                        <Image
+                          src={project.screenshotUrl}
+                          alt={`${project.name} project screenshot`}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 50vw"
+                          className="object-cover object-top group-hover:scale-[1.02] transition-transform duration-500"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex flex-col justify-between bg-[radial-gradient(circle_at_80%_20%,rgba(242,101,34,0.28),transparent_38%),linear-gradient(135deg,#07294d,#051c36)] p-6 sm:p-8 text-white">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-orange-300">Altavox Featured Project</span>
+                            <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px]">Arusha, Tanzania</span>
+                          </div>
+                          <div>
+                            <div className="mb-3 h-px w-16 bg-[#f26522]" />
+                            <p className="text-xs uppercase tracking-[0.25em] text-slate-300">Art · Culture · Creativity</p>
+                            <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">MRISHO ART GALLERY</h3>
+                            <p className="mt-2 text-xs text-slate-300">Digital gallery & artwork portfolio</p>
+                            <p className="mt-4 text-[10px] uppercase tracking-wider text-orange-200">Website screenshot pending</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
