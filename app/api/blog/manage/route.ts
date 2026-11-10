@@ -7,6 +7,7 @@ import { pool } from '@/lib/db'
 export async function POST(request: Request) {
   const session = await auth.api.getSession({headers:await headers()})
   if (!isAdminEmail(session?.user?.email, session?.user?.emailVerified)) return NextResponse.json({error:'Administrator access required.'},{status:403})
+  if (!pool) return NextResponse.json({error:'Blog database is unavailable.'},{status:503})
   try {
     const body = await request.json()
     const title = typeof body.title==='string' ? body.title.trim().slice(0,180) : ''
