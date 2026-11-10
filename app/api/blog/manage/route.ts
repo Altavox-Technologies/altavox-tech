@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
-import { isAltavoxAdmin } from '@/lib/admin'
+import { isAdminEmail } from '@/lib/admin'
 import { pool } from '@/lib/db'
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({headers:await headers()})
-  if (!isAltavoxAdmin(session?.user?.email)) return NextResponse.json({error:'Administrator access required.'},{status:403})
+  if (!isAdminEmail(session?.user?.email, session?.user?.emailVerified)) return NextResponse.json({error:'Administrator access required.'},{status:403})
   try {
     const body = await request.json()
     const title = typeof body.title==='string' ? body.title.trim().slice(0,180) : ''
