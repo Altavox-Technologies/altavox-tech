@@ -21,6 +21,7 @@ export async function POST(request: Request) {
   let event: { event?: string; service?: string; type?: string; status?: string; reference?: string; customerReference?: string; amount?: number; transactionId?: string }
   try { event = JSON.parse(rawBody) } catch { return NextResponse.json({ error: 'Invalid webhook payload.' }, { status: 400 }) }
   if (event.service !== 'Collection' || event.type !== 'CHARGE' || !event.reference || !event.customerReference) return NextResponse.json({ received: true, ignored: true })
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503 })
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
