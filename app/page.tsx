@@ -93,6 +93,7 @@ export default function HomePage() {
 
   const caseStudies = [
     {
+      slug: 'jaslyn-net',
       name: 'Jaslyn Net',
       role: 'Regional ISP & Network Operator',
       title: 'ISP billing workflows, subscriber lifecycle & MikroTik provisioning',
@@ -104,6 +105,7 @@ export default function HomePage() {
       quote: 'Jaslyn Net unites subscriber lifecycle, automated billing, and RouterOS automation into a coherent operational cockpit.'
     },
     {
+      slug: 'sammena',
       name: 'Sammena School',
       role: 'Pre & Primary Educational Institution',
       title: 'School SIMS for academic records, admissions & administration',
@@ -113,6 +115,17 @@ export default function HomePage() {
       image: '/projects/sammena-live.png',
       url: 'https://sammena.altavox.space',
       quote: 'Sammena School connects public school communications with private administrative record-keeping under strict data governance.'
+    },
+    {
+      slug: 'mrisho-art-gallery',
+      name: 'Mrisho Art Gallery',
+      role: 'Art Gallery & Creative Business',
+      title: 'Digital art portfolio, artwork discovery & gallery enquiries',
+      outcome: 'Creative Portfolio',
+      previous: 'Artwork collections and gallery information need a clear digital home.',
+      current: 'A public gallery website for presenting artwork, introducing the gallery, and directing visitors to enquiries.',
+      url: 'https://mrishoart.altavox.space',
+      quote: 'Mrisho Art Gallery brings its creative identity and artwork collections to a wider online audience.'
     }
   ]
 
@@ -796,27 +809,42 @@ export default function HomePage() {
 
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 border border-slate-200">
-                  Verified Production Platforms
+                  Featured Portfolio
                 </span>
               </div>
             </motion.div>
 
-            {/* Case Studies Grid - 2 Featured Projects */}
-            <div className="mt-12 grid gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+            {/* Case Studies Grid - Featured Projects */}
+            <div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-3 max-w-7xl mx-auto">
               {caseStudies.map((study) => (
                 <div
                   key={study.name}
                   className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#f26522] transition-colors duration-150"
                 >
                   <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden border-b border-slate-100">
-                    <Image
-                      src={study.image}
-                      alt={`${study.name} live platform interface`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover object-top transition duration-500 hover:scale-102"
-                      referrerPolicy="no-referrer"
-                    />
+                    {study.image ? (
+                      <Image
+                        src={study.image}
+                        alt={`${study.name} project preview`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover object-top transition duration-500 hover:scale-102"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col justify-between bg-[radial-gradient(circle_at_80%_20%,rgba(242,101,34,0.28),transparent_38%),linear-gradient(135deg,#07294d,#051c36)] p-6 sm:p-8 text-white">
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-orange-300">Altavox Featured Project</span>
+                          <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px]">Arusha, Tanzania</span>
+                        </div>
+                        <div>
+                          <div className="mb-3 h-px w-16 bg-[#f26522]" />
+                          <p className="text-xs uppercase tracking-[0.25em] text-slate-300">Art · Culture · Creativity</p>
+                          <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight">MRISHO ART GALLERY</h3>
+                          <p className="mt-2 text-xs text-slate-300">Digital gallery & artwork portfolio</p>
+                        </div>
+                      </div>
+                    )}
                     <div className="absolute top-3 left-3 bg-[#07294d]/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                       {study.outcome}
                     </div>
@@ -871,7 +899,7 @@ export default function HomePage() {
                         <ArrowRight className="size-3.5" />
                       </a>
                       <Link
-                        href={`/projects/${study.name.toLowerCase().includes('jaslyn') ? 'jaslyn-net' : 'sammena'}`}
+                        href={`/projects/${study.slug}`}
                         className="text-xs font-bold text-[#f26522] hover:underline"
                       >
                         Architecture Spec →
