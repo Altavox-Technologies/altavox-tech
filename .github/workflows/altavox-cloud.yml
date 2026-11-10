@@ -1,0 +1,47 @@
+name: Altavox Cloud control-plane checks
+
+on:
+  pull_request:
+    paths:
+      - "ops/altavox-cloud/**"
+      - ".github/workflows/altavox-cloud.yml"
+  push:
+    branches: ["**"]
+    paths:
+      - "ops/altavox-cloud/**"
+      - ".github/workflows/altavox-cloud.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: altavox-cloud-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  control-plane:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ops/altavox-cloud/control-plane
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Syntax check
+        run: npm run check
+      - name: Unit tests
+        run: npm test
+      - name: Validate Compose configuration
+        working-directory: .
+        env:
+          ALTAVOX_DB_PASSWORD: test-only-not-a-secret
+          ALTAVOX_CONTROL_PLANE_TOKEN: test-only-not-a-secret
+        run: docker compose --env-file /dev/null -f ops/altavox-cloud/compose.yaml config --quiet
