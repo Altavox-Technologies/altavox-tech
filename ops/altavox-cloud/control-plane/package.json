@@ -1,0 +1,18 @@
+{
+  "name": "@altavox/cloud-control-plane",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Self-hosted deployment control-plane API foundation for Altavox Cloud",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "check": "node --check src/server.mjs && node --check src/db.mjs && node --check src/validation.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
+}
