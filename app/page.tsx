@@ -161,15 +161,10 @@ export default function HomePage() {
                 className="lg:col-span-7 space-y-6"
               >
                 
-                {/* Launchpad Engineering Suite Badge */}
-                <Link
-                  href="/launchpad"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3.5 py-1 text-xs font-mono text-orange-300 hover:bg-white/20 hover:border-[#f26522] transition"
-                >
-                  <span className="size-2 rounded-full bg-emerald-400" />
-                  <span>Interactive Suite: MikroTik Script Forge & Regional Edge Prober</span>
-                  <ArrowRight className="size-3 text-[#f26522]" />
-                </Link>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-mono text-orange-300">
+                  <span className="size-2 rounded-full bg-[#f26522]" />
+                  <span>Independent software engineering · Tanzania</span>
+                </div>
 
                 {/* Main Hero Headline */}
                 <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl leading-[1.15]">
@@ -207,7 +202,7 @@ export default function HomePage() {
                   {/* Popular Pills */}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-300">
                     <span className="font-semibold text-slate-400">Featured:</span>
-                    {['Altavox WiFi', 'Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'NetBill-NOC', 'Nexora Cloud'].map((tag) => (
+                    {['Jaslyn Net ISP', 'MikroTik API', 'Sammena SIMS', 'School SIMS'].map((tag) => (
                       <button
                         key={tag}
                         onClick={() => {
@@ -374,7 +369,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* INTERACTIVE PRODUCTION COCKPIT & LIVE ENGINEERING SUITE */}
         {/* ======================================================== */}
-        <section className="bg-[#030d17] py-16 border-b border-slate-800 text-white relative overflow-hidden">
+        <section hidden className="bg-[#030d17] py-16 border-b border-slate-800 text-white relative overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -390,7 +385,7 @@ export default function HomePage() {
                   </span>
                   <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                     <span className="size-1.5 rounded-full bg-emerald-400" />
-                    <span>Production Verified</span>
+                    <span>Tools preview hidden from public homepage</span>
                   </span>
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
@@ -683,7 +678,7 @@ export default function HomePage() {
                   <div className="rounded-lg bg-black/20 p-2.5 flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-white">Carrier NOC Telemetry</p>
-                      <p className="text-[11px] text-slate-300">→ NetBill-NOC Multi-Site</p>
+                      <p className="text-[11px] text-slate-300">→ Network monitoring integrations</p>
                     </div>
                     <span className="font-bold text-emerald-400">Network monitoring design</span>
                   </div>
@@ -795,7 +790,7 @@ export default function HomePage() {
                   Real Operational Outcomes & Deployments
                 </h2>
                 <p className="mt-2 text-sm text-slate-600">
-                  Practical case studies from active ISP operations, school systems, and telecom network nodes.
+                  Project summaries for Jaslyn Net, Sammena, and Mrisho Art Gallery. Operational performance figures are published only when verified data is available.
                 </p>
               </div>
 
@@ -1029,7 +1024,7 @@ export default function HomePage() {
                 },
                 {
                   q: 'Can Sammena School SIMS be deployed on self-hosted servers or the cloud?',
-                  a: 'Yes. Sammena is built on modern Next.js 16 and PostgreSQL, allowing deployment on dedicated local hardware or cloud environments like Nexora Cloud with automated encrypted backups and SSL.'
+                  a: 'Yes. Sammena is built on modern Next.js 16 and PostgreSQL, allowing deployment on dedicated local hardware or cloud environments with automated encrypted backups and SSL.'
                 },
                 {
                   q: 'How does Altavox handle payment gateway webhooks for mobile money?',

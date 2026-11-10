@@ -252,7 +252,7 @@ export function AltavoxHeader() {
                   <Link
                     href="/projects"
                     onClick={() => setSolutionsDropdownOpen(false)}
-                    className="text-[11px] font-bold text-slate-600 hover:text-slate-900"
+                    className="text-[11px] font-bold text-[#f26522] hover:underline"
                   >
                     Featured projects →
                   </Link>
@@ -334,10 +334,6 @@ export function AltavoxHeader() {
             <Link href="/services" className="hover:text-[#f26522] transition">
               Services
             </Link>
-            <Link href="/launchpad" className="text-[#f26522] hover:text-[#d94f12] transition font-bold flex items-center gap-1">
-              <Zap className="size-3" />
-              <span>Tools</span>
-            </Link>
             <Link href="/wifi" className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 transition">
               <Wifi className="size-3 text-emerald-600" />
               <span>Altavox WiFi</span>
@@ -384,7 +380,7 @@ export function AltavoxHeader() {
 
         </div>
 
-        {/* Mobile Navigation: taps inside the panel never dismiss it. */}
+        {/* Mobile navigation closes on backdrop taps and normal navigation actions. */}
         {mobileMenuOpen && (
           <div
             className="lg:hidden fixed inset-0 z-[60] bg-[#061a30]/55 backdrop-blur-[2px]"
@@ -397,7 +393,7 @@ export function AltavoxHeader() {
               aria-modal="true"
               aria-label="Main navigation"
               className="absolute inset-x-0 top-0 max-h-[min(88dvh,760px)] overflow-y-auto overscroll-contain rounded-b-3xl border-t border-slate-200 bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl animate-in slide-in-from-top duration-200"
-              onClick={(event) => event.stopPropagation()}
+              onClick={(event) => { if (event.target === event.currentTarget) setMobileMenuOpen(false) }}
             >
               <div className="mb-4 flex items-center justify-between">
                 <div>
@@ -453,7 +449,6 @@ export function AltavoxHeader() {
                   { href: '/wifi', label: 'Altavox WiFi Cloud Portal', detail: 'Hotspot billing, vouchers & M-Pesa' },
                   { href: '/projects', label: 'Production Projects', detail: 'Products and platforms' },
                   { href: '/services', label: 'Engineering Services', detail: 'Software and infrastructure' },
-                  { href: '/launchpad', label: 'Engineering Tools & Launchpad', detail: 'MikroTik script forge & edge prober' },
                   { href: '/deployments', label: 'Deployments & Architecture', detail: 'Live systems and delivery' },
                   { href: '/courses', label: 'Tech Academy', detail: 'Learning and technical tracks' },
                   { href: '/store', label: 'Altavox Bookstore', detail: 'Browse digital and printed books' },

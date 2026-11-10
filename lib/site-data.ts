@@ -75,6 +75,23 @@ export const projects: ProjectItem[] = [
       'Role-based access control for administrators, teachers, and guardians',
       'Responsive interface optimized for low-bandwidth mobile connections'
     ]
+  },
+  {
+    slug: 'mrisho-art-gallery',
+    name: 'Mrisho Art Gallery',
+    category: 'Art, culture & creative portfolio',
+    client: 'Mrisho Art Gallery',
+    summary: 'An online gallery and portfolio presenting artwork and collections from Arusha, Tanzania.',
+    description: 'The website gives Mrisho Art Gallery a digital presence for discovering featured artwork and learning about the gallery. Artwork availability, pricing, and purchase arrangements should be confirmed directly with the gallery.',
+    status: 'In development',
+    url: 'https://mrishoart.altavox.space',
+    tags: ['Art gallery', 'Artwork portfolio', 'Creative showcase', 'Arusha, Tanzania'],
+    keyFeatures: [
+      'Digital presentation of the gallery and its artwork',
+      'Artwork and collection discovery',
+      'Gallery identity and visitor information',
+      'Direct enquiry pathway for artwork questions'
+    ]
   }
 ]
 
