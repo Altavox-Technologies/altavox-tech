@@ -122,6 +122,7 @@ export default function HomePage() {
       role: 'Art Gallery & Creative Business',
       title: 'Digital art portfolio, artwork discovery & gallery enquiries',
       outcome: 'Creative Portfolio',
+      image: undefined,
       previous: 'Artwork collections and gallery information need a clear digital home.',
       current: 'A public gallery website for presenting artwork, introducing the gallery, and directing visitors to enquiries.',
       url: 'https://mrishoart.altavox.space',
