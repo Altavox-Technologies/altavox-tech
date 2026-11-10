@@ -32,43 +32,25 @@
 
 :root {
   color-scheme: light;
-  --background: #fbfaf7;
-  --foreground: #172438;
+  --background: #ffffff;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #172438;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #172438;
-  --primary: #f2a900;
-  --primary-foreground: #101b2b;
-  --secondary: #f4f1e9;
-  --secondary-foreground: #172438;
-  --muted: #f4f1e9;
-  --muted-foreground: #5d6470;
-  --accent: #fff0c7;
-  --accent-foreground: #172438;
-  --destructive: #b42318;
-  --border: #dedbd3;
-  --input: #dedbd3;
-  --ring: #a36d00;
-  --radius: 0.25rem;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 6rem;
-}
-
-body {
-  min-height: 100%;
-  background: var(--background);
-  color: var(--foreground);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-::selection {
-  color: #101b2b;
-  background: #ffd16b;
+  --popover-foreground: #0f172a;
+  --primary: #f26522;
+  --primary-foreground: #ffffff;
+  --secondary: #07294d;
+  --secondary-foreground: #ffffff;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #fff7ed;
+  --accent-foreground: #ea580c;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #f26522;
+  --radius: 0.625rem;
 }
 
 .blueprint-grid {
@@ -90,6 +72,53 @@ body {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* Altavox global quality layer */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  color: #ffffff;
+  background: #f26522;
+}
+
+:focus-visible {
+  outline: 3px solid #f26522;
+  outline-offset: 3px;
+}
+
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img, svg, video {
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
 }

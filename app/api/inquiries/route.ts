@@ -5,7 +5,7 @@ import { inquiries } from '@/lib/db/schema'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const maxFieldLength = 2_000
-const optionalFields = ['organization', 'service', 'projectType', 'timeline'] as const
+const optionalFields = ['phone', 'organization', 'service', 'projectType', 'timeline'] as const
 
 function cleanOptional(value: unknown) {
   if (typeof value !== 'string') return null
@@ -19,7 +19,9 @@ export async function POST(request: Request) {
   const requiredFields = ['name', 'email', 'description'] as const
   const valid = body && requiredFields.every((field) => typeof body[field] === 'string' && body[field].trim().length > 0 && body[field].length <= maxFieldLength)
 
-  if (!valid || !emailPattern.test(body.email.trim())) {
+  const phoneValid = body && (body.phone == null || (typeof body.phone === 'string' && body.phone.trim().length <= 40))
+
+  if (!valid || !phoneValid || !emailPattern.test(body.email.trim())) {
     return NextResponse.json({ error: 'Invalid enquiry', requestId }, { status: 400, headers: { 'Cache-Control': 'no-store' } })
   }
 
@@ -35,6 +37,7 @@ export async function POST(request: Request) {
     await db.insert(inquiries).values({
       name: body.name.trim(),
       email: body.email.trim().toLowerCase(),
+      phone: optionalValues.phone,
       description: body.description.trim(),
       organization: optionalValues.organization,
       service: optionalValues.service,

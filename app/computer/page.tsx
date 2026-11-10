@@ -1,225 +1,233 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
-import { Activity, ArrowUpRight, BarChart3, BellRing, Bot, Box, CheckCircle2, Cloud, Code2, Command, Cpu, Database, GitBranch, Globe2, KeyRound, Link2, LockKeyhole, Network, Play, Radar, Search, Server, ShieldCheck, Sparkles, TerminalSquare, Upload, WandSparkles, Workflow } from 'lucide-react'
+import {
+  Activity, ArrowRight, BadgeCheck, BookOpen, CalendarClock, CheckCircle2,
+  ChevronRight, CircleDot, ClipboardCheck, CloudDownload, Cpu, ExternalLink,
+  FileText, HardDrive, Headphones, Laptop, LockKeyhole, MonitorCog, Network,
+  Search, ShieldCheck, Wrench,
+} from 'lucide-react'
 import { PageFrame } from '@/components/site-shell'
-import { OperationsStatus } from '@/components/operations-status'
 
-const modules = [
-  { name: 'Workspace OS', detail: 'One visual workspace for projects, environments, deployments, and team permissions.', icon: Command },
-  { name: 'Agent Room', detail: 'Design, test, supervise, and replay bot workflows before they reach a customer.', icon: Bot },
-  { name: 'Service Fabric', detail: 'Connect web apps, APIs, workers, databases, storage, and events as one system.', icon: Network },
-  { name: 'Data Vault', detail: 'Manage Postgres, files, backups, secrets, and access policies from one control plane.', icon: Database },
+const services = [
+  { id: 'PC Maintenance', title: 'Endpoint diagnostics & maintenance', category: 'ENDPOINT ENGINEERING', detail: 'Hardware health checks, OS integrity, startup analysis, driver remediation, thermal inspection and performance optimisation.', scope: 'Diagnostics · Preventive maintenance · Performance tuning', icon: Wrench },
+  { id: 'Windows Installation & Activation', title: 'Windows deployment & configuration', category: 'OPERATING SYSTEMS', detail: 'Clean OS deployment, partition planning, driver provisioning, update configuration and activation with a valid licence.', scope: 'Windows setup · Drivers · Licence validation', icon: MonitorCog },
+  { id: 'Software Centre', title: 'Software deployment & configuration', category: 'APPLICATION MANAGEMENT', detail: 'Installation, configuration and troubleshooting for business, education, productivity, creative and developer software.', scope: 'Application setup · Compatibility · Updates', icon: CloudDownload },
+  { id: 'Security Centre', title: 'Endpoint security & hardening', category: 'CYBERSECURITY', detail: 'Malware assessment, patching, firewall configuration, backup planning and practical endpoint security controls.', scope: 'Threat checks · Patching · Backup readiness', icon: ShieldCheck },
+  { id: 'Hardware Support', title: 'Hardware diagnostics & upgrades', category: 'HARDWARE ENGINEERING', detail: 'Assessment of storage, memory, batteries, displays, keyboards, power systems, printers and connected peripherals.', scope: 'Component testing · Upgrade advice · Repair assessment', icon: Cpu },
+  { id: 'Remote Support', title: 'Remote technical assistance', category: 'REMOTE OPERATIONS', detail: 'Technician-led troubleshooting through an agreed remote session with customer authorisation and session safeguards.', scope: 'Remote diagnosis · Configuration · User assistance', icon: Headphones },
+  { id: 'Service Booking', title: 'Technical service request intake', category: 'SERVICE MANAGEMENT', detail: 'Structured issue submission with device information, requested service, preferred date and a unique service reference.', scope: 'Request intake · Triage · Scheduling confirmation', icon: CalendarClock },
+  { id: 'Repair Tracking', title: 'Repair lifecycle tracking', category: 'WORK ORDER VISIBILITY', detail: 'Check the latest recorded work-order stage using the unique reference and the email associated with the request.', scope: 'Reference lookup · Status visibility · Quote status', icon: Activity },
+  { id: 'IT Knowledge Base', title: 'Technical knowledge base', category: 'SELF-SERVICE SUPPORT', detail: 'Step-by-step guidance for common Windows, networking, printer, software and device maintenance issues.', scope: 'Troubleshooting · User guides · Best practices', icon: BookOpen },
+  { id: 'Quotations & Invoices', title: 'Technical quotations & billing', category: 'COMMERCIAL SERVICES', detail: 'Submit requirements for an itemised estimate. Chargeable work proceeds only after the scope and quotation are agreed.', scope: 'Scope definition · Cost estimate · Invoice process', icon: FileText },
 ]
 
-const actions = ['Create a project', 'Deploy a website', 'Deploy a bot', 'Open system map']
-
-const researchedCapabilities = [
-  { label: 'Task graph', value: 'Plan → execute → verify', detail: 'Breaks multi-step work into inspectable stages with explicit completion evidence.' },
-  { label: 'Sandbox runs', value: 'Isolated execution', detail: 'Tests and previews run separately from production with a rollback checkpoint.' },
-  { label: 'Model router', value: 'Best model per task', detail: 'Balances reasoning quality, latency, privacy, and cost for each operation.' },
-  { label: 'Evidence trail', value: 'Sources + artifacts', detail: 'Keeps citations, changed files, test output, and approvals attached to the result.' },
+const guides = [
+  { title: 'Windows performance diagnostics', level: 'ENDPOINT', steps: ['Review CPU, memory and disk utilisation in Task Manager.', 'Check startup applications and Windows reliability history.', 'Verify free storage and inspect pending system updates.', 'If abnormal temperatures, disk errors or repeated crashes occur, stop intensive use and request a diagnostic assessment.'] },
+  { title: 'Windows Update troubleshooting', level: 'OPERATING SYSTEM', steps: ['Confirm a stable internet connection and connect the device to power.', 'Check available system drive capacity.', 'Restart only when Windows indicates it is safe to do so.', 'Record any update error code before requesting support.'] },
+  { title: 'Wi-Fi connectivity diagnostics', level: 'NETWORKING', steps: ['Check whether the issue affects one device or every device on the network.', 'Compare Wi-Fi signal strength near the access point.', 'Restart the network adapter and verify the saved network profile.', 'Record the error and router indicator state if the issue persists.'] },
+  { title: 'Printer and peripheral troubleshooting', level: 'PERIPHERALS', steps: ['Verify power, cabling, paper path and consumables.', 'Confirm the correct printer queue and device driver.', 'Check network reachability for wireless or shared printers.', 'Capture the model number and error code before booking service.'] },
 ]
 
-const advancedFeatures = [
-  { icon: Upload, title: 'Universal intake', detail: 'Upload PDFs, DOCX, CSVs, images, and code archives for instant project-aware analysis.' },
-  { icon: Code2, title: 'Build studio', detail: 'Generate, debug, refactor, test, and preview code with changes tracked before release.' },
-  { icon: Bot, title: 'Agent mode', detail: 'Let agents plan tasks, use approved tools, run workflows, and return verifiable results.' },
-  { icon: Database, title: 'Project intelligence', detail: 'Create a private knowledge base across docs, repositories, schemas, and operational history.' },
-  { icon: Globe2, title: 'Research desk', detail: 'Run web research with source trails, citations, and evidence attached to every answer.' },
-  { icon: Sparkles, title: 'Vision + voice', detail: 'Understand screenshots and diagrams, then capture voice notes and meeting transcripts.' },
-  { icon: Workflow, title: 'Custom skills', detail: 'Package repeatable assistants, rules, and workflows for each project or team.' },
-  { icon: ShieldCheck, title: 'Control center', detail: 'Manage roles, approvals, audit logs, usage, environments, rollbacks, and preview releases.' },
+const softwareLinks = [
+  { name: 'Microsoft 365', href: 'https://www.microsoft.com/microsoft-365', type: 'Productivity suite' },
+  { name: 'Google Chrome', href: 'https://www.google.com/chrome/', type: 'Web browser' },
+  { name: 'Mozilla Firefox', href: 'https://www.mozilla.org/firefox/new/', type: 'Web browser' },
+  { name: '7-Zip', href: 'https://www.7-zip.org/', type: 'Archive utility' },
+  { name: 'VLC Media Player', href: 'https://www.videolan.org/vlc/', type: 'Media utility' },
+  { name: 'Visual Studio Code', href: 'https://code.visualstudio.com/', type: 'Developer tooling' },
+  { name: 'Malwarebytes', href: 'https://www.malwarebytes.com/', type: 'Endpoint security' },
+  { name: 'Rufus', href: 'https://rufus.ie/', type: 'Boot media utility' },
 ]
+
+type RequestResult = { trackingCode: string; message: string }
+type TrackingResult = { trackingCode: string; serviceType: string; device: string; statusCode: string; status: string; quote: { amount: string; currency: string } | null; createdAt: string; updatedAt: string }
+
+const inputClass = 'mt-2 w-full border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#f26522] focus:ring-2 focus:ring-orange-100'
+const labelClass = 'block text-xs font-semibold uppercase tracking-wide text-slate-600'
 
 export default function ComputerPage() {
-  const [activeAction, setActiveAction] = useState('')
-  const [repository, setRepository] = useState('')
-  const [importStatus, setImportStatus] = useState('')
-  const [uploadedFile, setUploadedFile] = useState('')
-  const [importError, setImportError] = useState('')
-  const [isImporting, setIsImporting] = useState(false)
-  type Project = { name: string; source: string; status: string; detail?: string; id: string; branch?: string; url?: string; action?: string }
-  const [projects, setProjects] = useState<Project[]>([])
-  const [showActivity, setShowActivity] = useState(false)
-  const [commandQuery, setCommandQuery] = useState('')
-  const [commandResult, setCommandResult] = useState('')
-  const [activity, setActivity] = useState<string[]>([])
-  const [deploymentState, setDeploymentState] = useState<'idle' | 'running' | 'ready'>('idle')
-  const [selectedProject, setSelectedProject] = useState('')
-  const [selectedModel, setSelectedModel] = useState('Auto-route')
-  const [approvalState, setApprovalState] = useState<'pending' | 'approved'>('pending')
-  const [workspaceTab, setWorkspaceTab] = useState<'cli' | 'ide' | 'terminal'>('cli')
-  const [terminalCommand, setTerminalCommand] = useState('altavox status')
-  const [terminalOutput, setTerminalOutput] = useState('Ready. Type a command to inspect your workspace.')
-  const [commandLifecycle, setCommandLifecycle] = useState<'idle' | 'queued' | 'blocked'>('idle')
+  const [form, setForm] = useState({ name: '', email: '', phone: '', serviceType: 'PC Maintenance', deviceDetails: '', issueDescription: '', preferredDate: '' })
+  const [submitting, setSubmitting] = useState(false)
+  const [requestResult, setRequestResult] = useState<RequestResult | null>(null)
+  const [requestError, setRequestError] = useState('')
+  const [tracking, setTracking] = useState({ code: '', email: '' })
+  const [trackingResult, setTrackingResult] = useState<TrackingResult | null>(null)
+  const [trackingError, setTrackingError] = useState('')
+  const [trackingBusy, setTrackingBusy] = useState(false)
+  const [activeGuide, setActiveGuide] = useState(0)
 
-  function recordActivity(message: string) {
-    setActivity((current) => [message, ...current].slice(0, 8))
-  }
-
-  function prepareDeployment(projectName: string) {
-    setSelectedProject(projectName)
-    setDeploymentState('running')
-    setActiveAction(`Deploy ${projectName}`)
-    recordActivity(`Deployment plan opened for ${projectName}`)
-    window.setTimeout(() => {
-      setDeploymentState('ready')
-      setCommandResult(`Deployment plan ready for ${projectName}: preview, test, scan, approval, and release gates are configured.`)
-      recordActivity(`Deployment plan ready for ${projectName}`)
-    }, 700)
-  }
-
-  async function importRepository() {
-    const value = repository.trim()
-    setImportError('')
-    setImportStatus('')
-
-    if (!value) {
-      setImportError('Enter a GitHub repository URL to continue.')
-      return
-    }
-
+  async function submitRequest(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSubmitting(true)
+    setRequestError('')
+    setRequestResult(null)
     try {
-      const url = new URL(value.startsWith('http') ? value : `https://${value}`)
-      const parts = url.pathname.split('/').filter(Boolean)
-      if (url.hostname !== 'github.com' || parts.length < 2) throw new Error('invalid repository')
-      const owner = parts[0]
-      const repo = parts[1].replace(/\.git$/, '')
-      setIsImporting(true)
-      setImportStatus(`Connecting directly to GitHub: ${owner}/${repo}…`)
-      const response = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`, { headers: { Accept: 'application/vnd.github+json' } })
-      if (!response.ok) throw new Error(response.status === 404 ? 'not found' : 'github unavailable')
-      const data = await response.json() as { full_name: string; description?: string; default_branch: string; language?: string; html_url: string }
-      setProjects((current) => [{ id: `github-${data.full_name}`, name: data.full_name, source: 'GitHub direct', status: 'Connected', detail: `${data.language ?? 'Codebase'} · ${data.default_branch}`, branch: data.default_branch, url: data.html_url, action: 'Analyze stack' }, ...current.filter((project) => project.id !== `github-${data.full_name}`)])
-      setImportStatus(`Connected to ${data.full_name}. Repository metadata is ready for the deployment plan.`)
-      recordActivity(`GitHub repository connected: ${data.full_name}`)
+      const response = await fetch('/api/computer/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Request could not be saved.')
+      setRequestResult(data)
+      setForm({ name: '', email: '', phone: '', serviceType: 'PC Maintenance', deviceDetails: '', issueDescription: '', preferredDate: '' })
     } catch (error) {
-      setImportError(error instanceof Error && error.message === 'not found' ? 'Repository not found or private. Public repositories connect instantly; private repositories need GitHub sign-in.' : 'Use a valid public GitHub URL, for example github.com/owner/project.')
-      setImportStatus('')
+      setRequestError(error instanceof Error ? error.message : 'Request could not be saved.')
     } finally {
-      setIsImporting(false)
+      setSubmitting(false)
     }
   }
 
-  function runCommand(command = commandQuery) {
-    const normalized = command.trim().toLowerCase()
-    if (!normalized) {
-      setCommandResult('Try: scan project, show costs, open incidents, or deploy preview.')
-      return
-    }
-    if (normalized.includes('scan') || normalized.includes('security')) {
-      setCommandResult('Security scan queued: dependency, secret, and policy checks will run before release.')
-    } else if (normalized.includes('cost') || normalized.includes('spend')) {
-      setCommandResult('FinOps view ready: current projected spend is $42.18 with no budget drift detected.')
-    } else if (normalized.includes('incident') || normalized.includes('alert')) {
-      setCommandResult('Signal Center opened: 2 low-severity signals need review, no active outage detected.')
-    } else if (normalized.includes('deploy') || normalized.includes('preview')) {
-      setCommandResult('Preview deployment prepared with an isolated environment and rollback checkpoint.')
-    } else {
-      setCommandResult(`Altavox understood “${command.trim()}”. Add it to a workflow or choose a suggested action.`)
+  async function lookupRepair(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setTrackingBusy(true)
+    setTrackingError('')
+    setTrackingResult(null)
+    try {
+      const params = new URLSearchParams({ code: tracking.code, email: tracking.email })
+      const response = await fetch(`/api/computer/requests?${params.toString()}`, { cache: 'no-store' })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Tracking lookup failed.')
+      setTrackingResult(data.request)
+    } catch (error) {
+      setTrackingError(error instanceof Error ? error.message : 'Tracking lookup failed.')
+    } finally {
+      setTrackingBusy(false)
     }
   }
 
-  function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
-    setImportError('')
-    setImportStatus('')
+  return (
+    <PageFrame eyebrow="ALTAVOX TECHNICAL SERVICES / COMPUTING" title="IT Operations & Computer Support" intro="Technical services for endpoint systems, operating systems, software, hardware and user environments. Submit a service request, access verified software sources and follow your work-order status.">
+      <div className="mx-auto max-w-7xl space-y-14 px-4 py-10 sm:px-6 lg:px-8">
+        <section className="grid gap-0 border border-slate-200 bg-white lg:grid-cols-[1.35fr_0.65fr]">
+          <div className="relative overflow-hidden bg-[#061d35] p-7 text-white sm:p-10">
+            <div className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px)', backgroundSize: '34px 34px' }} />
+            <div className="relative">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-orange-300"><CircleDot className="size-3" /> Technical service desk</div>
+              <h2 className="mt-5 max-w-2xl text-3xl font-bold leading-tight sm:text-4xl">Diagnose. Resolve. Maintain. Secure.</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">A structured support channel for personal computers, business workstations, operating systems, applications and connected devices.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a href="#service-request" className="inline-flex items-center gap-2 bg-[#f26522] px-5 py-3 text-sm font-bold text-white hover:bg-orange-600">Open service request <ArrowRight className="size-4" /></a>
+                <a href="#work-order" className="inline-flex items-center gap-2 border border-white/30 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">Track work order <Search className="size-4" /></a>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 bg-slate-50">
+            {[
+              { icon: Laptop, label: 'Endpoint systems', value: 'PC / Laptop' },
+              { icon: Network, label: 'Connectivity', value: 'Wi-Fi / LAN' },
+              { icon: HardDrive, label: 'Storage & memory', value: 'SSD / RAM' },
+              { icon: LockKeyhole, label: 'Security posture', value: 'OS / Apps' },
+            ].map((item, index) => {
+              const Icon = item.icon
+              return <div key={item.label} className={`flex flex-col justify-between border-b border-l border-slate-200 p-5 sm:p-6 ${index > 1 ? 'border-b-0' : ''}`}>
+                <Icon className="size-5 text-[#f26522]" />
+                <div className="mt-8"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{item.label}</p><p className="mt-1 text-sm font-bold text-[#07294d]">{item.value}</p></div>
+              </div>
+            })}
+          </div>
+        </section>
 
-    if (!file) return
-    const supported = /\.(zip|tar|gz|tgz|pdf|docx|csv|png|jpg|jpeg|webp|gif|tsx|ts|jsx|js|py|md)$/i.test(file.name)
-    if (!supported) {
-      setImportError('Upload a project archive, PDF, DOCX, CSV, image, or supported code file.')
-      event.target.value = ''
-      return
-    }
-    if (file.size > 250 * 1024 * 1024) {
-      setImportError('Archives must be smaller than 250 MB.')
-      event.target.value = ''
-      return
-    }
-    const projectName = file.name.replace(/\.(zip|tar|gz|tgz)$/i, '')
-    setUploadedFile(file.name)
-    const projectId = `upload-${file.name}-${file.lastModified}`
-    setProjects((current) => [{ id: projectId, name: projectName, source: 'Upload', status: 'Plan ready', detail: `${file.type || 'Project asset'} · ${Math.ceil(file.size / 1024)} KB`, action: 'Analyze files' }, ...current.filter((project) => project.id !== projectId)])
-    setImportStatus(`Upload ready: ${file.name} (${Math.ceil(file.size / 1024)} KB)`)
-    recordActivity(`Upload intake completed: ${file.name}`)
-  }
+        <section id="service-catalog">
+          <div className="mb-6 flex flex-col justify-between gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-end">
+            <div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">01 / Service catalogue</p><h2 className="mt-2 text-2xl font-bold tracking-tight text-[#07294d]">Technical capabilities</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Ten service functions organised around the full lifecycle of computer support.</p></div>
+            <span className="font-mono text-xs text-slate-500">AVX / COMPUTE / 010</span>
+          </div>
+          <div className="grid border-l border-t border-slate-200 sm:grid-cols-2 lg:grid-cols-5">
+            {services.map((service, index) => {
+              const Icon = service.icon
+              const target = service.id === 'Repair Tracking' ? '#work-order' : service.id === 'IT Knowledge Base' ? '#knowledge-base' : service.id === 'Quotations & Invoices' ? '#quotations' : '#service-request'
+              return <a key={service.id} href={target} className="group flex min-h-56 flex-col border-b border-r border-slate-200 bg-white p-5 transition hover:bg-slate-50">
+                <div className="flex items-center justify-between"><span className="font-mono text-[11px] text-slate-400">0{index + 1}</span><Icon className="size-5 text-[#f26522]" /></div>
+                <p className="mt-5 text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">{service.category}</p>
+                <h3 className="mt-2 text-sm font-bold leading-5 text-[#07294d] group-hover:text-[#f26522]">{service.title}</h3>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{service.detail}</p>
+                <p className="mt-auto flex items-center gap-1 pt-4 text-[10px] font-semibold text-slate-500">{service.scope}<ChevronRight className="ml-auto size-3 shrink-0" /></p>
+              </a>
+            })}
+          </div>
+        </section>
 
-  function runProjectAction(project: Project) {
-    const action = project.action ?? 'Analyze stack'
-    const nextStatus = action === 'Analyze stack' || action === 'Analyze files' ? 'Analyzed' : action === 'Create preview' ? 'Preview ready' : 'Plan ready'
-    setProjects((current) => current.map((item) => item.id === project.id ? { ...item, status: nextStatus, action: nextStatus === 'Analyzed' ? 'Create preview' : nextStatus === 'Preview ready' ? 'Deploy release' : 'Analyze stack' } : item))
-    setCommandResult(`${action} completed for ${project.name}. ${nextStatus === 'Preview ready' ? 'A preview environment is ready for review.' : 'The next controlled release action is now available.'}`)
-    setShowActivity(true)
-    recordActivity(`${action} completed: ${project.name}`)
-  }
+        <section id="service-request" className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+          <div className="lg:sticky lg:top-8 lg:self-start">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">02 / Service management</p>
+            <h2 className="mt-2 text-2xl font-bold text-[#07294d]">Create a technical service request</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-600">Provide accurate device and fault information. The service desk uses these details to review the request and determine the appropriate next step.</p>
+            <div className="mt-7 border-l-2 border-[#f26522] pl-4">
+              <p className="text-xs font-bold text-[#07294d]">Request lifecycle</p>
+              <ol className="mt-3 space-y-3 text-xs text-slate-600">
+                {['Request submitted and reference generated', 'Technical review and issue triage', 'Quotation or service scope confirmed', 'Work authorised and service performed', 'Completion status recorded'].map((step, i) => <li key={step} className="flex gap-3"><span className="font-mono text-[#f26522]">0{i + 1}</span>{step}</li>)}
+              </ol>
+            </div>
+            <p className="mt-7 flex gap-2 text-xs leading-5 text-slate-500"><LockKeyhole className="size-4 shrink-0 text-[#f26522]" /> Submit only information needed to diagnose the device. Never include passwords, PINs or authentication codes.</p>
+          </div>
+          <form onSubmit={submitRequest} className="border border-slate-200 bg-white">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4"><div><p className="text-xs font-bold text-[#07294d]">New service intake</p><p className="mt-1 text-[10px] text-slate-500">All fields marked * are required</p></div><span className="font-mono text-[10px] text-slate-400">FORM / CS-01</span></div>
+            <div className="space-y-5 p-5 sm:p-7">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className={labelClass}>Customer / contact name *<input required maxLength={120} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className={inputClass} autoComplete="name" /></label>
+                <label className={labelClass}>Business email *<input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className={inputClass} autoComplete="email" /></label>
+                <label className={labelClass}>Phone / WhatsApp *<input required type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className={inputClass} autoComplete="tel" /></label>
+                <label className={labelClass}>Requested service *<select value={form.serviceType} onChange={e => setForm({ ...form, serviceType: e.target.value })} className={inputClass}>{services.map(s => <option key={s.id}>{s.id}</option>)}</select></label>
+              </div>
+              <div className="border-t border-slate-100 pt-5"><p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Device & incident details</p>
+                <label className={labelClass}>Device make, model and operating system *<input required maxLength={300} value={form.deviceDetails} onChange={e => setForm({ ...form, deviceDetails: e.target.value })} placeholder="e.g. Dell Latitude 5420 · Windows 11 Pro · 16 GB RAM" className={inputClass} /></label>
+                <label className={`${labelClass} mt-4`}>Fault symptoms / requested configuration *<textarea required maxLength={2000} rows={5} value={form.issueDescription} onChange={e => setForm({ ...form, issueDescription: e.target.value })} placeholder="Describe symptoms, error codes, recent changes and the outcome you need…" className={inputClass} /></label>
+                <label className={`${labelClass} mt-4 max-w-xs`}>Preferred service date<input type="date" min={new Date().toISOString().slice(0, 10)} value={form.preferredDate} onChange={e => setForm({ ...form, preferredDate: e.target.value })} className={inputClass} /></label>
+              </div>
+              {requestError && <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">{requestError}</p>}
+              {requestResult && <div role="status" className="border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900"><div className="flex items-center gap-2 font-bold"><BadgeCheck className="size-5" /> Request successfully recorded</div><p className="mt-2 text-xs">Service reference</p><p className="mt-1 font-mono text-2xl font-bold">{requestResult.trackingCode}</p><p className="mt-2 text-xs">{requestResult.message} Keep this reference and use the same email address for status lookup.</p></div>}
+              <div className="flex flex-col justify-between gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center"><p className="max-w-sm text-[10px] leading-5 text-slate-500">Submitting a request does not confirm a booking or authorise paid work. The service desk will review and confirm the next step.</p><button disabled={submitting} className="inline-flex shrink-0 items-center justify-center gap-2 bg-[#f26522] px-6 py-3 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-50">{submitting ? 'Submitting request…' : 'Submit service request'} <ArrowRight className="size-4" /></button></div>
+            </div>
+          </form>
+        </section>
 
-  return <PageFrame eyebrow="Altavox Computer" title="Your complete digital operations desk." intro="A native control plane for building, deploying, operating, and improving the systems behind your business. Altavox Computer gives every project a home, every service a role, and every release a clear path." >
-    <section className="mx-auto max-w-7xl overflow-hidden px-6 py-14 lg:px-8">
-      <div className="mb-8 rounded-[2rem] border border-cyan-300/25 bg-cyan-300/[0.06] p-6 sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-5">
-          <div className="max-w-2xl"><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Bring your code</p><h2 className="mt-3 text-2xl font-medium text-white">Import a project directly into Altavox.</h2><p className="mt-2 text-sm leading-6 text-slate-400">Paste a public or private GitHub repository, or upload a project archive. Altavox will inspect the stack, create an environment, and prepare the first deployment plan.</p></div>
-          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">GitHub + upload</span>
-        </div>
-        <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_auto_auto]">
-          <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#07101b] px-4 py-3"><Link2 className="size-4 shrink-0 text-cyan-300" /><span className="sr-only">GitHub repository URL</span><input value={repository} onChange={(event) => setRepository(event.target.value)} placeholder="https://github.com/owner/project" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600" /></label>
-          <button type="button" onClick={importRepository} disabled={isImporting} className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 text-sm font-semibold text-[#08121f] transition hover:bg-white disabled:cursor-wait disabled:opacity-60"><GitBranch className="size-4" /> {isImporting ? 'Connecting…' : 'Import repository'}</button>
-          <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/50 hover:bg-white/[0.05]"><Upload className="size-4 text-cyan-300" /> Upload files<span className="sr-only"> project, document, data, image, or code files</span><input type="file" accept=".zip,.tar,.gz,.tgz,.pdf,.docx,.csv,.png,.jpg,.jpeg,.webp,.gif,.tsx,.ts,.jsx,.js,.py,.md" onChange={handleUpload} className="sr-only" /></label>
-        </div>
-        {importError && <p role="alert" className="mt-4 flex items-center gap-2 text-xs text-rose-200"><span className="grid size-4 place-items-center rounded-full border border-rose-300/70 text-[10px]">!</span>{importError}</p>}
-        {(importStatus || uploadedFile) && !importError && <p role="status" className="mt-4 flex items-center gap-2 text-xs text-cyan-200"><CheckCircle2 className="size-4" />{importStatus || uploadedFile}</p>}
-        <p className="mt-4 text-xs text-slate-600">Supported: Next.js, React, Node.js, Python, static sites, APIs, workers, and monorepos. Max archive size: 250 MB.</p>
+        <section id="work-order" className="grid gap-8 border-y border-slate-200 bg-slate-50 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:px-7">
+          <div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">03 / Work order visibility</p><h2 className="mt-2 text-2xl font-bold text-[#07294d]">Track a service request</h2><p className="mt-3 text-sm leading-7 text-slate-600">Retrieve the latest status recorded by the service desk. For privacy, the lookup requires both the unique service reference and the booking email.</p><div className="mt-5 flex items-center gap-2 text-xs text-slate-500"><ClipboardCheck className="size-4 text-[#f26522]" /> Status reflects the latest saved work-order update.</div></div>
+          <div>
+            <form onSubmit={lookupRepair} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+              <label className={labelClass}>Service reference<input required placeholder="AVX-12AB34CD56EF" value={tracking.code} onChange={e => setTracking({ ...tracking, code: e.target.value.toUpperCase() })} className={inputClass} /></label>
+              <label className={labelClass}>Booking email<input required type="email" placeholder="name@example.com" value={tracking.email} onChange={e => setTracking({ ...tracking, email: e.target.value })} className={inputClass} /></label>
+              <button disabled={trackingBusy} className="inline-flex h-[43px] items-center justify-center gap-2 bg-[#07294d] px-5 text-xs font-bold text-white hover:bg-[#0b3b69] disabled:opacity-50">{trackingBusy ? 'Checking…' : 'Check status'} <Search className="size-4" /></button>
+            </form>
+            {trackingError && <p role="alert" className="mt-3 text-sm text-red-700">{trackingError}</p>}
+            {trackingResult && <div className="mt-5 border border-slate-200 bg-white p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-mono text-xs font-bold text-[#f26522]">{trackingResult.trackingCode}</p><h3 className="mt-1 text-lg font-bold text-[#07294d]">{trackingResult.status}</h3></div><span className="border border-slate-200 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">Work order status</span></div><div className="mt-5 border-t border-slate-100 pt-4"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Work order lifecycle</p><ol className="mt-3 grid gap-2 sm:grid-cols-5">{[{ key: "received", label: "Received" }, { key: "reviewing", label: "Technical review" }, { key: "quoted", label: "Quotation" }, { key: "in_progress", label: "In progress" }, { key: "ready", label: "Ready" }].map((stage, index) => { const stages = ["received", "reviewing", "quoted", "approved", "in_progress", "ready", "completed"]; const current = stages.indexOf(trackingResult.statusCode); const done = current >= stages.indexOf(stage.key); return <li key={stage.key} className={`border-l-2 pl-2 py-1 text-[10px] ${done ? "border-[#f26522] text-[#07294d] font-bold" : "border-slate-200 text-slate-400"}`}><span className="block font-mono">0{index + 1}</span>{stage.label}</li> })}</ol></div><div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 text-xs sm:grid-cols-2"><p><span className="block text-slate-400">Requested service</span><strong className="mt-1 block text-slate-700">{trackingResult.serviceType}</strong></p><p><span className="block text-slate-400">Device</span><strong className="mt-1 block text-slate-700">{trackingResult.device}</strong></p>{trackingResult.quote && <p><span className="block text-slate-400">Recorded quotation</span><strong className="mt-1 block text-slate-700">{trackingResult.quote.currency} {Number(trackingResult.quote.amount).toLocaleString()}</strong></p>}<p><span className="block text-slate-400">Last updated</span><strong className="mt-1 block text-slate-700">{new Date(trackingResult.updatedAt).toLocaleString()}</strong></p></div></div>}
+          </div>
+        </section>
+
+        <section id="software">
+          <div className="mb-6 flex flex-col justify-between gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-end"><div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">04 / Application management</p><h2 className="mt-2 text-2xl font-bold text-[#07294d]">Verified software sources</h2><p className="mt-2 text-sm text-slate-600">Official publisher destinations for commonly used system and productivity tools.</p></div><span className="text-[10px] text-slate-400">EXTERNAL PUBLISHER LINKS</span></div>
+          <div className="grid border-l border-t border-slate-200 sm:grid-cols-2 lg:grid-cols-4">{softwareLinks.map((item, index) => <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-3 border-b border-r border-slate-200 bg-white p-4 hover:bg-slate-50"><span><span className="block font-mono text-[10px] text-slate-400">APP / 0{index + 1}</span><strong className="mt-1 block text-sm text-[#07294d]">{item.name}</strong><span className="mt-1 block text-xs text-slate-500">{item.type}</span></span><ExternalLink className="size-4 shrink-0 text-[#f26522]" /></a>)}</div>
+          <p className="mt-3 text-[11px] leading-5 text-slate-500">Downloads are hosted by their respective publishers. Licence terms, compatibility and installation requirements are controlled by each publisher.</p>
+        </section>
+
+        <section className="grid gap-8 lg:grid-cols-2">
+          <div className="border border-slate-200 bg-white p-6 sm:p-7">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">05 / Endpoint security</p><h2 className="mt-2 text-xl font-bold text-[#07294d]">Security baseline</h2><p className="mt-2 text-sm leading-6 text-slate-600">A practical baseline for reducing common endpoint risks.</p>
+            <ul className="mt-5 space-y-3">{['Apply operating system and application security updates.', 'Enable firewall and reputable endpoint protection.', 'Use genuine, supported software and remove unknown activators.', 'Maintain tested backups of business-critical data.', 'Enforce unique passwords and multi-factor authentication.', 'Restrict remote access and review permissions regularly.'].map(x => <li key={x} className="flex gap-3 text-xs leading-5 text-slate-600"><CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#f26522]" />{x}</li>)}</ul>
+          </div>
+          <div className="border border-slate-200 bg-[#07294d] p-6 text-white sm:p-7">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-300">06 / Remote operations</p><h2 className="mt-2 text-xl font-bold">Remote technical assistance</h2><p className="mt-3 text-sm leading-7 text-slate-300">Remote sessions are arranged after request review. A technician confirms the scope, obtains your approval and provides the connection procedure for the agreed session.</p>
+            <div className="mt-5 border-t border-white/15 pt-4"><p className="flex gap-2 text-xs leading-5 text-slate-300"><LockKeyhole className="size-4 shrink-0 text-orange-300" /> Never disclose passwords, banking credentials, PINs or one-time authentication codes during support.</p><a href="#service-request" onClick={() => setForm(current => ({ ...current, serviceType: 'Remote Support' }))} className="mt-5 inline-flex items-center gap-2 bg-[#f26522] px-4 py-3 text-xs font-bold text-white">Request remote assistance <ArrowRight className="size-4" /></a></div>
+          </div>
+        </section>
+
+        <section id="knowledge-base">
+          <div className="mb-6 border-b border-slate-200 pb-5"><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">07 / Technical documentation</p><h2 className="mt-2 text-2xl font-bold text-[#07294d]">IT knowledge base</h2><p className="mt-2 text-sm text-slate-600">Initial troubleshooting procedures for common endpoint and peripheral incidents.</p></div>
+          <div className="grid gap-0 border border-slate-200 lg:grid-cols-[0.7fr_1.3fr]">
+            <div className="border-b border-slate-200 lg:border-b-0 lg:border-r">{guides.map((guide, index) => <button key={guide.title} onClick={() => setActiveGuide(index)} className={`flex w-full items-center justify-between border-b border-slate-200 px-5 py-4 text-left last:border-b-0 ${activeGuide === index ? 'bg-[#07294d] text-white' : 'bg-white text-[#07294d] hover:bg-slate-50'}`}><span><span className={`block font-mono text-[9px] tracking-widest ${activeGuide === index ? 'text-orange-300' : 'text-slate-400'}`}>{guide.level}</span><span className="mt-1 block text-xs font-bold">{guide.title}</span></span><ChevronRight className="size-4 shrink-0" /></button>)}</div>
+            <article className="bg-slate-50 p-6 sm:p-8"><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#f26522]"><BookOpen className="size-4" /> Technical procedure</div><h3 className="mt-3 text-lg font-bold text-[#07294d]">{guides[activeGuide].title}</h3><ol className="mt-5 space-y-4">{guides[activeGuide].steps.map((step, index) => <li key={step} className="flex gap-3 text-sm leading-6 text-slate-600"><span className="font-mono text-xs font-bold text-[#f26522]">0{index + 1}</span>{step}</li>)}</ol></article>
+          </div>
+        </section>
+
+        <section id="quotations" className="grid gap-6 border-t border-slate-200 pt-8 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f26522]">08 / Commercial services</p><h2 className="mt-2 text-2xl font-bold text-[#07294d]">Quotations & service billing</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">Request an itemised quotation by selecting “Quotations & Invoices” in the service intake form. The service desk reviews the device, scope and parts requirements before confirming an estimate. No chargeable work is authorised by submitting the form alone.</p></div>
+          <a href="#service-request" onClick={() => setForm(current => ({ ...current, serviceType: 'Quotations & Invoices' }))} className="inline-flex items-center justify-center gap-2 bg-[#f26522] px-5 py-3 text-sm font-bold text-white hover:bg-orange-600">Request quotation <FileText className="size-4" /></a>
+        </section>
+
+        <section className="border-t border-slate-200 pt-5"><div className="flex flex-col gap-3 text-[10px] leading-5 text-slate-500 sm:flex-row sm:items-center sm:justify-between"><p>ALTAVOX TECH · COMPUTER SERVICES · SERVICE DESK</p><p>All service stages reflect recorded information. Scheduling, pricing and completion are confirmed separately.</p></div></section>
       </div>
-      <div className="overflow-hidden rounded-[2rem] border border-cyan-300/25 bg-[#07101b] shadow-2xl shadow-cyan-950/20">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-4 sm:px-7">
-          <div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-cyan-300 text-[#08121f]"><Cpu className="size-5" /></span><div><p className="text-sm font-semibold text-white">Altavox Computer</p><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Control plane / online</p></div></div>
-          <div className="flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-xs text-amber-100"><Activity className="size-3.5" /> Telemetry unavailable</div>
-        </div>
-        <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r"><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Good morning, operator</p><h2 className="mt-4 max-w-sm text-3xl font-medium tracking-tight text-white">Build the next system from one desk.</h2><p className="mt-4 max-w-md text-sm leading-7 text-slate-400">No jumping between disconnected provider dashboards. Plan, ship, observe, and improve with Altavox-native workflows.</p><div className="mt-7 grid gap-2">{actions.map(action => <button type="button" key={action} onClick={() => setActiveAction(action)} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-slate-300 transition hover:border-cyan-300/40 hover:bg-cyan-300/[0.07] hover:text-white"><span>{action}</span><ArrowUpRight className="size-4 text-cyan-300" /></button>)}</div>{activeAction && <p role="status" className="mt-4 flex items-center gap-2 text-xs text-cyan-200"><CheckCircle2 className="size-4" />{activeAction} is ready in the Launchpad.</p>}</div>
-          <div className="bg-[#0b1828] p-6 sm:p-8"><div className="flex items-center justify-between"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-slate-500">Live topology</p><h3 className="mt-2 text-lg font-medium text-white">Jaslyn Net production</h3></div><span className="rounded-full bg-amber-300/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-100">telemetry unavailable</span></div><div className="relative mt-8 grid gap-3 sm:grid-cols-2"><div className="rounded-2xl border border-cyan-300/30 bg-cyan-300/10 p-4 sm:col-span-2"><div className="flex items-center gap-3"><Globe2 className="size-5 text-cyan-300" /><div><p className="text-sm font-medium text-white">Public gateway</p><p className="text-xs text-slate-400">jaslyn-net.altavox.space</p></div></div></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><Server className="size-5 text-cyan-300" /><p className="mt-3 text-sm font-medium text-white">Web service</p><p className="mt-1 text-xs text-slate-500">2 instances / auto scale</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><Database className="size-5 text-cyan-300" /><p className="mt-3 text-sm font-medium text-white">Primary data</p><p className="mt-1 text-xs text-slate-500">Postgres / encrypted</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><Bot className="size-5 text-cyan-300" /><p className="mt-3 text-sm font-medium text-white">Operations bot</p><p className="mt-1 text-xs text-slate-500">WhatsApp / connected</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><LockKeyhole className="size-5 text-cyan-300" /><p className="mt-3 text-sm font-medium text-white">Security</p><p className="mt-1 text-xs text-slate-500">Policy checks passing</p></div></div></div>
-        </div>
-      </div>
-      <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{modules.map(({name, detail, icon: Icon}) => <article key={name} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:-translate-y-1 hover:border-cyan-300/35"><span className="grid size-10 place-items-center rounded-xl bg-cyan-300/10 text-cyan-300"><Icon className="size-5" /></span><h2 className="mt-5 text-base font-medium text-white">{name}</h2><p className="mt-2 text-sm leading-6 text-slate-400">{detail}</p></article>)}</div>
-      <div className="mt-16 rounded-3xl border border-cyan-300/20 bg-[#07101b] p-6 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Research-backed control layer</p><h2 className="mt-3 text-2xl font-medium text-white">From an answer to an accountable run.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Modern AI coding platforms are moving beyond chat: agents plan work, execute in isolated environments, cite evidence, and hand back changes for approval. Altavox now exposes those same control primitives in one operator view.</p></div><span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-emerald-200">operator mode</span></div><div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{researchedCapabilities.map((item) => <article key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">{item.label}</p><p className="mt-3 text-sm font-medium text-white">{item.value}</p><p className="mt-2 text-xs leading-5 text-slate-500">{item.detail}</p></article>)}</div><div className="mt-6 flex flex-wrap gap-2">{['Research repository', 'Plan implementation', 'Run sandbox checks', 'Review evidence'].map((label) => <button type="button" key={label} onClick={() => { setCommandQuery(label); setCommandResult(`${label} is queued in the operator timeline. No production changes are made without approval.`); recordActivity(`${label} queued`) }} className="rounded-full border border-cyan-300/25 bg-cyan-300/[0.06] px-3 py-2 text-xs font-semibold text-cyan-200 transition hover:border-cyan-300/60 hover:bg-cyan-300/10">{label}</button>)}</div></div>
-      <div className="mt-16 rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[0.08] to-white/[0.02] p-6 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Developer cockpit</p><h2 className="mt-3 text-2xl font-medium text-white">CLI, IDE, and terminal in one workspace.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Move from idea to shipped system without leaving Altavox. Use the CLI for repeatable automation, the IDE for focused edits, and the terminal for transparent execution.</p></div><span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-emerald-200">workspace online</span></div><div className="mt-7 overflow-hidden rounded-2xl border border-white/10 bg-[#07101b]"><div className="flex flex-wrap border-b border-white/10 p-2">{(['cli','ide','terminal'] as const).map((tab) => <button type="button" key={tab} onClick={() => setWorkspaceTab(tab)} className={`rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition ${workspaceTab === tab ? 'bg-cyan-300 text-[#08121f]' : 'text-slate-500 hover:text-white'}`}>{tab === 'cli' ? 'Altavox CLI' : tab === 'ide' ? 'Cloud IDE' : 'Terminal'}</button>)}</div>{workspaceTab === 'cli' && <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1fr_0.8fr]"><div><p className="font-mono text-xs text-cyan-300">$ altavox init --project current</p><p className="mt-4 text-sm leading-6 text-slate-400">Bootstrap environments, sync repositories, run checks, and promote releases through the same guarded command surface.</p><div className="mt-5 flex flex-wrap gap-2">{['altavox init', 'altavox dev', 'altavox scan', 'altavox deploy --preview'].map((command) => <button type="button" key={command} onClick={() => { setTerminalCommand(command); setWorkspaceTab('terminal'); setTerminalOutput(`$ ${command}\nCommand accepted. Approval and audit gates are active.`) }} className="rounded-lg border border-white/10 px-3 py-2 font-mono text-xs text-slate-300 hover:border-cyan-300/40 hover:text-cyan-200">{command}</button>)}</div></div><div className="rounded-xl border border-white/10 p-4"><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">CLI capabilities</p><div className="mt-3 grid gap-2 text-xs text-slate-300"><span>Repository sync and branch worktrees</span><span>Environment and secret checks</span><span>Preview deploys and rollback</span><span>Structured JSON output for CI</span></div></div></div>}{workspaceTab === 'ide' && <div className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[0.8fr_1.2fr]"><div className="rounded-xl border border-white/10 p-4"><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Explorer</p><div className="mt-4 grid gap-2 font-mono text-xs text-slate-300"><button type="button" onClick={() => setCommandResult('Opened app/computer/page.tsx in the active editor.')} className="text-left text-cyan-200 hover:text-white">⌄ app/</button><button type="button" onClick={() => setCommandResult('Opened app/computer/page.tsx in the active editor.')} className="pl-4 text-left text-slate-300 hover:text-white">⌄ computer/</button><button type="button" onClick={() => setCommandResult('Opened app/computer/page.tsx in the active editor.')} className="pl-8 text-left text-white hover:text-cyan-200">page.tsx</button><button type="button" onClick={() => setCommandResult('Opened app/layout.tsx in the active editor.')} className="pl-4 text-left text-slate-300 hover:text-white">layout.tsx</button><button type="button" onClick={() => setCommandResult('Opened components/site-shell.tsx in the active editor.')} className="text-left text-cyan-200 hover:text-white">⌄ components/</button><button type="button" onClick={() => setCommandResult('Opened components/site-shell.tsx in the active editor.')} className="pl-4 text-left text-slate-300 hover:text-white">site-shell.tsx</button></div></div><div className="rounded-xl border border-white/10 p-4"><div className="flex items-center justify-between"><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">page.tsx · modified</p><span className="text-xs text-emerald-200">type-safe</span></div><div className="mt-4 flex flex-wrap gap-2">{['Explain', 'Find issues', 'Generate tests'].map((action) => <button type="button" key={action} onClick={() => { setCommandResult(`${action} queued for app/computer/page.tsx. Results will be attached to the evidence trail.`); recordActivity(`${action} requested from IDE`) }} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[11px] text-slate-300 hover:border-cyan-300/40 hover:text-cyan-200">{action}</button>)}</div><pre className="mt-4 overflow-x-auto text-xs leading-6 text-slate-400"><code><span className="text-cyan-200">export default</span> <span className="text-white">function</span> Computer() {'{'}{`\n`}  <span className="text-cyan-200">return</span> <span className="text-amber-200">&lt;Workspace /&gt;</span>{`\n`} {'}'}</code></pre><button type="button" onClick={() => { setCommandResult('IDE checkpoint created. Changes are staged for review.'); recordActivity('IDE checkpoint created') }} className="mt-4 rounded-lg bg-cyan-300 px-3 py-2 text-xs font-semibold text-[#08121f]">Create checkpoint</button></div></div>}{workspaceTab === 'terminal' && <div className="p-5 sm:p-6"><div className="min-h-32 rounded-xl border border-white/10 bg-black/20 p-4"><pre className="whitespace-pre-wrap font-mono text-xs leading-6 text-cyan-100">{terminalOutput}</pre></div><div className="mt-4 flex gap-2"><input aria-label="Terminal command" value={terminalCommand} onChange={(event) => setTerminalCommand(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { setCommandLifecycle('blocked'); setTerminalOutput(`$ ${terminalCommand}\nBlocked: execution backend is not connected. No command was run and no production changes were made.`); recordActivity(`Terminal command blocked: backend unavailable`) } }} className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/20 px-3 py-2 font-mono text-xs text-white outline-none placeholder:text-slate-600" /><button type="button" onClick={() => { setCommandLifecycle('blocked'); setTerminalOutput(`$ ${terminalCommand}\nBlocked: execution backend is not connected. No command was run and no production changes were made.`); recordActivity(`Terminal command blocked: backend unavailable`) }} className="rounded-lg bg-cyan-300 px-3 py-2 text-xs font-semibold text-[#08121f]">Run</button></div></div>}</div></div>
-      <div className="mt-16 rounded-3xl border border-amber-300/20 bg-amber-300/[0.04] p-6 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-amber-200">Operational truth</p><h2 className="mt-3 text-2xl font-medium text-white">Network telemetry status</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Live device telemetry is not connected in this environment. Altavox will not fabricate health, latency, bandwidth, subscriber, or payment state.</p></div><span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-amber-100">Telemetry unavailable</span></div><div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{['Devices', 'Reachability', 'Sessions', 'Provider links'].map((label) => <div key={label} className="rounded-xl border border-white/10 bg-[#07101b]/70 p-4"><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">{label}</p><p className="mt-3 text-sm font-medium text-amber-100">Telemetry unavailable</p><p className="mt-1 text-xs text-slate-600">Connect an adapter to measure</p></div>)}</div><div className="mt-5 rounded-xl border border-white/10 bg-[#07101b]/70 p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Command lifecycle</p><p className="mt-2 text-sm text-slate-300">request → auth → policy → risk → approval → audit → queue → adapter → result</p></div><span className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ${commandLifecycle === 'blocked' ? 'bg-amber-300/10 text-amber-100' : 'bg-white/10 text-slate-400'}`}>{commandLifecycle === 'blocked' ? 'blocked safely' : 'awaiting command'}</span></div></div><OperationsStatus /></div>
-      <div className="mt-16 rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[0.08] to-white/[0.02] p-6 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Platform control plane</p><h2 className="mt-3 text-2xl font-medium text-white">One workspace. Every serious engineering surface.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Altavox brings code, data, agents, releases, observability, governance, and team operations into one accountable system.</p></div><span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-cyan-200">100M capability map</span></div><div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[{ title: 'Build', items: ['Cloud IDE', 'CLI worktrees', 'AI refactor', 'Test generation'] }, { title: 'Operate', items: ['Live logs', 'Health checks', 'Incident room', 'Runbooks'] }, { title: 'Govern', items: ['RBAC', 'Approvals', 'Audit trail', 'Policy packs'] }, { title: 'Scale', items: ['Model routing', 'Cost budgets', 'Edge regions', 'Usage analytics'] }].map((group) => <div key={group.title} className="rounded-2xl border border-white/10 bg-[#07101b]/70 p-4"><p className="font-mono text-xs uppercase tracking-[0.16em] text-cyan-300">{group.title}</p><div className="mt-4 grid gap-2">{group.items.map((item) => <button type="button" key={item} onClick={() => { setCommandResult(`${item} control opened. Changes require an approval gate and are added to the audit trail.`); recordActivity(`${item} control opened`) }} className="rounded-lg border border-white/10 px-3 py-2 text-left text-xs text-slate-300 transition hover:border-cyan-300/40 hover:text-white">{item}<span className="float-right text-cyan-300">→</span></button>)}</div></div>)}</div></div>
-      <div className="mt-16 rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[0.08] to-white/[0.02] p-6 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Next-level operations</p><h2 className="mt-3 text-2xl font-medium text-white">Ship with an approval-aware command deck.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Choose the reasoning profile, inspect the release gates, and approve only when the evidence is complete.</p></div><span className={`rounded-full px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider ${approvalState === 'approved' ? 'bg-emerald-300/10 text-emerald-200' : 'bg-amber-300/10 text-amber-200'}`}>{approvalState === 'approved' ? 'approved to ship' : 'approval required'}</span></div><div className="mt-7 grid gap-4 lg:grid-cols-[1fr_1fr_auto]"><label className="rounded-2xl border border-white/10 bg-[#07101b] p-4"><span className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Model routing</span><select value={selectedModel} onChange={(event) => setSelectedModel(event.target.value)} className="mt-3 w-full bg-transparent text-sm text-white outline-none"><option className="bg-[#07101b]">Auto-route</option><option className="bg-[#07101b]">Deep reasoning</option><option className="bg-[#07101b]">Fast implementation</option><option className="bg-[#07101b]">Private code mode</option></select></label><div className="rounded-2xl border border-white/10 bg-[#07101b] p-4"><span className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Release gates</span><div className="mt-3 flex flex-wrap gap-2">{['Diff reviewed', 'Tests passed', 'Security clean', 'Rollback ready'].map((gate) => <span key={gate} className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1.5 text-[11px] text-emerald-200">{gate}</span>)}</div></div><button type="button" onClick={() => { setApprovalState('approved'); setCommandResult(`Release approved with ${selectedModel}. Audit evidence attached and rollback checkpoint preserved.`); recordActivity(`Release approved using ${selectedModel}`) }} className="rounded-2xl bg-cyan-300 px-5 py-3 text-sm font-semibold text-[#08121f] transition hover:bg-white">Approve release</button></div></div>
-      <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><div className="flex items-center justify-between"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Agent capacity</p><Bot className="size-4 text-cyan-300" /></div><p className="mt-4 text-2xl font-medium text-white">84<span className="text-sm text-slate-500">%</span></p><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[84%] rounded-full bg-cyan-300" /></div><p className="mt-2 text-xs text-slate-500">12 tasks ready to run</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><div className="flex items-center justify-between"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Release health</p><ShieldCheck className="size-4 text-emerald-300" /></div><p className="mt-4 text-2xl font-medium text-white">A<span className="text-sm text-emerald-200"> stable</span></p><p className="mt-3 text-xs text-slate-500">0 blocking checks · 3 passed</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><div className="flex items-center justify-between"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Knowledge index</p><Database className="size-4 text-cyan-300" /></div><p className="mt-4 text-2xl font-medium text-white">1,284</p><p className="mt-3 text-xs text-slate-500">documents · 98% freshness</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><div className="flex items-center justify-between"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">Spend guardrail</p><BarChart3 className="size-4 text-amber-200" /></div><p className="mt-4 text-2xl font-medium text-white">$42.18</p><p className="mt-3 text-xs text-amber-100/70">Projected this cycle · on target</p></div></div>
-      <div className="mt-16 grid gap-5 lg:grid-cols-3"><div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 lg:col-span-2"><div className="flex items-center gap-2 text-cyan-300"><TerminalSquare className="size-4" /><span className="font-mono text-xs uppercase tracking-[0.2em]">Why it is different</span></div><h2 className="mt-4 max-w-2xl text-2xl font-medium text-white">Altavox Computer is the operating system for your digital company.</h2><div className="mt-7 grid gap-4 sm:grid-cols-2">{['Business context stays attached to every deployment.', 'Bots, websites, data, and infrastructure share one identity.', 'Every action has an audit trail and an owner.', 'Provider connections are optional modules, never your foundation.'].map(item => <div key={item} className="flex gap-3 text-sm leading-6 text-slate-300"><CheckCircle2 className="mt-1 size-4 shrink-0 text-cyan-300" />{item}</div>)}</div></div><div className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.07] p-6 sm:p-8"><Sparkles className="size-5 text-cyan-300" /><h2 className="mt-5 text-xl font-medium text-white">Start with a brief.</h2><p className="mt-3 text-sm leading-6 text-slate-400">Describe what you want to build and Altavox turns it into a launch plan.</p><Link href="/launchpad" className="mt-7 inline-flex items-center gap-2 rounded-full bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-[#08121f] hover:bg-white">Open Launchpad <ArrowUpRight className="size-4" /></Link></div></div>
-      <div className="mt-10 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 lg:col-span-2">
-          <div className="flex flex-wrap items-center justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Project registry</p><h2 className="mt-3 text-2xl font-medium text-white">Your systems, ready for their next release.</h2></div><button type="button" onClick={() => setShowActivity((value) => !value)} className="rounded-full border border-white/15 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:border-cyan-300/50 hover:text-white">{showActivity ? 'Hide activity' : 'View activity'}</button></div>
-          {projects.length === 0 ? <p className="mt-5 text-sm text-slate-500">Imported projects will appear here with their source, deployment plan, and next action.</p> : <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{projects.map((project, index) => <div key={`${project.name}-${index}`} className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.05] p-4"><div className="flex items-start justify-between gap-3"><div><p className="truncate text-sm font-medium text-white">{project.name}</p><p className="mt-1 text-xs text-slate-500">{project.source} import{project.detail ? ` · ${project.detail}` : ''}</p></div><span className="rounded-full bg-emerald-300/10 px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-emerald-200">{project.status}</span></div><div className="mt-4 flex flex-wrap items-center gap-3"><button type="button" onClick={() => runProjectAction(project)} className="inline-flex items-center gap-2 text-xs font-semibold text-cyan-300 hover:text-white">{project.action ?? 'Analyze stack'} <Play className="size-3.5" /></button><button type="button" onClick={() => prepareDeployment(project.name)} className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white">Release plan <ArrowUpRight className="size-3.5" /></button></div></div>)}</div>}
-          {showActivity && <div className="mt-6 border-t border-white/10 pt-5"><div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]"><div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1"><div><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Latest event</p><p className="mt-2 text-sm text-white">{activity[0] ?? 'Workspace initialized'}</p></div><div><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Security gate</p><p className="mt-2 text-sm text-emerald-200">Awaiting scan</p></div><div><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Next action</p><p className="mt-2 text-sm text-cyan-200">Review deployment plan</p></div></div><div className="rounded-2xl border border-white/10 bg-[#07101b] p-4"><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Audit stream</p>{activity.length === 0 ? <p className="mt-3 text-sm text-slate-500">Your import, analysis, and release actions will appear here.</p> : <div className="mt-3 grid gap-2">{activity.map((event, index) => <div key={`${event}-${index}`} className="flex items-center gap-3 text-xs text-slate-300"><span className="size-1.5 shrink-0 rounded-full bg-cyan-300" />{event}</div>)}</div>}</div></div></div>}
-        </div>
-      </div>
-      <div className="mt-16 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
-        <div className="rounded-3xl border border-cyan-300/25 bg-gradient-to-br from-cyan-300/[0.09] to-white/[0.03] p-6 sm:p-8 lg:col-span-2">
-          <div className="flex flex-wrap items-start justify-between gap-5"><div><div className="flex items-center gap-2 text-cyan-300"><WandSparkles className="size-4" /><span className="font-mono text-xs uppercase tracking-[0.2em]">Altavox intelligence layer</span></div><h2 className="mt-4 text-2xl font-medium text-white">Operate your stack with natural language.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Ask Computer to inspect, explain, secure, estimate, or prepare a release. Commands become auditable actions instead of chat that disappears.</p></div><div className="flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1.5 text-xs text-emerald-200"><BellRing className="size-3.5" /> Guardrails active</div></div>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row"><label className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-white/10 bg-[#07101b] px-4 py-3"><Search className="size-4 shrink-0 text-cyan-300" /><span className="sr-only">Ask Altavox Computer</span><input value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.nativeEvent.isComposing && event.keyCode !== 229) runCommand() }} placeholder="Ask: scan my project or show spend" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600" /></label><button type="button" onClick={() => runCommand()} className="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 text-sm font-semibold text-[#08121f] transition hover:bg-white"><WandSparkles className="size-4" /> Run command</button></div>
-          <div className="mt-4 flex flex-wrap gap-2">{['Scan project', 'Show costs', 'Open incidents', 'Deploy preview'].map((command) => <button key={command} type="button" onClick={() => { setCommandQuery(command); runCommand(command) }} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-slate-400 transition hover:border-cyan-300/40 hover:text-cyan-200">{command}</button>)}</div>
-          {commandResult && <p role="status" className="mt-5 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.06] px-4 py-3 text-sm leading-6 text-cyan-100">{commandResult}</p>}
-          {deploymentState !== 'idle' && <div className="mt-5 rounded-2xl border border-white/10 bg-[#07101b] p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">Release control</p><p className="mt-1 text-sm font-medium text-white">{selectedProject}</p></div><span className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ${deploymentState === 'ready' ? 'bg-emerald-300/10 text-emerald-200' : 'bg-amber-300/10 text-amber-200'}`}>{deploymentState === 'ready' ? 'plan ready' : 'preparing'}</span></div><div className="mt-4 flex flex-wrap gap-2">{['Preview', 'Test', 'Security scan', 'Approval gate'].map((gate, index) => <span key={gate} className={`rounded-full border px-3 py-1.5 text-xs ${deploymentState === 'ready' || index === 0 ? 'border-cyan-300/30 bg-cyan-300/10 text-cyan-100' : 'border-white/10 text-slate-500'}`}>{gate}</span>)}</div></div>}
-        </div>
-        <div className="rounded-3xl border border-white/10 bg-[#0c1a2a] p-6 sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2 text-cyan-300"><Workflow className="size-4" /><span className="font-mono text-xs uppercase tracking-[0.2em]">Autonomous delivery</span></div><span className="rounded-full bg-emerald-300/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-emerald-200">policy approved</span></div>
-          <h2 className="mt-4 text-2xl font-medium text-white">Ship safely without slowing down.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-slate-400">Altavox Computer turns every release into a controlled workflow: preview, test, scan, approve, deploy, and observe.</p>
-          <div className="mt-7 grid gap-3 sm:grid-cols-5">{['Preview','Test','Scan','Approve','Live'].map((step, index) => <div key={step} className="relative"><div className="flex items-center gap-2"><span className={`grid size-8 place-items-center rounded-full text-xs font-semibold ${index < 4 ? 'bg-cyan-300 text-[#08121f]' : 'border border-cyan-300/40 text-cyan-200'}`}>{index + 1}</span><span className="text-xs text-slate-300">{step}</span></div>{index < 4 && <span className="absolute left-8 top-4 hidden h-px w-full bg-cyan-300/30 sm:block" />}</div>)}</div>
-        </div>
-        <div className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[0.07] p-6 sm:p-8"><Radar className="size-5 text-cyan-300" /><h2 className="mt-5 text-xl font-medium text-white">Signal Center</h2><p className="mt-3 text-sm leading-6 text-slate-400">One feed for incidents, security drift, spend anomalies, and performance regressions.</p><div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4"><span className="text-xs text-slate-500">Open signals</span><span className="text-2xl font-medium text-white">02</span></div><Link href="/deployments" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-white">Review signals <ArrowUpRight className="size-4" /></Link></div>
-      </div>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[{ icon: Code2, title: 'Native runtime', copy: 'Build APIs, workers, cron jobs, and edge functions in one workspace.' }, { icon: ShieldCheck, title: 'Security posture', copy: 'Secrets, access rules, audit logs, and automated threat checks.' }, { icon: BarChart3, title: 'FinOps cockpit', copy: 'See unit cost, usage trends, and budget guardrails before surprises.' }, { icon: KeyRound, title: 'Identity graph', copy: 'Connect people, services, bots, and permissions with one identity model.' }].map(({ icon: Icon, title, copy }) => <article key={title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"><Icon className="size-5 text-cyan-300" /><h3 className="mt-4 text-sm font-medium text-white">{title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{copy}</p></article>)}
-      </div>
-      <div className="mt-16 rounded-3xl border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[0.08] to-white/[0.03] p-6 sm:p-8">
-        <div className="flex flex-wrap items-end justify-between gap-5"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">Beyond chat</p><h2 className="mt-3 max-w-2xl text-2xl font-medium text-white">One intelligence layer for the whole build lifecycle.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Altavox Computer combines the strongest ideas from modern AI workspaces with a native control plane for real software delivery.</p></div><span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-cyan-200">8 native capabilities</span></div>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{advancedFeatures.map(({ icon: Icon, title, detail }) => <article key={title} className="rounded-2xl border border-white/10 bg-[#07101b]/70 p-4 transition hover:-translate-y-0.5 hover:border-cyan-300/40"><span className="grid size-9 place-items-center rounded-xl bg-cyan-300/10 text-cyan-300"><Icon className="size-4" /></span><h3 className="mt-4 text-sm font-medium text-white">{title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{detail}</p></article>)}</div>
-      </div>
-      <div className="mt-16 flex flex-col gap-5 rounded-3xl border border-white/10 bg-[#0c1a2a] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"><div className="flex items-center gap-4"><span className="grid size-11 place-items-center rounded-2xl bg-cyan-300/10 text-cyan-300"><Box className="size-5" /></span><div><h2 className="text-lg font-medium text-white">One home for every system you own.</h2><p className="mt-1 text-sm text-slate-400">Altavox Computer is built to grow with your operations.</p></div></div><Link href="/contact" className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-white">Talk to Altavox <ArrowUpRight className="size-4" /></Link></div>
-    </section>
-  </PageFrame>
+    </PageFrame>
+  )
 }
