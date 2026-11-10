@@ -11,6 +11,7 @@ async function requireAdmin() {
 
 export async function GET() {
   if (!await requireAdmin()) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503 })
   try {
     const result = await pool.query("SELECT o.id,o.order_number,o.customer_name,o.customer_email,o.customer_phone,o.delivery_address,o.delivery_region,o.subtotal,o.delivery_fee,o.total,o.currency,o.payment_status,o.order_status,o.created_at, COALESCE(json_agg(json_build_object('title',i.title_snapshot,'format',i.format,'quantity',i.quantity,'unit_price',i.unit_price)) FILTER (WHERE i.id IS NOT NULL), '[]') AS items FROM book_orders o LEFT JOIN book_order_items i ON i.order_id=o.id GROUP BY o.id ORDER BY o.created_at DESC LIMIT 200")
     return NextResponse.json({ orders: result.rows })
@@ -21,6 +22,7 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   if (!await requireAdmin()) return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503 })
   const client = await pool.connect()
   try {
     const body = await request.json()
