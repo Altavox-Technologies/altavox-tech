@@ -5,7 +5,7 @@ import { inquiries } from '@/lib/db/schema'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const maxFieldLength = 2_000
-const optionalFields = ['phone', 'organization', 'service', 'projectType', 'timeline'] as const
+const optionalFields = ['organization', 'service', 'projectType', 'timeline'] as const
 
 function cleanOptional(value: unknown) {
   if (typeof value !== 'string') return null
@@ -37,7 +37,6 @@ export async function POST(request: Request) {
     await db.insert(inquiries).values({
       name: body.name.trim(),
       email: body.email.trim().toLowerCase(),
-      phone: optionalValues.phone,
       description: body.description.trim(),
       organization: optionalValues.organization,
       service: optionalValues.service,
