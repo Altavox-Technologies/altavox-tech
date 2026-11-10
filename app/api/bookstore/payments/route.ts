@@ -28,6 +28,7 @@ export async function POST(request: Request) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(orderId) || (!isMobile && !isBank)) return NextResponse.json({ error: 'Select a supported payment channel.' }, { status: 400 })
   const account = isMobile ? normalizeTzPhone(body.phone) : String(body.bankAccount ?? '').replace(/\s/g, '')
   if (!account || (isBank && !/^[A-Za-z0-9-]{5,32}$/.test(account))) return NextResponse.json({ error: isMobile ? 'Enter a valid Tanzania mobile number.' : 'Enter the bank payment account or bill reference provided by your bank.' }, { status: 400 })
+  if (!pool) return NextResponse.json({ error: 'Bookstore database is unavailable.' }, { status: 503 })
   try {
     const found = await pool.query("SELECT id,order_number,total,currency,payment_status,customer_id FROM book_orders WHERE id=$1 AND customer_id=$2 LIMIT 1", [orderId,session.user.id])
     const order = found.rows[0]
