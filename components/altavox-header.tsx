@@ -500,6 +500,9 @@ export function AltavoxHeader() {
             <Link href="/projects" className="hover:text-[#f26522] transition">
               Projects
             </Link>
+            <Link href="/discovery" className="hover:text-[#f26522] transition font-semibold text-[#9a6b12]">
+              Discovery Hub
+            </Link>
             <Link href="/academy" className="hover:text-[#f26522] transition font-bold text-[#07294d]">
               Academy (20 Tracks)
             </Link>
