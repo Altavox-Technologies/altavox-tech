@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    // Published public content can be read by the website.
+    // Only a trusted server/admin can publish or modify it.
+    match /publicContent/{documentId} {
+      allow get, list: if resource.data.published == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Live event streams are readable only by authenticated Altavox users.
+    // Client writes are deliberately disabled; trusted server routes publish events.
+    match /realtimeChannels/{channelId}/events/{eventId} {
+      allow get, list: if signedIn()
+        && channelId in ['site-announcements', 'admin-activity'];
+      allow create, update, delete: if isAdmin()
+        && channelId in ['site-announcements', 'admin-activity']
+        && request.resource.data.keys().hasOnly([
+          'type', 'title', 'body', 'visibility', 'actorId',
+          'createdAt', 'source', 'correlationId'
+        ])
+        && request.resource.data.type is string
+        && request.resource.data.type.size() <= 80
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 180
+        && request.resource.data.body is string
+        && request.resource.data.body.size() <= 4000
+        && request.resource.data.visibility in ['private', 'public']
+        && request.resource.data.createdAt is timestamp;
+    }
+
+    // User-scoped private documents are readable only by their owner.
+    // Writes remain server-only until a concrete user-owned data contract exists.
+    match /users/{userId}/private/{document=**} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Explicit deny-by-default for every collection not designed above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
