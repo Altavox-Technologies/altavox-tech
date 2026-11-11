@@ -654,7 +654,7 @@ export function AltavoxHeader() {
 
         </div>
 
-        {/* Mobile navigation closes on backdrop taps and normal navigation actions. */}
+        {/* Mobile navigation - Compact, two-column side-by-side dashboard */}
         {mobileMenuOpen && (
           <div
             className="lg:hidden fixed inset-0 z-[60] bg-[#061a30]/55 backdrop-blur-[2px]"
@@ -666,24 +666,36 @@ export function AltavoxHeader() {
               role="dialog"
               aria-modal="true"
               aria-label="Main navigation"
-              className="absolute inset-x-0 top-0 max-h-[min(88dvh,760px)] overflow-y-auto overscroll-contain rounded-b-3xl border-t border-slate-200 bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl animate-in slide-in-from-top duration-200"
+              className="absolute inset-x-0 top-0 max-h-[85vh] overflow-y-auto overscroll-contain rounded-b-2xl border-t border-slate-200 bg-white p-4 pb-5 shadow-2xl animate-in slide-in-from-top duration-200"
               onClick={(event) => { if (event.target === event.currentTarget) setMobileMenuOpen(false) }}
             >
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f26522]">ALTAVOX TECH</p>
-                  <p className="mt-1 text-lg font-extrabold text-[#07294d]">Explore our platform</p>
+              {/* Header */}
+              <div className="mb-3 flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/capricorn_emblem_clean_black.svg"
+                    alt="Altavox"
+                    width={26}
+                    height={30}
+                    className="h-6 w-5.5 object-contain"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#f26522]">ALTAVOX TECH</p>
+                    <p className="text-xs font-extrabold text-[#07294d]">Platform Navigation</p>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-100"
+                  className="rounded-lg border border-slate-200 p-1.5 text-slate-700 hover:bg-slate-100 transition"
                   aria-label="Close navigation menu"
                 >
-                  <X className="size-5" />
+                  <X className="size-4" />
                 </button>
               </div>
 
+              {/* Compact Search */}
               <div className="relative">
                 <input
                   type="search"
@@ -691,82 +703,123 @@ export function AltavoxHeader() {
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Search systems and courses..."
                   aria-label="Search systems and courses"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-[#f26522] focus:bg-white focus:ring-2 focus:ring-orange-100"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-8 pr-3 text-xs text-slate-900 outline-none transition focus:border-[#f26522] focus:bg-white"
                 />
-                <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
               </div>
 
               {searchQuery.trim() && (
-                <div className="mt-2 rounded-xl border border-slate-100 bg-slate-50 p-2">
-                  <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Matching courses ({filteredCourses.length})
+                <div className="mt-2 rounded-lg border border-slate-100 bg-slate-50 p-2 text-xs">
+                  <p className="px-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Matches ({filteredCourses.length})
                   </p>
-                  {filteredCourses.slice(0, 5).map((course) => (
+                  {filteredCourses.slice(0, 4).map((course) => (
                     <Link
                       key={course.id}
                       href={`/courses/${course.slug}`}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block rounded-lg px-3 py-2 text-sm font-semibold text-[#07294d] hover:bg-white"
+                      className="block rounded px-2 py-1.5 text-xs font-semibold text-[#07294d] hover:bg-white truncate"
                     >
                       {course.title}
-                      <span className="mt-0.5 block text-xs font-normal text-slate-500">{course.category}</span>
                     </Link>
                   ))}
                   {filteredCourses.length === 0 && (
-                    <p className="px-3 py-3 text-sm text-slate-500">No matching courses found.</p>
+                    <p className="px-2 py-1 text-slate-500 text-xs">No matching courses found.</p>
                   )}
                 </div>
               )}
 
-              <nav aria-label="Mobile main navigation" className="mt-4 grid grid-cols-1 gap-1 text-sm font-semibold text-slate-800">
-                {[
-                  { href: '/codex', label: 'Codex Knowledge', detail: 'ADRs & engineering intelligence' },
-                  { href: '/enigma', label: 'Enigma Investigations', detail: 'Diagnostic reasoning & runbooks' },
-                  { href: '/research-lab', label: 'Research Lab', detail: 'Empirical RFCs & protocol specs' },
-                  { href: '/archive', label: 'Digital Archive', detail: 'SHA-256 cryptographically audited records' },
-                  { href: '/atlas', label: 'Atlas System Map', detail: 'Interactive architecture & concept map' },
-                  { href: '/security-challenge', label: 'Security Challenge', detail: 'Defensive sandbox & cyber scoring' },
-                  { href: '/origin', label: 'Altavox Origin', detail: 'Capricorn charter & Nduruma roots' },
-                  { href: '/cloud', label: 'Altavox Cloud', detail: 'Edge POPs, deployments & telemetry' },
-                  { href: '/ai', label: 'Altavox AI Platform', detail: 'Systems intelligence & RFC analysis' },
-                  { href: '/developers', label: 'Altavox Developers', detail: 'REST APIs, webhooks & SDKs' },
-                  { href: '/marketplace', label: 'Digital Marketplace', detail: 'Code templates, blueprints & books' },
-                  { href: '/portal', label: 'Client & Business Portal', detail: 'Tenant organization & billing' },
-                  { href: '/support', label: 'Connect & Support Desk', detail: 'Incident tickets & SLA assistance' },
-                  { href: '/academy', label: 'Altavox Academy (20 Tracks)', detail: 'Technical education & LMS' },
-                  { href: '/projects', label: 'Production Projects', detail: 'Jaslyn Net, Sammena & Mrisho Art' },
-                  { href: '/partners', label: 'Strategic Partnerships', detail: 'Carrier & institutional frameworks' },
-                  { href: '/labs', label: 'Altavox Labs', detail: 'Experimental R&D & protocols' },
-                  { href: '/wifi', label: 'Altavox WiFi Hotspots', detail: 'Carrier billing & vouchers' },
-                  { href: '/services', label: 'Engineering Services', detail: 'Software and infrastructure' },
-                  { href: '/about', label: 'About Altavox', detail: 'Company, leadership & principles' },
-                  { href: '/contact', label: 'Contact & Inquiries', detail: 'Executive engineering desk' },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between rounded-xl border border-transparent px-3 py-3 transition hover:border-slate-100 hover:bg-slate-50"
-                  >
-                    <span>
-                      <span className="block text-sm font-bold text-[#07294d]">{item.label}</span>
-                      <span className="mt-0.5 block text-xs font-normal text-slate-500">{item.detail}</span>
-                    </span>
-                    <ArrowRight className="size-4 shrink-0 text-[#f26522]" />
-                  </Link>
-                ))}
-              </nav>
+              {/* Section 1: The Seven Intelligent Systems (2-column grid) */}
+              <div className="mt-3">
+                <div className="flex items-center justify-between px-1 mb-1.5">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1">
+                    <span className="font-serif">♑</span> Seven Systems
+                  </span>
+                  <span className="text-[9px] font-mono text-slate-400">Core Engines</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5 text-xs font-semibold">
+                  {[
+                    { href: '/codex', label: 'A. Codex', sub: 'Engineering ADRs' },
+                    { href: '/enigma', label: 'B. Enigma', sub: 'Diagnostics & AI' },
+                    { href: '/research-lab', label: 'C. Research Lab', sub: 'Empirical RFCs' },
+                    { href: '/archive', label: 'D. Archive', sub: 'SHA-256 Vault' },
+                    { href: '/atlas', label: 'E. Atlas Map', sub: 'Topology Graph' },
+                    { href: '/security-challenge', label: 'F. Security', sub: 'Cyber Sandbox' },
+                    { href: '/origin', label: 'G. Origin', sub: 'Capricorn Charter', colSpan: true },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`p-2 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] hover:bg-amber-500/10 transition text-slate-800 ${
+                        item.colSpan ? 'col-span-2 flex items-center justify-between' : 'block'
+                      }`}
+                    >
+                      <span className="block font-bold text-[#07294d] text-xs truncate">{item.label}</span>
+                      <span className="block text-[10px] text-slate-500 truncate">{item.sub}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-2 border-t border-slate-100 pt-4">
+              {/* Section 2: Core Ecosystem & Education (2-column grid) */}
+              <div className="mt-3">
+                <div className="px-1 mb-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  Ecosystem & Education
+                </div>
+                <div className="grid grid-cols-2 gap-1.5 text-xs">
+                  {[
+                    { href: '/academy', label: 'Academy (20 Tracks)', tag: 'LMS' },
+                    { href: '/wifi', label: 'Altavox WiFi', tag: 'ISP' },
+                    { href: '/os', label: 'Altavox OS 3.0', tag: 'ERP' },
+                    { href: '/cloud', label: 'Altavox Cloud', tag: 'Edge' },
+                    { href: '/ai', label: 'Altavox AI', tag: 'LLM' },
+                    { href: '/developers', label: 'Developers', tag: 'API' },
+                    { href: '/projects', label: 'Projects', tag: 'Live' },
+                    { href: '/marketplace', label: 'Marketplace', tag: 'Store' },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="p-2 rounded-lg border border-slate-100 bg-slate-50 hover:bg-slate-100 transition flex items-center justify-between"
+                    >
+                      <span className="font-bold text-[#07294d] text-xs truncate">{item.label}</span>
+                      <span className="text-[9px] font-mono text-slate-400 uppercase">{item.tag}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section 3: Company & Direct Support */}
+              <div className="mt-3">
+                <div className="grid grid-cols-4 gap-1.5 text-center text-[11px] font-semibold text-slate-700">
+                  <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="py-1.5 px-1 rounded bg-slate-100 hover:bg-slate-200 truncate">
+                    Services
+                  </Link>
+                  <Link href="/portal" onClick={() => setMobileMenuOpen(false)} className="py-1.5 px-1 rounded bg-slate-100 hover:bg-slate-200 truncate">
+                    Portal
+                  </Link>
+                  <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="py-1.5 px-1 rounded bg-slate-100 hover:bg-slate-200 truncate">
+                    About
+                  </Link>
+                  <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="py-1.5 px-1 rounded bg-slate-100 hover:bg-slate-200 truncate">
+                    Contact
+                  </Link>
+                </div>
+              </div>
+
+              {/* Bottom Quick Action CTAs (Side-by-side) */}
+              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
                 <button
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false)
                     setDemoModalOpen(true)
                   }}
-                  className="w-full rounded-xl bg-[#f26522] py-3.5 text-center text-sm font-bold text-white transition hover:bg-[#e05312]"
+                  className="rounded-lg bg-[#f26522] py-2.5 text-center text-xs font-bold text-white transition hover:bg-[#e05312] shadow-xs cursor-pointer truncate"
                 >
-                  Book Technical Demo
+                  Book Demo
                 </button>
                 <button
                   type="button"
@@ -774,12 +827,13 @@ export function AltavoxHeader() {
                     setMobileMenuOpen(false)
                     setAdvisorModalOpen(true)
                   }}
-                  className="w-full rounded-xl bg-[#07294d] py-3.5 text-center text-sm font-bold text-white transition hover:bg-[#051c36]"
+                  className="rounded-lg bg-[#07294d] py-2.5 text-center text-xs font-bold text-white transition hover:bg-[#051c36] shadow-xs cursor-pointer truncate"
                 >
-                  AI Systems Advisor
+                  AI Advisor
                 </button>
               </div>
-              <p className="mt-4 text-center text-[11px] text-slate-400">Tap outside this panel or press Esc to close.</p>
+
+              <p className="mt-2 text-center text-[10px] text-slate-400">Altavox Technologies · Tap outside or press Esc</p>
             </section>
           </div>
         )}

@@ -160,7 +160,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* HERO SECTION - CORPORATE NAVY & VIBRANT ORANGE ACCENTS */}
         {/* ======================================================== */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#07294d] via-[#093563] to-[#051c36] text-white pt-12 pb-20 lg:pt-16 lg:pb-28">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#07294d] via-[#093563] to-[#051c36] text-white pt-8 pb-12 sm:pt-12 sm:pb-16 lg:pt-16 lg:pb-24">
           {/* Tech Grid Pattern */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
@@ -507,7 +507,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* PRODUCTION SYSTEMS & TRACKS GRID (ALTAVOX TECH COURSE CARD) */}
         {/* ======================================================== */}
-        <section id="systems-section" className="py-16 sm:py-24 bg-slate-50">
+        <section id="systems-section" className="py-10 sm:py-16 lg:py-20 bg-slate-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             
             <motion.div
@@ -595,7 +595,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* INTERACTIVE ARCHITECTURE & ROI CALCULATOR SECTION */}
         {/* ======================================================== */}
-        <section className="bg-gradient-to-b from-white to-slate-50 py-16 sm:py-20 border-b border-slate-200">
+        <section className="bg-gradient-to-b from-white to-slate-50 py-10 sm:py-16 lg:py-20 border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -706,7 +706,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* WHY CHOOSE ALTAVOX - 4 PRINCIPLES IN ALTAVOX TECH PRINCIPLES */}
         {/* ======================================================== */}
-        <section className="py-20 bg-white border-b border-slate-200">
+        <section className="py-10 sm:py-16 lg:py-20 bg-white border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -787,7 +787,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* CLIENT CASE STUDIES & OPERATIONAL OUTCOMES */}
         {/* ======================================================== */}
-        <section className="py-20 bg-slate-50">
+        <section className="py-10 sm:py-16 lg:py-20 bg-slate-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -917,7 +917,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* ENGINEERING ARTICLES & TECHNICAL INSIGHTS */}
         {/* ======================================================== */}
-        <section className="py-20 bg-white border-b border-slate-200">
+        <section className="py-10 sm:py-16 lg:py-20 bg-white border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
@@ -1028,7 +1028,7 @@ export default function HomePage() {
         {/* ======================================================== */}
         {/* TECHNICAL FAQS SECTION */}
         {/* ======================================================== */}
-        <section className="py-20 bg-white border-t border-slate-200">
+        <section className="py-10 sm:py-16 lg:py-20 bg-white border-t border-slate-200">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

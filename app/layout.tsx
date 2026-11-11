@@ -93,6 +93,30 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined') {
+                window.addEventListener('error', function(event) {
+                  var err = event && (event.error || event.message);
+                  var isChunk = err && (
+                    (typeof err === 'string' && (err.indexOf('ChunkLoadError') !== -1 || err.indexOf('Failed to load chunk') !== -1)) ||
+                    (err.name === 'ChunkLoadError') ||
+                    (err.message && (err.message.indexOf('ChunkLoadError') !== -1 || err.message.indexOf('Failed to load chunk') !== -1))
+                  );
+                  if (isChunk) {
+                    var last = sessionStorage.getItem('altavox_chunk_retry');
+                    var now = Date.now();
+                    if (!last || (now - parseInt(last, 10)) > 8000) {
+                      sessionStorage.setItem('altavox_chunk_retry', String(now));
+                      window.location.reload();
+                    }
+                  }
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body className="antialiased">
         {children}
