@@ -17,28 +17,24 @@ jobs:
   verify:
     name: Typecheck and production build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 12.3.4
-          run_install: false
+          bun-version: 1.2.22
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
+      - name: Install dependencies
+        run: bun install
 
-      - name: Install locked dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Static Firestore configuration test
+        run: bun run scripts/test-firestore-config.mjs
 
       - name: TypeScript check
-        run: pnpm run typecheck
+        run: bun run typecheck
 
       - name: Production build
-        run: pnpm run build
+        run: bun run build

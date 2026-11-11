@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { FirebaseSessionBridge } from '@/components/firebase-session-bridge'
 
 const brandEmblem = '/capricorn_emblem_clean_black.svg'
 
@@ -95,6 +96,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <FirebaseSessionBridge />
         {children}
       </body>
     </html>

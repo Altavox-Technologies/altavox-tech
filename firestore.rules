@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function validEvent(data) {
+      return data.keys().hasOnly([
+          'type', 'title', 'body', 'visibility', 'actorId',
+          'createdAt', 'source', 'correlationId'
+        ])
+        && data.type is string
+        && data.type.size() <= 80
+        && data.title is string
+        && data.title.size() <= 180
+        && data.body is string
+        && data.body.size() <= 4000
+        && data.visibility in ['private', 'public']
+        && data.createdAt is timestamp;
+    }
+
+    match /publicContent/{documentId} {
+      allow get, list: if resource.data.published == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /realtimeChannels/{channelId}/events/{eventId} {
+      allow get, list: if channelId == 'site-announcements' && signedIn()
+        || channelId == 'admin-activity' && isAdmin();
+      allow create, update: if isAdmin()
+        && channelId in ['site-announcements', 'admin-activity']
+        && validEvent(request.resource.data);
+      allow delete: if isAdmin()
+        && channelId in ['site-announcements', 'admin-activity'];
+    }
+
+    match /users/{userId}/private/{document=**} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
