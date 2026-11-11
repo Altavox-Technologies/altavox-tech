@@ -500,6 +500,9 @@ export function AltavoxHeader() {
             <Link href="/projects" className="hover:text-[#f26522] transition">
               Projects
             </Link>
+            <Link href="/discovery" className="hover:text-[#f26522] transition font-semibold text-[#9a6b12]">
+              Discovery Hub
+            </Link>
             <Link href="/academy" className="hover:text-[#f26522] transition font-bold text-[#07294d]">
               Academy (20 Tracks)
             </Link>
@@ -619,6 +622,7 @@ export function AltavoxHeader() {
                   { href: '/support', label: 'Connect & Support Desk', detail: 'Incident tickets & SLA assistance' },
                   { href: '/academy', label: 'Altavox Academy (20 Tracks)', detail: 'Technical education & LMS' },
                   { href: '/projects', label: 'Production Projects', detail: 'Jaslyn Net, Sammena & Mrisho Art' },
+                  { href: '/discovery', label: 'Discovery & Knowledge Hub', detail: 'Codex, Enigma, Research Lab, Archive, Atlas & Security' },
                   { href: '/partners', label: 'Strategic Partnerships', detail: 'Carrier & institutional frameworks' },
                   { href: '/labs', label: 'Altavox Labs', detail: 'Experimental R&D & protocols' },
                   { href: '/wifi', label: 'Altavox WiFi Hotspots', detail: 'Carrier billing & vouchers' },
