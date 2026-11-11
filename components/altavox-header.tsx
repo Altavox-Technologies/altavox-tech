@@ -113,11 +113,15 @@ export function AltavoxHeader() {
           <div className="flex items-center gap-3 sm:gap-5">
             {/* Rapid Division Links */}
             <div className="hidden xl:flex items-center gap-3 text-slate-300 font-mono text-[10px]">
+              <Link href="/os" className="text-amber-400 font-bold hover:text-white transition">OS 3.0</Link>
+              <span>·</span>
               <Link href="/cloud" className="hover:text-sky-300 transition">Cloud</Link>
               <span>·</span>
               <Link href="/ai" className="hover:text-purple-300 transition">AI</Link>
               <span>·</span>
               <Link href="/developers" className="hover:text-emerald-300 transition">Developers</Link>
+              <span>·</span>
+              <Link href="/status" className="hover:text-emerald-400 transition">Status</Link>
               <span>·</span>
               <Link href="/portal" className="hover:text-amber-300 transition">Client Portal</Link>
             </div>
@@ -384,6 +388,20 @@ export function AltavoxHeader() {
                   </div>
                   <div className="space-y-1 pt-1 text-xs">
                     <Link
+                      href="/os"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 bg-amber-50/70 hover:bg-amber-100/60 transition text-slate-900"
+                    >
+                      <Zap className="size-4 text-amber-600 shrink-0" />
+                      <div>
+                        <p className="font-bold flex items-center gap-1.5">
+                          Altavox OS 3.0
+                          <span className="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-mono font-normal">Enterprise</span>
+                        </p>
+                        <p className="text-[10px] text-slate-500">ERP, CRM, Flow & ProductOps</p>
+                      </div>
+                    </Link>
+                    <Link
                       href="/cloud"
                       onClick={() => setEcosystemDropdownOpen(false)}
                       className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
@@ -439,14 +457,28 @@ export function AltavoxHeader() {
                       </div>
                     </Link>
                     <Link
-                      href="/labs"
+                      href="/trust"
                       onClick={() => setEcosystemDropdownOpen(false)}
                       className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
                     >
-                      <FlaskConical className="size-4 text-rose-500 shrink-0" />
+                      <ShieldCheck className="size-4 text-teal-600 shrink-0" />
                       <div>
-                        <p className="font-bold">Altavox Labs</p>
-                        <p className="text-[10px] text-slate-400">R&D & mesh protocols</p>
+                        <p className="font-bold">Trust & Governance</p>
+                        <p className="text-[10px] text-slate-400">Subprocessors & DSR requests</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/status"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Activity className="size-4 text-emerald-600 shrink-0" />
+                      <div>
+                        <p className="font-bold flex items-center gap-1.5">
+                          System Status
+                          <span className="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </p>
+                        <p className="text-[10px] text-slate-400">Live POPs & 99.98% SLA</p>
                       </div>
                     </Link>
                     <Link

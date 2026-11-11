@@ -127,6 +127,12 @@ export function AltavoxFooter() {
             <h4 className="font-bold uppercase tracking-wider text-white text-xs">Ecosystem Divisions</h4>
             <ul className="mt-4 space-y-2.5">
               <li>
+                <Link href="/os" className="text-amber-400 font-bold hover:underline flex items-center justify-between">
+                  <span>Altavox OS 3.0 — Enterprise</span>
+                  <ArrowUpRight className="size-3 text-amber-500" />
+                </Link>
+              </li>
+              <li>
                 <Link href="/cloud" className="text-sky-400 font-semibold hover:underline flex items-center justify-between">
                   <span>Altavox Cloud — Edge Infra</span>
                   <ArrowUpRight className="size-3 text-slate-500" />
@@ -155,13 +161,8 @@ export function AltavoxFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/labs" className="text-rose-400 font-semibold hover:underline">
-                  Altavox Labs — R&D Prototypes
-                </Link>
-              </li>
-              <li>
-                <Link href="/partners" className="text-amber-400 font-semibold hover:underline">
-                  Strategic Partnerships
+                <Link href="/partners/portal" className="text-orange-300 font-medium hover:underline">
+                  Certified Partner Portal
                 </Link>
               </li>
               <li>
@@ -231,6 +232,17 @@ export function AltavoxFooter() {
               <li>
                 <Link href="/projects" className="hover:text-[#f26522] transition">
                   Production Projects Portfolio
+                </Link>
+              </li>
+              <li>
+                <Link href="/trust" className="text-teal-300 font-medium hover:underline">
+                  Trust Center & Governance
+                </Link>
+              </li>
+              <li>
+                <Link href="/status" className="text-emerald-300 font-medium hover:underline flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-emerald-400"></span>
+                  <span>System Telemetry & Status</span>
                 </Link>
               </li>
               <li>

@@ -36,7 +36,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'technology',
     'corporate',
     'privacy',
-    'terms'
+    'terms',
+    'os',
+    'trust',
+    'status',
+    'partners/portal'
   ]
 
   const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
