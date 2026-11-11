@@ -31,8 +31,8 @@ service cloud.firestore {
     }
 
     match /realtimeChannels/{channelId}/events/{eventId} {
-      allow get, list: if signedIn()
-        && channelId in ['site-announcements', 'admin-activity'];
+      allow get, list: if channelId == 'site-announcements' && signedIn()
+        || channelId == 'admin-activity' && isAdmin();
       allow create, update: if isAdmin()
         && channelId in ['site-announcements', 'admin-activity']
         && validEvent(request.resource.data);
