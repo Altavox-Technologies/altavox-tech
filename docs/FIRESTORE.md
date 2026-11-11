@@ -35,8 +35,8 @@ perform their own authorization checks.
 
 ## Required Firebase configuration
 
-Create a Firebase project and enable Cloud Firestore (Native mode) and
-Firebase Authentication (custom-token sign-in). Configure:
+Firebase project is `altavox-tech` (project number `184390554889`). Enable Cloud Firestore (Native mode) and
+Firebase Authentication (custom-token sign-in). Register a Web App in Firebase Project Settings and copy its SDK config values. Configure:
 
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
