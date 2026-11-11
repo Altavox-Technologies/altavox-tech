@@ -51,7 +51,7 @@ export function AltavoxFooter() {
         </div>
 
         {/* Main Footer Links */}
-        <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4 border-b border-white/10 text-xs">
+        <div className="grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 border-b border-white/10 text-xs">
           
           {/* Col 1: Brand & Contacts */}
           <div>
@@ -122,7 +122,59 @@ export function AltavoxFooter() {
             </div>
           </div>
 
-          {/* Col 2: Connected Ecosystem Divisions */}
+          {/* Col 2: The Seven Systems */}
+          <div>
+            <h4 className="font-bold uppercase tracking-wider text-amber-400 text-xs flex items-center gap-1.5">
+              <span className="font-serif text-sm">♑</span>
+              Seven Systems
+            </h4>
+            <ul className="mt-4 space-y-2.5">
+              <li>
+                <Link href="/codex" className="text-slate-300 hover:text-amber-400 transition flex items-center justify-between">
+                  <span>Codex Knowledge</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/enigma" className="text-slate-300 hover:text-amber-400 transition flex items-center justify-between">
+                  <span>Enigma Diagnostic</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/research-lab" className="text-slate-300 hover:text-amber-400 transition flex items-center justify-between">
+                  <span>Research Lab & RFCs</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/archive" className="text-slate-300 hover:text-amber-400 transition flex items-center justify-between">
+                  <span>Digital Archive</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/atlas" className="text-slate-300 hover:text-amber-400 transition flex items-center justify-between">
+                  <span>Atlas System Map</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/security-challenge" className="text-slate-300 hover:text-amber-400 transition flex items-center justify-between">
+                  <span>Security Challenge</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/origin" className="text-amber-400 font-semibold hover:underline flex items-center justify-between">
+                  <span>Altavox Origin</span>
+                  <ArrowUpRight className="size-3 text-amber-500" />
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Connected Ecosystem Divisions */}
           <div>
             <h4 className="font-bold uppercase tracking-wider text-white text-xs">Ecosystem Divisions</h4>
             <ul className="mt-4 space-y-2.5">

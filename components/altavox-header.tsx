@@ -42,6 +42,7 @@ export function AltavoxHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false)
   const [ecosystemDropdownOpen, setEcosystemDropdownOpen] = useState(false)
+  const [sevenSystemsDropdownOpen, setSevenSystemsDropdownOpen] = useState(false)
   const [selectedCurrency, setSelectedCurrency] = useState<'USD' | 'TZS'>('USD')
   const [selectedLang, setSelectedLang] = useState<'EN' | 'SW'>('EN')
   const [searchQuery, setSearchQuery] = useState('')
@@ -367,6 +368,114 @@ export function AltavoxHeader() {
 
           {/* Navigation Links */}
           <nav className="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-700">
+            {/* Seven Intelligent Systems Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setSevenSystemsDropdownOpen(!sevenSystemsDropdownOpen)}
+                className="flex items-center gap-1.5 font-bold text-[#07294d] hover:text-[#f26522] transition py-1"
+              >
+                <span className="flex items-center gap-1">
+                  <span className="font-serif text-[#f26522] text-sm">♑</span>
+                  Seven Systems
+                </span>
+                <ChevronDown className={`size-3 transition-transform ${sevenSystemsDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {sevenSystemsDropdownOpen && (
+                <div
+                  className="absolute left-0 top-full mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95"
+                  onMouseLeave={() => setSevenSystemsDropdownOpen(false)}
+                >
+                  <div className="p-2 border-b border-slate-100 flex items-center justify-between">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+                      7 Core Architectural Systems
+                    </span>
+                    <span className="text-[10px] font-mono text-[#f26522] font-semibold">Active</span>
+                  </div>
+                  <div className="space-y-1 pt-1 text-xs">
+                    <Link
+                      href="/codex"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Terminal className="size-4 text-amber-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">A. Codex</p>
+                        <p className="text-[10px] text-slate-400">Engineering intelligence & ADR specs</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/enigma"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Brain className="size-4 text-purple-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">B. Enigma</p>
+                        <p className="text-[10px] text-slate-400">Diagnostic investigations & reasoning</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/research-lab"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <FlaskConical className="size-4 text-sky-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">C. Research Lab</p>
+                        <p className="text-[10px] text-slate-400">Empirical RFCs & test vectors</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/archive"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Layers className="size-4 text-emerald-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">D. Digital Archive</p>
+                        <p className="text-[10px] text-slate-400">SHA-256 audited records vault</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/atlas"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Globe className="size-4 text-blue-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">E. Atlas Map</p>
+                        <p className="text-[10px] text-slate-400">Interactive topology & knowledge map</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/security-challenge"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <ShieldCheck className="size-4 text-rose-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">F. Security Challenge</p>
+                        <p className="text-[10px] text-slate-400">Defensive cyber assessment sandbox</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/origin"
+                      onClick={() => setSevenSystemsDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <span className="font-serif text-sm text-[#f26522] shrink-0">♑</span>
+                      <div>
+                        <p className="font-bold">G. Altavox Origin</p>
+                        <p className="text-[10px] text-slate-400">Nduruma roots & Capricorn charter</p>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Ecosystem Divisions Dropdown */}
             <div className="relative">
               <button
@@ -611,6 +720,13 @@ export function AltavoxHeader() {
 
               <nav aria-label="Mobile main navigation" className="mt-4 grid grid-cols-1 gap-1 text-sm font-semibold text-slate-800">
                 {[
+                  { href: '/codex', label: 'Codex Knowledge', detail: 'ADRs & engineering intelligence' },
+                  { href: '/enigma', label: 'Enigma Investigations', detail: 'Diagnostic reasoning & runbooks' },
+                  { href: '/research-lab', label: 'Research Lab', detail: 'Empirical RFCs & protocol specs' },
+                  { href: '/archive', label: 'Digital Archive', detail: 'SHA-256 cryptographically audited records' },
+                  { href: '/atlas', label: 'Atlas System Map', detail: 'Interactive architecture & concept map' },
+                  { href: '/security-challenge', label: 'Security Challenge', detail: 'Defensive sandbox & cyber scoring' },
+                  { href: '/origin', label: 'Altavox Origin', detail: 'Capricorn charter & Nduruma roots' },
                   { href: '/cloud', label: 'Altavox Cloud', detail: 'Edge POPs, deployments & telemetry' },
                   { href: '/ai', label: 'Altavox AI Platform', detail: 'Systems intelligence & RFC analysis' },
                   { href: '/developers', label: 'Altavox Developers', detail: 'REST APIs, webhooks & SDKs' },
