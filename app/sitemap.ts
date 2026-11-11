@@ -33,6 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'contact',
     'start-project',
     'insights',
+    'discovery',
     'technology',
     'corporate',
     'privacy',
