@@ -122,42 +122,51 @@ export function AltavoxFooter() {
             </div>
           </div>
 
-          {/* Col 2: Featured Platforms */}
+          {/* Col 2: Connected Ecosystem Divisions */}
           <div>
-            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Featured Platforms</h4>
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Ecosystem Divisions</h4>
             <ul className="mt-4 space-y-2.5">
               <li>
-                <Link href="/projects/jaslyn-net" className="hover:text-[#f26522] transition flex items-center justify-between">
-                  <span>Jaslyn Net — ISP Operations</span>
+                <Link href="/cloud" className="text-sky-400 font-semibold hover:underline flex items-center justify-between">
+                  <span>Altavox Cloud — Edge Infra</span>
                   <ArrowUpRight className="size-3 text-slate-500" />
                 </Link>
               </li>
               <li>
-                <Link href="/projects/sammena" className="hover:text-[#f26522] transition flex items-center justify-between">
-                  <span>Sammena School — Educational SIMS</span>
+                <Link href="/ai" className="text-purple-400 font-semibold hover:underline flex items-center justify-between">
+                  <span>Altavox AI — Systems Intelligence</span>
                   <ArrowUpRight className="size-3 text-slate-500" />
                 </Link>
               </li>
               <li>
-                <Link href="/wifi" className="text-emerald-400 font-bold hover:underline flex items-center gap-1.5">
-                  <Wifi className="size-3" />
-                  <span>Altavox WiFi — Cloud Hotspot Platform</span>
+                <Link href="/developers" className="text-emerald-400 font-semibold hover:underline flex items-center justify-between">
+                  <span>Altavox Developers — APIs & SDKs</span>
+                  <ArrowUpRight className="size-3 text-slate-500" />
                 </Link>
               </li>
               <li>
-                <Link href="/store" className="text-[#f26522] font-semibold hover:underline">
-                  Altavox Bookstore — Digital & Print
+                <Link href="/marketplace" className="text-[#f26522] font-semibold hover:underline">
+                  Marketplace & Digital Blueprints
                 </Link>
               </li>
               <li>
-                <Link href="/computer" className="text-[#f26522] font-semibold hover:underline flex items-center gap-1">
-                  <Terminal className="size-3" />
-                  <span>Computer Service Console</span>
+                <Link href="/portal" className="text-slate-300 hover:text-white transition">
+                  Client & Business Portal
                 </Link>
               </li>
               <li>
-                <Link href="/launchpad" className="hover:text-[#f26522] transition">
-                  Engineering Tools & Launchpad
+                <Link href="/labs" className="text-rose-400 font-semibold hover:underline">
+                  Altavox Labs — R&D Prototypes
+                </Link>
+              </li>
+              <li>
+                <Link href="/partners" className="text-amber-400 font-semibold hover:underline">
+                  Strategic Partnerships
+                </Link>
+              </li>
+              <li>
+                <Link href="/support" className="text-slate-300 hover:text-white transition">
+                  Altavox Connect & Support
                 </Link>
               </li>
             </ul>
@@ -198,8 +207,8 @@ export function AltavoxFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/services#database-architecture" className="hover:text-[#f26522] transition">
-                  Database Architecture & APIs
+                <Link href="/business" className="hover:text-[#f26522] transition font-bold text-orange-300">
+                  Enterprise SLAs & Retainers
                 </Link>
               </li>
             </ul>
@@ -207,26 +216,21 @@ export function AltavoxFooter() {
 
           {/* Col 4: Altavox Academy & Governance */}
           <div>
-            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Academy & Company</h4>
+            <h4 className="font-bold uppercase tracking-wider text-white text-xs">Academy & Governance</h4>
             <ul className="mt-4 space-y-2.5">
               <li>
-                <Link href="/courses" className="text-orange-400 font-semibold hover:underline">
-                  Altavox Academy (10 Tracks) →
+                <Link href="/academy" className="text-orange-400 font-bold hover:underline">
+                  Altavox Academy (20 Tracks) →
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-[#f26522] transition">
-                  About Altavox & Principles
+                <Link href="/academy/dashboard" className="text-slate-300 hover:text-[#f26522] transition">
+                  Student Learning Dashboard
                 </Link>
               </li>
               <li>
                 <Link href="/projects" className="hover:text-[#f26522] transition">
-                  Projects & Systems Architecture
-                </Link>
-              </li>
-              <li>
-                <Link href="/deployments" className="hover:text-[#f26522] transition">
-                  Deployments & Operations
+                  Production Projects Portfolio
                 </Link>
               </li>
               <li>
@@ -240,8 +244,13 @@ export function AltavoxFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[#f26522] transition">
-                  Contact & Inquiries
+                <Link href="/refund" className="text-emerald-400 font-medium hover:underline">
+                  Refund & Cancellation Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="text-slate-400 hover:text-white transition font-mono">
+                  Admin Command Center
                 </Link>
               </li>
             </ul>

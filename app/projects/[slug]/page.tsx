@@ -6,12 +6,22 @@ import { projects } from '@/lib/site-data'
 import { ProjectPreview } from '@/components/project-preview'
 
 export function generateStaticParams() {
-  return projects.map(({ slug }) => ({ slug }))
+  const baseParams = projects.map(({ slug }) => ({ slug }))
+  return [
+    ...baseParams,
+    { slug: 'mrisho-art' },
+    { slug: 'sammena-school' }
+  ]
 }
 
 export default async function Project({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const project = projects.find((item) => item.slug === slug)
+  const project = projects.find(
+    (item) =>
+      item.slug === slug ||
+      (slug === 'mrisho-art' && item.slug === 'mrisho-art-gallery') ||
+      (slug === 'sammena-school' && item.slug === 'sammena')
+  )
   if (!project) notFound()
 
   return (
@@ -34,10 +44,11 @@ export default async function Project({ params }: { params: Promise<{ slug: stri
           <div>
             {/* Locked, read-only embedded website preview */}
             <ProjectPreview
+              project={project}
               projectName={project.name}
               projectUrl={project.url}
               screenshot={project.screenshotUrl}
-              initialMode={project.slug === 'mrisho-art-gallery' ? 'iframe' : 'screenshot'}
+              initialMode={project.slug === 'mrisho-art' || project.slug === 'mrisho-art-gallery' ? 'iframe' : 'screenshot'}
             />
 
             {/* Problem & Context */}

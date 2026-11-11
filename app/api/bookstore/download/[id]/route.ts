@@ -25,18 +25,20 @@ export async function GET(
   const tokenExpiresAt = Date.now() + 15 * 60 * 1000
   const downloadToken = `ATB-DL-${Buffer.from(`${id}:${tokenExpiresAt}:${ip}`).toString('base64url')}`
 
-  // Log download activity in database
-  try {
-    await pool.query(
-      `INSERT INTO book_downloads (library_item_id, ip_address)
-       VALUES ($1, $2)`,
-      [
-        typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-0000-0000-000000000001',
-        ip
-      ]
-    )
-  } catch (err) {
-    // Non-fatal if database is offline in preview
+  // Log download activity in database if pool is configured
+  if (pool) {
+    try {
+      await pool.query(
+        `INSERT INTO book_downloads (library_item_id, ip_address)
+         VALUES ($1, $2)`,
+        [
+          typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-0000-0000-000000000001',
+          ip
+        ]
+      )
+    } catch (err) {
+      // Non-fatal if database is offline in preview
+    }
   }
 
   // Return authorized download access payload with signed expiry

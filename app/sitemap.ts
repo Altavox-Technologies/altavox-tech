@@ -10,13 +10,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'about',
     'services',
     'projects',
+    'academy',
+    'academy/dashboard',
+    'cloud',
+    'ai',
+    'developers',
+    'marketplace',
+    'portal',
+    'business',
+    'support',
+    'connect',
+    'labs',
+    'partners',
+    'refund',
+    'store',
     'case-studies',
     'courses',
     'wifi',
     'launchpad',
     'deployments',
     'computer',
-    'store',
     'contact',
     'start-project',
     'insights',
@@ -30,21 +43,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: route ? `${siteUrl}/${route}` : siteUrl,
     lastModified: new Date(),
     changeFrequency: route === '' ? 'weekly' : 'monthly',
-    priority: route === '' ? 1.0 : ['services', 'projects', 'courses', 'wifi', 'store'].includes(route) ? 0.8 : 0.6
+    priority: route === '' ? 1.0 : ['academy', 'cloud', 'ai', 'developers', 'marketplace', 'projects'].includes(route) ? 0.9 : 0.7
   }))
 
-  const courseEntries: MetadataRoute.Sitemap = coursesData.map((course) => ({
-    url: `${siteUrl}/courses/${course.slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7
-  }))
+  const courseEntries: MetadataRoute.Sitemap = coursesData.flatMap((course) => [
+    {
+      url: `${siteUrl}/academy/courses/${course.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
+    },
+    {
+      url: `${siteUrl}/courses/${course.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.75
+    }
+  ])
 
   const projectEntries: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${siteUrl}/projects/${project.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
-    priority: 0.75
+    priority: 0.8
   }))
 
   return [...staticEntries, ...courseEntries, ...projectEntries]

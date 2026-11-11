@@ -15,18 +15,38 @@ import {
 import { ProjectItem } from '@/lib/site-data'
 
 interface ProjectPreviewProps {
-  project: ProjectItem
+  project?: ProjectItem
+  projectName?: string
+  projectUrl?: string
+  screenshot?: string
+  initialMode?: 'iframe' | 'screenshot'
   defaultMode?: 'iframe' | 'screenshot'
   className?: string
 }
 
 export function ProjectPreview({
   project,
+  projectName,
+  projectUrl,
+  screenshot,
+  initialMode,
   defaultMode = 'screenshot',
   className = ''
 }: ProjectPreviewProps) {
+  const name = project?.name || projectName || 'Project'
+  const url = project?.url || projectUrl || 'https://altavox.space'
+  const screenshotUrl = project?.screenshotUrl || screenshot || '/projects/mrisho-art-live.png'
+  const slug = project?.slug || (url.includes('mrishoart') ? 'mrisho-art' : '')
+  const infrastructure = project?.architecture?.infrastructure || 'Cloud Native Infrastructure'
+
   // Mrisho Art Gallery opens in iframe mode by default as requested
-  const isDefaultIframe = defaultMode === 'iframe' || project.slug === 'mrisho-art'
+  const isDefaultIframe =
+    defaultMode === 'iframe' ||
+    initialMode === 'iframe' ||
+    slug === 'mrisho-art' ||
+    slug === 'mrisho-art-gallery' ||
+    url.includes('mrishoart')
+
   const [mode, setMode] = useState<'iframe' | 'screenshot'>(isDefaultIframe ? 'iframe' : 'screenshot')
   const [iframeError, setIframeError] = useState(false)
   const [isInteractive, setIsInteractive] = useState(false)
@@ -57,7 +77,7 @@ export function ProjectPreview({
           </span>
 
           <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-400 font-mono">
-            {project.url}
+            {url}
           </span>
         </div>
 
@@ -114,7 +134,7 @@ export function ProjectPreview({
           )}
 
           <a
-            href={project.url}
+            href={url}
             target="_blank"
             rel="noopener noreferrer"
             title="Open official site in new window"
@@ -131,8 +151,8 @@ export function ProjectPreview({
         {mode === 'screenshot' ? (
           <div className="relative h-full w-full">
             <Image
-              src={project.screenshotUrl}
-              alt={`${project.name} verified production screenshot`}
+              src={screenshotUrl}
+              alt={`${name} verified production screenshot`}
               fill
               sizes="(max-width: 1024px) 100vw, 60vw"
               className="object-cover object-top"
@@ -150,7 +170,7 @@ export function ProjectPreview({
                 <AlertCircle className="size-10 text-amber-400 mb-3" />
                 <h4 className="font-bold text-sm text-white">Live Iframe Embedding Restricted</h4>
                 <p className="mt-1 max-w-md text-xs text-slate-400 leading-relaxed">
-                  The target domain ({project.url}) enforces strict browser CSP or X-Frame-Options headers to protect its sessions. Switched to high-resolution production screenshot fallback.
+                  The target domain ({url}) enforces strict browser CSP or X-Frame-Options headers to protect its sessions. Switched to high-resolution production screenshot fallback.
                 </p>
                 <button
                   type="button"
@@ -164,8 +184,8 @@ export function ProjectPreview({
               <>
                 {!reloading && (
                   <iframe
-                    src={project.url}
-                    title={`${project.name} isolated read-only preview`}
+                    src={url}
+                    title={`${name} isolated read-only preview`}
                     // Strictly isolate: allow scripts for rendering, but no forms, no popups, no top navigation, no same-origin cookie access
                     sandbox="allow-scripts"
                     tabIndex={-1}
@@ -192,8 +212,8 @@ export function ProjectPreview({
 
       {/* Viewport Footer Spec */}
       <div className="flex items-center justify-between border-t border-white/10 bg-slate-950/80 px-4 py-2 text-[11px] text-slate-400">
-        <span>Domain: <strong className="text-slate-200 font-mono">{project.url.replace('https://', '')}</strong></span>
-        <span>Infrastructure: <strong className="text-slate-200 font-medium">{project.architecture.infrastructure}</strong></span>
+        <span>Domain: <strong className="text-slate-200 font-mono">{url.replace('https://', '')}</strong></span>
+        <span>Infrastructure: <strong className="text-slate-200 font-medium">{infrastructure}</strong></span>
       </div>
     </div>
   )

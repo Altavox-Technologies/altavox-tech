@@ -9,30 +9,32 @@ export async function GET(request: NextRequest) {
   const category = request.nextUrl.searchParams.get('category')?.trim()
   const format = request.nextUrl.searchParams.get('format')?.trim()
 
-  try {
-    const values: string[] = []
-    let where = "status = 'published'"
-    if (query) {
-      values.push(`%${query.slice(0, 100)}%`)
-      where += ` AND (title ILIKE $1 OR author ILIKE $1 OR description ILIKE $1 OR category ILIKE $1)`
-    }
-    const result = await pool.query(
-      `SELECT id, slug, title, author, description, cover_image_url, format, category, language, digital_price, print_price, stock_quantity FROM book_products WHERE ${where} ORDER BY created_at DESC LIMIT 60`,
-      values,
-    )
+  if (pool) {
+    try {
+      const values: string[] = []
+      let where = "status = 'published'"
+      if (query) {
+        values.push(`%${query.slice(0, 100)}%`)
+        where += ` AND (title ILIKE $1 OR author ILIKE $1 OR description ILIKE $1 OR category ILIKE $1)`
+      }
+      const result = await pool.query(
+        `SELECT id, slug, title, author, description, cover_image_url, format, category, language, digital_price, print_price, stock_quantity FROM book_products WHERE ${where} ORDER BY created_at DESC LIMIT 60`,
+        values,
+      )
 
-    if (result && Array.isArray(result.rows) && result.rows.length > 0) {
-      let products = result.rows
-      if (category && category !== 'All Titles') {
-        products = products.filter((p: any) => p.category?.toLowerCase() === category.toLowerCase())
+      if (result && Array.isArray(result.rows) && result.rows.length > 0) {
+        let products = result.rows
+        if (category && category !== 'All Titles') {
+          products = products.filter((p: any) => p.category?.toLowerCase() === category.toLowerCase())
+        }
+        if (format && format !== 'all') {
+          products = products.filter((p: any) => p.format === format || p.format === 'both')
+        }
+        return NextResponse.json({ products })
       }
-      if (format && format !== 'all') {
-        products = products.filter((p: any) => p.format === format || p.format === 'both')
-      }
-      return NextResponse.json({ products })
+    } catch (error) {
+      // Database read fallback to curated technical catalog
     }
-  } catch (error) {
-    // Database read fallback to curated technical catalog
   }
 
   // Fallback to official curated Altavox Tech technical book catalogue

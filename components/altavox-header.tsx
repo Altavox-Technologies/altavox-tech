@@ -22,7 +22,16 @@ import {
   Terminal,
   Activity,
   Zap,
-  Wifi
+  Wifi,
+  Cloud,
+  Brain,
+  Code2,
+  ShoppingBag,
+  FlaskConical,
+  LifeBuoy,
+  Building2,
+  Globe,
+  Coins
 } from 'lucide-react'
 import { coursesData, courseCategories } from '@/lib/courses-data'
 import { DemoModal } from '@/components/demo-modal'
@@ -32,6 +41,9 @@ import { QuickContactWidget } from '@/components/quick-contact-widget'
 export function AltavoxHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false)
+  const [ecosystemDropdownOpen, setEcosystemDropdownOpen] = useState(false)
+  const [selectedCurrency, setSelectedCurrency] = useState<'USD' | 'TZS'>('USD')
+  const [selectedLang, setSelectedLang] = useState<'EN' | 'SW'>('EN')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [demoModalOpen, setDemoModalOpen] = useState(false)
@@ -98,21 +110,51 @@ export function AltavoxHeader() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-3 sm:gap-5">
+            {/* Rapid Division Links */}
+            <div className="hidden xl:flex items-center gap-3 text-slate-300 font-mono text-[10px]">
+              <Link href="/cloud" className="hover:text-sky-300 transition">Cloud</Link>
+              <span>·</span>
+              <Link href="/ai" className="hover:text-purple-300 transition">AI</Link>
+              <span>·</span>
+              <Link href="/developers" className="hover:text-emerald-300 transition">Developers</Link>
+              <span>·</span>
+              <Link href="/portal" className="hover:text-amber-300 transition">Client Portal</Link>
+            </div>
+
+            {/* Currency Selector Badge */}
+            <div className="hidden md:flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[10px] font-mono">
+              <Coins className="size-2.5 text-amber-300" />
+              <button
+                type="button"
+                onClick={() => setSelectedCurrency(selectedCurrency === 'USD' ? 'TZS' : 'USD')}
+                className="hover:text-white transition font-bold"
+                title="Toggle Display Currency (Validated on Server)"
+              >
+                {selectedCurrency === 'USD' ? 'USD ($)' : 'TZS (Sh)'}
+              </button>
+            </div>
+
+            {/* Language Selector Badge */}
+            <div className="flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[10px] font-mono">
+              <Globe className="size-2.5 text-sky-300" />
+              <button
+                type="button"
+                onClick={() => setSelectedLang(selectedLang === 'EN' ? 'SW' : 'EN')}
+                className="hover:text-white transition font-bold"
+                title="Toggle Platform Language (English / Kiswahili)"
+              >
+                {selectedLang === 'EN' ? 'EN' : 'SW'}
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => setAdvisorModalOpen(true)}
               className="inline-flex items-center gap-1 font-bold text-[#f26522] hover:text-white transition"
             >
               <Sparkles className="size-3" />
-              <span>AI Systems Advisor</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDemoModalOpen(true)}
-              className="hover:text-white transition hidden md:inline"
-            >
-              Book Tech Demo
+              <span>AI Advisor</span>
             </button>
             <Link
               href="/wifi"
@@ -120,13 +162,6 @@ export function AltavoxHeader() {
             >
               <Wifi className="size-2.5" />
               <span>Altavox WiFi</span>
-            </Link>
-            <Link
-              href="/computer"
-              className="rounded bg-white/10 px-2 py-0.5 text-white hover:bg-[#f26522] transition flex items-center gap-1"
-            >
-              <Terminal className="size-2.5" />
-              <span>Computer Console</span>
             </Link>
           </div>
         </div>
@@ -327,26 +362,124 @@ export function AltavoxHeader() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-700">
+          <nav className="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-700">
+            {/* Ecosystem Divisions Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setEcosystemDropdownOpen(!ecosystemDropdownOpen)}
+                className="flex items-center gap-1.5 font-bold text-[#07294d] hover:text-[#f26522] transition py-1"
+              >
+                <span>Ecosystem</span>
+                <ChevronDown className={`size-3 transition-transform ${ecosystemDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {ecosystemDropdownOpen && (
+                <div
+                  className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95"
+                  onMouseLeave={() => setEcosystemDropdownOpen(false)}
+                >
+                  <div className="p-2 border-b border-slate-100 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+                    Connected Business Divisions
+                  </div>
+                  <div className="space-y-1 pt-1 text-xs">
+                    <Link
+                      href="/cloud"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Cloud className="size-4 text-sky-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">Altavox Cloud</p>
+                        <p className="text-[10px] text-slate-400">Edge POPs & carrier infra</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/ai"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Brain className="size-4 text-purple-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">Altavox AI</p>
+                        <p className="text-[10px] text-slate-400">Systems intelligence engine</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/developers"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Code2 className="size-4 text-emerald-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">Altavox Developers</p>
+                        <p className="text-[10px] text-slate-400">APIs, webhooks & SDKs</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/marketplace"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <ShoppingBag className="size-4 text-[#f26522] shrink-0" />
+                      <div>
+                        <p className="font-bold">Marketplace</p>
+                        <p className="text-[10px] text-slate-400">Code templates & manuals</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/portal"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <Building2 className="size-4 text-blue-600 shrink-0" />
+                      <div>
+                        <p className="font-bold">Customer Portal</p>
+                        <p className="text-[10px] text-slate-400">Organization & invoices</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/labs"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <FlaskConical className="size-4 text-rose-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">Altavox Labs</p>
+                        <p className="text-[10px] text-slate-400">R&D & mesh protocols</p>
+                      </div>
+                    </Link>
+                    <Link
+                      href="/support"
+                      onClick={() => setEcosystemDropdownOpen(false)}
+                      className="flex items-center gap-2.5 rounded-xl p-2 hover:bg-slate-50 transition text-slate-700 hover:text-[#07294d]"
+                    >
+                      <LifeBuoy className="size-4 text-amber-500 shrink-0" />
+                      <div>
+                        <p className="font-bold">Connect & Support</p>
+                        <p className="text-[10px] text-slate-400">Support tickets & SLA desk</p>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Link href="/projects" className="hover:text-[#f26522] transition">
               Projects
+            </Link>
+            <Link href="/academy" className="hover:text-[#f26522] transition font-bold text-[#07294d]">
+              Academy (20 Tracks)
             </Link>
             <Link href="/services" className="hover:text-[#f26522] transition">
               Services
             </Link>
-            <Link href="/wifi" className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 transition">
-              <Wifi className="size-3 text-emerald-600" />
-              <span>Altavox WiFi</span>
+            <Link href="/marketplace" className="hover:text-[#f26522] transition">
+              Marketplace
             </Link>
-            <Link href="/deployments" className="hover:text-[#f26522] transition">
-              Deployments
+            <Link href="/partners" className="hover:text-[#f26522] transition">
+              Partners
             </Link>
-            <Link href="/courses" className="hover:text-[#f26522] transition">
-              Academy
-            </Link>
-            <Link href="/store" className="font-bold text-[#f26522] hover:text-[#d94f12] transition">Bookstore</Link>
-            <Link href="/blog" className="hover:text-[#f26522] transition">Insights</Link>
-            <Link href="/cart" className="rounded-lg border border-slate-200 px-3 py-2 text-[#07294d] hover:border-[#f26522] hover:text-[#f26522] transition">Cart</Link>
             <Link href="/about" className="hover:text-[#f26522] transition">
               About
             </Link>
@@ -446,17 +579,20 @@ export function AltavoxHeader() {
 
               <nav aria-label="Mobile main navigation" className="mt-4 grid grid-cols-1 gap-1 text-sm font-semibold text-slate-800">
                 {[
-                  { href: '/wifi', label: 'Altavox WiFi Cloud Portal', detail: 'Hotspot billing, vouchers & M-Pesa' },
-                  { href: '/projects', label: 'Production Projects', detail: 'Products and platforms' },
+                  { href: '/cloud', label: 'Altavox Cloud', detail: 'Edge POPs, deployments & telemetry' },
+                  { href: '/ai', label: 'Altavox AI Platform', detail: 'Systems intelligence & RFC analysis' },
+                  { href: '/developers', label: 'Altavox Developers', detail: 'REST APIs, webhooks & SDKs' },
+                  { href: '/marketplace', label: 'Digital Marketplace', detail: 'Code templates, blueprints & books' },
+                  { href: '/portal', label: 'Client & Business Portal', detail: 'Tenant organization & billing' },
+                  { href: '/support', label: 'Connect & Support Desk', detail: 'Incident tickets & SLA assistance' },
+                  { href: '/academy', label: 'Altavox Academy (20 Tracks)', detail: 'Technical education & LMS' },
+                  { href: '/projects', label: 'Production Projects', detail: 'Jaslyn Net, Sammena & Mrisho Art' },
+                  { href: '/partners', label: 'Strategic Partnerships', detail: 'Carrier & institutional frameworks' },
+                  { href: '/labs', label: 'Altavox Labs', detail: 'Experimental R&D & protocols' },
+                  { href: '/wifi', label: 'Altavox WiFi Hotspots', detail: 'Carrier billing & vouchers' },
                   { href: '/services', label: 'Engineering Services', detail: 'Software and infrastructure' },
-                  { href: '/deployments', label: 'Deployments & Architecture', detail: 'Live systems and delivery' },
-                  { href: '/courses', label: 'Tech Academy', detail: 'Learning and technical tracks' },
-                  { href: '/store', label: 'Altavox Bookstore', detail: 'Browse digital and printed books' },
-                  { href: '/cart', label: 'Shopping Cart', detail: 'Review selected books' },
-                  { href: '/blog', label: 'Insights & Blog', detail: 'Technology and company insights' },
-                  { href: '/about', label: 'About Altavox', detail: 'Company and capabilities' },
-                  { href: '/contact', label: 'Contact & Inquiries', detail: 'Talk to our team' },
-                  { href: '/computer', label: 'Computer Console', detail: 'Open the technical console' },
+                  { href: '/about', label: 'About Altavox', detail: 'Company, leadership & principles' },
+                  { href: '/contact', label: 'Contact & Inquiries', detail: 'Executive engineering desk' },
                 ].map((item) => (
                   <Link
                     key={item.href}

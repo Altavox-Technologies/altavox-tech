@@ -30,24 +30,26 @@ export async function POST(request: Request) {
     }
 
     // Persist payment record if database pool is connected
-    try {
-      await pool.query(
-        `INSERT INTO book_payments (order_id, provider, provider_reference, amount, currency, status)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         ON CONFLICT DO NOTHING`,
-        [
-          // Fallback UUID if order_id requires uuid
-          typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-0000-0000-000000000001',
-          'paypal',
-          captureResult.transactionId,
-          captureResult.amount,
-          captureResult.currency,
-          'completed'
-        ]
-      )
-    } catch (dbErr) {
-      // Non-fatal if database is not active; mock fallback handles memory
-      console.warn('[Payments DB] Could not record to book_payments:', dbErr)
+    if (pool) {
+      try {
+        await pool.query(
+          `INSERT INTO book_payments (order_id, provider, provider_reference, amount, currency, status)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           ON CONFLICT DO NOTHING`,
+          [
+            // Fallback UUID if order_id requires uuid
+            typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : '00000000-0000-0000-0000-000000000001',
+            'paypal',
+            captureResult.transactionId,
+            captureResult.amount,
+            captureResult.currency,
+            'completed'
+          ]
+        )
+      } catch (dbErr) {
+        // Non-fatal if database is not active; mock fallback handles memory
+        console.warn('[Payments DB] Could not record to book_payments:', dbErr)
+      }
     }
 
     return NextResponse.json({

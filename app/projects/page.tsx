@@ -156,10 +156,11 @@ export default function ProjectsPage() {
                   {/* Locked, read-only embedded website preview */}
                   <div className="lg:col-span-6">
                     <ProjectPreview
+                      project={project}
                       projectName={project.name}
                       projectUrl={project.url}
                       screenshot={project.screenshotUrl}
-                      initialMode={project.slug === 'mrisho-art-gallery' ? 'iframe' : 'screenshot'}
+                      initialMode={project.slug === 'mrisho-art' || project.slug === 'mrisho-art-gallery' ? 'iframe' : 'screenshot'}
                     />
                   </div>
                 </div>
