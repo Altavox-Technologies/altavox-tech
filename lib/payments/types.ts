@@ -36,12 +36,14 @@ export interface CreateOrderResult {
   approvalUrl?: string
   amount: number
   currency: string
-  status: 'pending' | 'created' | 'mock_approved'
+  status: 'pending' | 'created'
 }
 
 export interface CaptureOrderParams {
   internalOrderId: string
   providerOrderId: string
+  expectedAmount: number
+  expectedCurrency: 'USD' | 'TZS'
 }
 
 export interface CaptureOrderResult {
@@ -66,7 +68,11 @@ export const registeredPaymentProviders: PaymentProviderStatus[] = [
   {
     id: 'paypal',
     name: 'PayPal Business (Altavox Technologies)',
-    state: process.env.PAYPAL_CLIENT_ID ? (process.env.PAYPAL_MODE === 'live' ? 'OPERATIONAL' : 'SANDBOX') : 'NOT_CONFIGURED',
+    state: process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET
+      ? (process.env.PAYPAL_MODE === 'live' ? 'OPERATIONAL' : 'SANDBOX')
+      : process.env.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_SECRET
+        ? 'DEGRADED'
+        : 'NOT_CONFIGURED',
     currency: 'USD',
     description: 'International card and PayPal checkout with automated server capture and webhook reconciliation.',
     supportedTypes: ['course', 'book']

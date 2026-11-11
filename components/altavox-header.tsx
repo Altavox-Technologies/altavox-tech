@@ -435,7 +435,7 @@ export function AltavoxHeader() {
                       <Layers className="size-4 text-emerald-500 shrink-0" />
                       <div>
                         <p className="font-bold">D. Digital Archive</p>
-                        <p className="text-[10px] text-slate-400">SHA-256 audited records vault</p>
+                        <p className="text-[10px] text-slate-400">Published public records index</p>
                       </div>
                     </Link>
                     <Link
@@ -742,7 +742,7 @@ export function AltavoxHeader() {
                     { href: '/codex', label: 'A. Codex', sub: 'Engineering ADRs' },
                     { href: '/enigma', label: 'B. Enigma', sub: 'Diagnostics & AI' },
                     { href: '/research-lab', label: 'C. Research Lab', sub: 'Empirical RFCs' },
-                    { href: '/archive', label: 'D. Archive', sub: 'SHA-256 Vault' },
+                    { href: '/archive', label: 'D. Archive', sub: 'Public record index' },
                     { href: '/atlas', label: 'E. Atlas Map', sub: 'Topology Graph' },
                     { href: '/security-challenge', label: 'F. Security', sub: 'Cyber Sandbox' },
                     { href: '/origin', label: 'G. Origin', sub: 'Capricorn Charter', colSpan: true },

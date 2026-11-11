@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { AltavoxHeader } from '@/components/altavox-header';
+import { AltavoxFooter } from '@/components/altavox-footer';
 import {
   Compass,
   History,
@@ -138,8 +140,10 @@ export default function OriginPage() {
     MILESTONES.find((m) => m.year === selectedMilestoneYear) || MILESTONES[MILESTONES.length - 1];
 
   return (
-    <div className="min-h-screen bg-[#070d19] text-slate-100 py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-500/30 selection:text-amber-200">
-      <div className="max-w-7xl mx-auto space-y-16">
+    <div className="min-h-screen flex flex-col bg-[#070d19] text-slate-100 selection:bg-amber-500/30 selection:text-amber-200">
+      <AltavoxHeader />
+      <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-16">
         {/* Hero Section */}
         <div className="border-b border-slate-800 pb-12">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
@@ -359,7 +363,7 @@ export default function OriginPage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/projects/sammena-school"
+                  href="/projects/sammena"
                   className="text-xs font-mono text-amber-400 hover:text-amber-300 flex items-center gap-1"
                 >
                   View Case Study & Live Preview <ArrowRight className="w-3.5 h-3.5" />
@@ -402,7 +406,9 @@ export default function OriginPage() {
             </Link>
           </div>
         </div>
-      </div>
+        </div>
+      </main>
+      <AltavoxFooter />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from 'node:crypto'
 import {
   CreateOrderParams,
   CreateOrderResult,
@@ -33,7 +34,8 @@ export async function getPayPalAccessToken(): Promise<string | null> {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: 'grant_type=client_credentials',
-      cache: 'no-store'
+      cache: 'no-store',
+      signal: AbortSignal.timeout(10_000)
     })
 
     if (!res.ok) {
@@ -55,21 +57,15 @@ export async function getPayPalAccessToken(): Promise<string | null> {
 export async function createPayPalOrder(
   params: CreateOrderParams
 ): Promise<CreateOrderResult> {
-  const internalOrderId = `ATX-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`
+  const internalOrderId = `ATX-${randomUUID().replace(/-/g, '')}`
   const token = await getPayPalAccessToken()
 
-  // If PayPal credentials are not configured in environment, provide safe sandbox testing response
   if (!token) {
-    console.warn('[PayPal] Server credentials not configured in environment; simulating Sandbox order:', internalOrderId)
-    return {
-      internalOrderId,
-      provider: 'paypal',
-      providerOrderId: `MOCK-PAYPAL-${Date.now()}`,
-      approvalUrl: `${params.returnUrl || '/academy/dashboard'}?mock_order_id=${internalOrderId}`,
-      amount: params.amount,
-      currency: params.currency,
-      status: 'mock_approved'
-    }
+    throw new Error('PayPal is not configured. No payment order was created.')
+  }
+
+  if (!Number.isFinite(params.amount) || params.amount <= 0) {
+    throw new Error('Payment amount must be a positive number.')
   }
 
   const payload = {
@@ -101,7 +97,8 @@ export async function createPayPalOrder(
       'Content-Type': 'application/json',
       'PayPal-Request-Id': internalOrderId
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(10_000)
   })
 
   if (!response.ok) {
@@ -132,17 +129,16 @@ export async function capturePayPalOrder(
 ): Promise<CaptureOrderResult> {
   const token = await getPayPalAccessToken()
 
-  // Handle mock sandbox test orders
-  if (params.providerOrderId.startsWith('MOCK-PAYPAL-') || !token) {
+  if (!token || params.providerOrderId.startsWith('MOCK-PAYPAL-')) {
     return {
-      success: true,
+      success: false,
       internalOrderId: params.internalOrderId,
       providerOrderId: params.providerOrderId,
-      transactionId: `TXN-${Date.now()}`,
-      amount: 149.0,
+      transactionId: '',
+      amount: 0,
       currency: 'USD',
-      status: 'completed',
-      message: 'Verified in Altavox Sandbox Environment'
+      status: 'failed',
+      message: 'PayPal capture could not be verified. No enrollment was granted.'
     }
   }
 
@@ -152,8 +148,10 @@ export async function capturePayPalOrder(
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+        'PayPal-Request-Id': createHash('sha256').update(`${params.internalOrderId}:capture`).digest('hex').slice(0, 36)
+      },
+      signal: AbortSignal.timeout(10_000)
     }
   )
 
@@ -173,17 +171,23 @@ export async function capturePayPalOrder(
   }
 
   const captureData = await response.json()
-  const captureUnit = captureData.purchase_units?.[0]?.payments?.captures?.[0]
-  const isCompleted = captureData.status === 'COMPLETED' || captureUnit?.status === 'COMPLETED'
+  const purchaseUnit = captureData.purchase_units?.[0]
+  const captureUnit = purchaseUnit?.payments?.captures?.[0]
+  const amount = Number(captureUnit?.amount?.value)
+  const currency = captureUnit?.amount?.currency_code || 'USD'
+  const referenceMatches = purchaseUnit?.reference_id === params.internalOrderId
+  const amountMatches = Number.isFinite(amount) && amount === params.expectedAmount && currency === params.expectedCurrency
+  const isCompleted = (captureData.status === 'COMPLETED' || captureUnit?.status === 'COMPLETED') && referenceMatches && amountMatches
 
   return {
     success: isCompleted,
     internalOrderId: params.internalOrderId,
     providerOrderId: captureData.id,
-    transactionId: captureUnit?.id || `TXN-${Date.now()}`,
-    amount: Number(captureUnit?.amount?.value || 0),
-    currency: captureUnit?.amount?.currency_code || 'USD',
-    status: isCompleted ? 'completed' : 'pending'
+    transactionId: captureUnit?.id || '',
+    amount: Number.isFinite(amount) ? amount : 0,
+    currency,
+    status: isCompleted ? 'completed' : 'failed',
+    ...(isCompleted ? {} : { message: 'PayPal capture did not match the server-quoted order.' })
   }
 }
 
@@ -198,10 +202,14 @@ export async function verifyPayPalWebhookSignature(
   const webhookId = process.env.PAYPAL_WEBHOOK_ID
 
   if (!token || !webhookId) {
-    return {
-      verified: true,
-      eventType: 'SIMULATED_WEBHOOK'
-    }
+    return { verified: false, error: 'PayPal webhook verification is not configured.' }
+  }
+
+  let webhookEvent: unknown
+  try {
+    webhookEvent = JSON.parse(rawBody)
+  } catch {
+    return { verified: false, error: 'Webhook body is invalid JSON.' }
   }
 
   const payload = {
@@ -211,7 +219,7 @@ export async function verifyPayPalWebhookSignature(
     transmission_sig: headers.get('paypal-transmission-sig'),
     transmission_time: headers.get('paypal-transmission-time'),
     webhook_id: webhookId,
-    webhook_event: JSON.parse(rawBody)
+    webhook_event: webhookEvent
   }
 
   try {
@@ -223,7 +231,8 @@ export async function verifyPayPalWebhookSignature(
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10_000)
       }
     )
 
