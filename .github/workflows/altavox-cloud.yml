@@ -28,7 +28,7 @@ jobs:
         working-directory: ops/altavox-cloud/control-plane
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
