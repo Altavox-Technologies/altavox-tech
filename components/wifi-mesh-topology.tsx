@@ -31,7 +31,7 @@ export interface NetworkNode {
   cpu: number
   x: number // percent on canvas
   y: number // percent on canvas
-  tunnelType: 'WireGuard SSL' | 'RADIUS AAA' | 'Direct Ethernet' | 'L2TP/IPsec'
+  tunnelType: 'WireGuard' | 'RADIUS AAA' | 'Direct Ethernet' | 'L2TP/IPsec'
 }
 
 const INITIAL_NODES: NetworkNode[] = [
@@ -39,7 +39,7 @@ const INITIAL_NODES: NetworkNode[] = [
     id: 'node-cloud',
     name: 'Altavox Cloud RADIUS Core',
     location: 'Dar es Salaam Data Center Tier III',
-    ip: '197.243.12.82',
+    ip: '192.0.2.10',
     type: 'core',
     brand: 'Altavox Cloud Core',
     status: 'online',
@@ -56,7 +56,7 @@ const INITIAL_NODES: NetworkNode[] = [
     id: 'node-rtr1',
     name: 'MikroTik CCR2004 Core Mall',
     location: 'Kariakoo Commercial Hub, DSM',
-    ip: '197.243.12.82',
+    ip: '192.0.2.10',
     type: 'gateway',
     brand: 'MikroTik CCR2004',
     status: 'online',
@@ -67,13 +67,13 @@ const INITIAL_NODES: NetworkNode[] = [
     cpu: 24,
     x: 20,
     y: 65,
-    tunnelType: 'WireGuard SSL'
+    tunnelType: 'WireGuard'
   },
   {
     id: 'node-rtr2',
     name: 'MikroTik hEX S Hostel',
     location: 'Sinza Kwaremi Campus, DSM',
-    ip: '197.243.14.105',
+    ip: '192.0.2.11',
     type: 'gateway',
     brand: 'MikroTik RB750Gr3',
     status: 'online',
@@ -90,7 +90,7 @@ const INITIAL_NODES: NetworkNode[] = [
     id: 'node-rtr3',
     name: 'UniFi U6 Enterprise Hub',
     location: 'Mlimani City Student Plaza, DSM',
-    ip: '197.243.15.201',
+    ip: '192.0.2.12',
     type: 'ap',
     brand: 'Ubiquiti UniFi U6',
     status: 'online',
@@ -107,7 +107,7 @@ const INITIAL_NODES: NetworkNode[] = [
     id: 'node-rtr4',
     name: 'TP-Link Omada ER605 Node',
     location: 'Clock Tower Safari Lounge, Arusha',
-    ip: '197.243.19.44',
+    ip: '192.0.2.13',
     type: 'gateway',
     brand: 'TP-Link Omada',
     status: 'online',
@@ -124,11 +124,12 @@ const INITIAL_NODES: NetworkNode[] = [
 
 export function WifiMeshTopology() {
   const [nodes, setNodes] = useState<NetworkNode[]>(INITIAL_NODES)
-  const [selectedNode, setSelectedNode] = useState<NetworkNode>(INITIAL_NODES[0])
+  const [selectedNodeId, setSelectedNodeId] = useState(INITIAL_NODES[0].id)
+  const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? nodes[0]
   const [pingRunning, setPingRunning] = useState(false)
-  const [lastRefreshed, setLastRefreshed] = useState('Papo hapo (Live)')
+  const [lastRefreshed, setLastRefreshed] = useState('Sample dataset')
 
-  const triggerLivePingTest = () => {
+  const refreshSampleValues = () => {
     setPingRunning(true)
     setTimeout(() => {
       setNodes((prev) =>
@@ -157,32 +158,31 @@ export function WifiMeshTopology() {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base sm:text-lg font-black text-white">
-                Ramani ya Mtandao wa Kitaifa (Live NOC Topology)
+                Ramani ya Mtandao · Sample Topology
               </h3>
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                RADIUS WireGuard Encrypted
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold bg-amber-500/15 text-amber-200 border border-amber-500/30 px-2 py-0.5 rounded">
+                DEMO · no router connection
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Muunganiko wa moja kwa moja kati ya Altavox Cloud Core na vituo vya MikroTik, UniFi na Omada kote nchini.
+              Illustrative links only. No live MikroTik, UniFi, Omada or RADIUS session is connected.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
-            onClick={triggerLivePingTest}
+            onClick={refreshSampleValues}
             disabled={pingRunning}
             className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 px-3.5 py-2 text-xs font-bold text-white transition cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`size-3.5 ${pingRunning ? 'animate-spin' : ''}`} />
-            <span>{pingRunning ? 'Inapima Latency...' : 'Pima Latency Sasa'}</span>
+            <span>{pingRunning ? 'Refreshing sample...' : 'Refresh sample values'}</span>
           </button>
         </div>
       </div>
 
-      {/* Main Interactive Topology Visual Canvas */}
+      {/* Sample topology visualization; this does not probe external devices. */}
       <div className="grid lg:grid-cols-12 gap-6">
         
         {/* Left: Topology Canvas */}
@@ -238,10 +238,13 @@ export function WifiMeshTopology() {
           {/* Canvas Nodes */}
           <div className="relative flex-1 min-h-[380px]">
             {/* Core Node */}
-            <div
+            <button
+              type="button"
+              aria-label={`Select sample node ${cloudNode.name}`}
+              aria-pressed={selectedNode.id === cloudNode.id}
               style={{ left: `${cloudNode.x}%`, top: `${cloudNode.y}%` }}
-              onClick={() => setSelectedNode(cloudNode)}
-              className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
+              onClick={() => setSelectedNodeId(cloudNode.id)}
+              className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group appearance-none border-0 bg-transparent p-0 text-inherit focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
             >
               <div className={`relative flex flex-col items-center transition transform group-hover:scale-105 ${
                 selectedNode.id === cloudNode.id ? 'scale-110' : ''
@@ -258,17 +261,20 @@ export function WifiMeshTopology() {
                   <div className="text-[10px] font-mono text-emerald-400 font-bold">{cloudNode.ip}</div>
                 </div>
               </div>
-            </div>
+            </button>
 
             {/* Branch Nodes */}
             {branchNodes.map((node) => {
               const isSelected = selectedNode.id === node.id
               return (
-                <div
+                <button
+                  type="button"
                   key={node.id}
+                  aria-label={`Select sample node ${node.name}`}
+                  aria-pressed={isSelected}
                   style={{ left: `${node.x}%`, top: `${node.y}%` }}
-                  onClick={() => setSelectedNode(node)}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group"
+                  onClick={() => setSelectedNodeId(node.id)}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer group appearance-none border-0 bg-transparent p-0 text-inherit focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
                 >
                   <div className={`relative flex flex-col items-center transition transform group-hover:scale-105 ${
                     isSelected ? 'scale-110' : ''
@@ -295,7 +301,7 @@ export function WifiMeshTopology() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </button>
               )
             })}
           </div>
@@ -305,12 +311,12 @@ export function WifiMeshTopology() {
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
                 <ShieldCheck className="size-4" />
-                <span>NOC Core Uptime: 99.98%</span>
+                <span>Demo topology · uptime not measured</span>
               </span>
-              <span>Jumla ya Wateja: <strong className="text-white">273 Vifaa</strong></span>
+              <span>Sample clients: <strong className="text-white">{nodes.reduce((total, node) => total + node.activeClients, 0)} vifaa</strong></span>
             </div>
             <div>
-              <span>Sasisho: {lastRefreshed}</span>
+              <span>Sample refresh: {lastRefreshed}</span>
             </div>
           </div>
         </div>
@@ -328,7 +334,7 @@ export function WifiMeshTopology() {
                 </h4>
               </div>
               <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">
-                ONLINE
+                SAMPLE
               </span>
             </div>
 
@@ -367,8 +373,8 @@ export function WifiMeshTopology() {
               {/* Ping Stability Progress */}
               <div className="bg-white/5 p-3 rounded-xl border border-white/5 space-y-1.5">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-slate-400">Packet Loss Rate:</span>
-                  <span className="text-emerald-400 font-bold">{selectedNode.packetLoss}% (Imara)</span>
+                  <span className="text-slate-400">Sample packet loss:</span>
+                  <span className="text-emerald-400 font-bold">{selectedNode.packetLoss}% example</span>
                 </div>
                 <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
                   <div className="bg-emerald-400 h-full w-[99%]" />
@@ -379,11 +385,11 @@ export function WifiMeshTopology() {
 
           <div className="mt-6 pt-4 border-t border-white/10 space-y-2">
             <button
-              onClick={() => alert(`Amri ya 'Winbox Remote Ping' imetumwa kwa ${selectedNode.name} (${selectedNode.ip}). Hali: Latency ${selectedNode.latencyMs}ms, Pakiti 0% Loss.`)}
+              onClick={refreshSampleValues}
               className="w-full rounded-xl bg-[#f26522] py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Zap className="size-3.5" />
-              <span>Pima Afya ya Kifaa Hiki (Probing)</span>
+              <span>Refresh sample metrics</span>
             </button>
           </div>
         </div>

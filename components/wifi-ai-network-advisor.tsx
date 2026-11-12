@@ -29,27 +29,27 @@ const INITIAL_RECOMMENDATIONS: Recommendation[] = [
     id: 'rec-1',
     title: 'Washa Dynamic Queue Burst kwa Masaa ya Rush (18:00 - 22:00)',
     category: 'performance',
-    impact: '+24% Kuridhika kwa Wateja',
+    impact: 'Example only · unmeasured',
     description: 'MikroTik CCR2004 inaona wateja zaidi ya 350 saa 20:00. Burst ya sekunde 15 ya 16 Mbps itasaidia kurasa kufunguka papo hapo bila kulemea bendi nzima.',
-    actionLabel: 'Tekeleza Burst Queue',
+    actionLabel: 'Review sample idea',
     applied: false
   },
   {
     id: 'rec-2',
     title: 'Ongeza Kifurushi cha "Masaa 12 Usiku (Night Owl)" kwa TZS 1,500',
     category: 'revenue',
-    impact: '+TZS 450,000/Mwezi',
+    impact: 'Potential · unverified',
     description: 'Kuanzia saa 23:00 hadi 06:00 asubuhi, bendi inakuwa tupu (wastani wa wateja 18 tu). Kifurushi cha usiku kitavuta wanafunzi wa chuo na kuongeza mapato wakati mtandao hauna msongamano.',
-    actionLabel: 'Unda Kifurushi Kiotomatiki',
+    actionLabel: 'Review sample package',
     applied: false
   },
   {
     id: 'rec-3',
     title: 'Washa Anti-MAC Spoofing & DHCP Snooping kwenye UniFi U6',
     category: 'security',
-    impact: '100% Kuzuia Wizi wa Vocha',
+    impact: 'Proposed control · review',
     description: 'Inazuia watumiaji wasio waaminifu kuiga anwani za MAC za wateja waliolipia bando ili kutumia intaneti bure.',
-    actionLabel: 'Washa Kinga ya MAC',
+    actionLabel: 'Review sample control',
     applied: true
   }
 ]
@@ -78,14 +78,14 @@ export function WifiAiNetworkAdvisor() {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-extrabold text-white">
-                Altavox AI Telemetry & Revenue Intelligence
+                Sample Network Operations Recommendations
               </h3>
               <span className="text-[10px] font-mono font-bold bg-orange-500/20 text-[#f26522] border border-orange-500/30 px-2 py-0.5 rounded">
-                Autonomous NOC
+                Rule-based sample
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Uchambuzi wa akili mnemba unaotambua fursa za mapato na kuzuia msongamano kabla haujatokea.
+              Example operator ideas for review. This panel has no live router telemetry, AI model, or device connection.
             </p>
           </div>
         </div>
@@ -95,7 +95,7 @@ export function WifiAiNetworkAdvisor() {
           <TrendingUp className="size-4 text-emerald-400" />
           <div className="text-xs font-mono">
             <span className="text-slate-400 text-[10px] block">Makadirio ya Mwezi Huu:</span>
-            <span className="font-black text-emerald-400 text-sm">TZS 8,420,000</span>
+            <span className="font-black text-amber-200 text-sm">Not connected</span>
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@ export function WifiAiNetworkAdvisor() {
                 {rec.applied && (
                   <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                     <CheckCircle2 className="size-3" />
-                    Imetekelezwa
+                    Imehakikiwa kwenye demo
                   </span>
                 )}
               </div>
@@ -139,7 +139,7 @@ export function WifiAiNetworkAdvisor() {
             <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
               {rec.applied ? (
                 <span className="text-[11px] text-emerald-400 font-bold font-mono">
-                  ✓ Config Imetumwa kwa Router
+                  Demo review saved · not sent to router
                 </span>
               ) : (
                 <button
@@ -159,10 +159,10 @@ export function WifiAiNetworkAdvisor() {
       <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-mono gap-2">
         <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
           <ShieldCheck className="size-3.5" />
-          <span>Zero-Drop Failover: Mtandao haukatiki wakati wa mabadiliko ya mipangilio</span>
+          <span>No router configuration is sent from this preview</span>
         </span>
         <span className="text-slate-400">
-          Uchambuzi unafanywa kila baada ya dakika 15
+          Sample recommendations · no live telemetry
         </span>
       </div>
     </div>

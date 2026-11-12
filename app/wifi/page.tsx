@@ -116,7 +116,7 @@ interface PaymentTransaction {
   packageName: string
   routerName: string
   timestamp: string
-  status: 'COMPLETED' | 'PENDING' | 'FAILED'
+  status: 'DEMO' | 'PENDING' | 'FAILED'
 }
 
 interface Agent {
@@ -193,7 +193,7 @@ const INITIAL_ROUTERS: HotspotRouter[] = [
     location: 'Kariakoo, Dar es Salaam',
     model: 'MikroTik CCR2004-1G-12S+2XS (RouterOS v7.14)',
     brand: 'MikroTik',
-    ip: '197.243.12.82',
+    ip: '192.0.2.10',
     status: 'online',
     activeUsers: 142,
     totalRevenueToday: 384500,
@@ -207,7 +207,7 @@ const INITIAL_ROUTERS: HotspotRouter[] = [
     location: 'Sinza Kwaremi, Dar es Salaam',
     model: 'MikroTik RB750Gr3 (RouterOS v7.14)',
     brand: 'MikroTik',
-    ip: '197.243.14.105',
+    ip: '192.0.2.11',
     status: 'online',
     activeUsers: 38,
     totalRevenueToday: 112000,
@@ -221,7 +221,7 @@ const INITIAL_ROUTERS: HotspotRouter[] = [
     location: 'Mlimani City Area, Dar es Salaam',
     model: 'UniFi Cloud Gateway Ultra + U6 AP',
     brand: 'Ubiquiti UniFi',
-    ip: '197.243.15.201',
+    ip: '192.0.2.12',
     status: 'online',
     activeUsers: 64,
     totalRevenueToday: 198000,
@@ -235,7 +235,7 @@ const INITIAL_ROUTERS: HotspotRouter[] = [
     location: 'Clock Tower, Arusha',
     model: 'TP-Link Omada ER605 Gigabit Router',
     brand: 'TP-Link Omada',
-    ip: '197.243.19.44',
+    ip: '192.0.2.13',
     status: 'online',
     activeUsers: 29,
     totalRevenueToday: 87000,
@@ -255,7 +255,7 @@ const INITIAL_TRANSACTIONS: PaymentTransaction[] = [
     packageName: 'Siku 1 Nzima (24 Hrs)',
     routerName: 'MikroTik CCR2004 — Kariakoo Mall',
     timestamp: '2026-11-02 17:14:22',
-    status: 'COMPLETED'
+    status: 'DEMO'
   },
   {
     id: 'tx-102',
@@ -266,7 +266,7 @@ const INITIAL_TRANSACTIONS: PaymentTransaction[] = [
     packageName: 'Masaa 3 Kasi Zaidi',
     routerName: 'MikroTik hEX — Sinza Hostel',
     timestamp: '2026-11-02 17:11:05',
-    status: 'COMPLETED'
+    status: 'DEMO'
   },
   {
     id: 'tx-103',
@@ -277,7 +277,7 @@ const INITIAL_TRANSACTIONS: PaymentTransaction[] = [
     packageName: 'Dakika 60 (Saa 1)',
     routerName: 'UniFi U6 — Mlimani Campus Hub',
     timestamp: '2026-11-02 17:08:44',
-    status: 'COMPLETED'
+    status: 'DEMO'
   },
   {
     id: 'tx-104',
@@ -288,7 +288,7 @@ const INITIAL_TRANSACTIONS: PaymentTransaction[] = [
     packageName: 'Siku 1 Nzima (24 Hrs)',
     routerName: 'MikroTik CCR2004 — Kariakoo Mall',
     timestamp: '2026-11-02 17:01:10',
-    status: 'COMPLETED'
+    status: 'DEMO'
   },
   {
     id: 'tx-105',
@@ -299,7 +299,7 @@ const INITIAL_TRANSACTIONS: PaymentTransaction[] = [
     packageName: 'Wiki 1 (Siku 7)',
     routerName: 'MikroTik hEX — Sinza Hostel',
     timestamp: '2026-11-02 16:48:30',
-    status: 'COMPLETED'
+    status: 'DEMO'
   }
 ]
 
@@ -308,7 +308,7 @@ const INITIAL_AGENTS: Agent[] = [
     id: 'ag-1',
     name: 'Kariakoo Stationery & Cyber Shop',
     location: 'Kariakoo Msimbazi, Dar es Salaam',
-    phone: '0754 882 109',
+    phone: 'DEMO-AGENT-001',
     commissionRate: 10,
     vouchersSold: 284,
     totalEarnedTzs: 56800,
@@ -319,7 +319,7 @@ const INITIAL_AGENTS: Agent[] = [
     id: 'ag-2',
     name: 'Sinza Hostel Reception Desk',
     location: 'Sinza Kwaremi, Dar es Salaam',
-    phone: '0714 330 991',
+    phone: 'DEMO-AGENT-002',
     commissionRate: 12,
     vouchersSold: 140,
     totalEarnedTzs: 28000,
@@ -330,7 +330,7 @@ const INITIAL_AGENTS: Agent[] = [
     id: 'ag-3',
     name: 'Mlimani Student Canteen Cashier',
     location: 'Mlimani Campus Gate, Dar es Salaam',
-    phone: '0787 554 210',
+    phone: 'DEMO-AGENT-003',
     commissionRate: 10,
     vouchersSold: 98,
     totalEarnedTzs: 19600,
@@ -391,24 +391,25 @@ export default function AltavoxWifiStandalonePortal() {
   const [voucherQty, setVoucherQty] = useState(10)
   const [voucherSelectedPkg, setVoucherSelectedPkg] = useState('pkg-24hr')
   const [voucherPrefix, setVoucherPrefix] = useState('ALTA')
+  const [voucherNotice, setVoucherNotice] = useState('')
 
   // Captive Portal Simulation State
   const [portalSelectedPkg, setPortalSelectedPkg] = useState<string>('pkg-24hr')
   const [portalPaymentMethod, setPortalPaymentMethod] = useState<'mpesa' | 'tigo' | 'airtel' | 'halopesa' | 'voucher'>('mpesa')
-  const [portalPhone, setPortalPhone] = useState('0754 123 456')
+  const [portalPhone, setPortalPhone] = useState('')
   const [portalVoucherInput, setPortalVoucherInput] = useState('')
-  const [portalSimState, setPortalSimState] = useState<'idle' | 'prompting' | 'authenticated'>('idle')
+  const [portalSimState, setPortalSimState] = useState<'idle' | 'prompting' | 'demo-completed'>('idle')
   const [portalMessage, setPortalMessage] = useState('')
 
   // Settings State (Direct Mobile Money Setup)
-  const [mpesaTill, setMpesaTill] = useState('5849201')
-  const [tigoTill, setTigoTill] = useState('8841920')
-  const [airtelPaybill, setAirtelPaybill] = useState('150820')
+  const [mpesaTill, setMpesaTill] = useState('')
+  const [tigoTill, setTigoTill] = useState('')
+  const [airtelPaybill, setAirtelPaybill] = useState('')
   const [businessName, setBusinessName] = useState('Altavox WiFi Networks TZ')
   const [supportPhone, setSupportPhone] = useState('+255 750 227 073')
-  const [smsGatewayEnabled, setSmsGatewayEnabled] = useState(true)
+  const [smsGatewayEnabled, setSmsGatewayEnabled] = useState(false)
   const [smsSenderId, setSmsSenderId] = useState('ALTAVOX')
-  const [whatsappAlertsEnabled, setWhatsappAlertsEnabled] = useState(true)
+  const [whatsappAlertsEnabled, setWhatsappAlertsEnabled] = useState(false)
   const [expiryReminderMinutes, setExpiryReminderMinutes] = useState(15)
 
   // Financial Summary
@@ -420,28 +421,71 @@ export default function AltavoxWifiStandalonePortal() {
     return routers.reduce((acc, curr) => acc + curr.activeUsers, 0)
   }, [routers])
 
-  // Generate Voucher Function
+  // Generate collision-checked voucher batches for the current local demo.
   const handleGenerateVouchers = () => {
-    const pkg = packages.find((p) => p.id === voucherSelectedPkg) || packages[0]
-    const newVouchers: Voucher[] = []
-
-    for (let i = 0; i < voucherQty; i++) {
-      const rand1 = Math.floor(1000 + Math.random() * 9000)
-      const rand2 = Math.floor(1000 + Math.random() * 9000)
-      const code = `${voucherPrefix.toUpperCase()}-${rand1}-${rand2}`
-      newVouchers.push({
-        code,
-        packageId: pkg.id,
-        packageName: pkg.name,
-        priceTzs: pkg.priceTzs,
-        durationHours: pkg.durationHours,
-        status: 'unused',
-        createdAt: new Date().toISOString().substring(0, 16).replace('T', ' ')
-      })
+    const pkg = packages.find((item) => item.id === voucherSelectedPkg)
+    const prefix = voucherPrefix.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8)
+    if (!pkg || !prefix) {
+      setVoucherNotice('Chagua kifurushi na weka prefix ya herufi/namba kabla ya kuzalisha.')
+      return
     }
 
-    setVouchers((prev) => [...newVouchers, ...prev])
-    alert(`Imefanikiwa! Vocha ${voucherQty} za ${pkg.name} zimezalishwa tayari.`)
+    try {
+      const usedCodes = new Set(vouchers.map((voucher) => voucher.code))
+      const newVouchers: Voucher[] = []
+      const values = new Uint32Array(1)
+      const range = 2 ** 32
+      const limit = Math.floor(range / 9000) * 9000
+      const randomSegment = () => {
+        do {
+          window.crypto.getRandomValues(values)
+        } while (values[0] >= limit)
+        return 1000 + (values[0] % 9000)
+      }
+
+      for (let index = 0; index < voucherQty; index++) {
+        let code = ''
+        let attempts = 0
+        do {
+          code = `${prefix}-${randomSegment()}-${randomSegment()}`
+          attempts += 1
+        } while (usedCodes.has(code) && attempts < 20)
+        if (usedCodes.has(code)) throw new Error('Could not create a unique voucher code.')
+        usedCodes.add(code)
+        newVouchers.push({
+          code,
+          packageId: pkg.id,
+          packageName: pkg.name,
+          priceTzs: pkg.priceTzs,
+          durationHours: pkg.durationHours,
+          status: 'unused',
+          createdAt: new Date().toISOString().substring(0, 16).replace('T', ' ')
+        })
+      }
+
+      setVouchers((current) => [...newVouchers, ...current])
+      setVoucherNotice(`${newVouchers.length} vocha salama zimetengenezwa kwenye demo hii. Pakua CSV kuzihifadhi; data ya ukurasa haisawazishwi kwenye router.`)
+    } catch {
+      setVoucherNotice('Kizalishaji salama hakipatikani kwenye kivinjari hiki; hakuna vocha iliyozalishwa.')
+    }
+  }
+
+  const handleExportVouchers = () => {
+    const quote = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`
+    const rows = [
+      ['voucher_code', 'package', 'price_tzs', 'duration_hours', 'status', 'created_at'],
+      ...vouchers.map((voucher) => [voucher.code, voucher.packageName, voucher.priceTzs, voucher.durationHours, voucher.status, voucher.createdAt])
+    ]
+    const csv = [String.fromCharCode(0xfeff), rows.map((row) => row.map(quote).join(',')).join(String.fromCharCode(13, 10))].join('')
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `altavox-wifi-vouchers-demo-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(anchor)
+    anchor.click()
+    anchor.remove()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+    setVoucherNotice('CSV imepakuliwa. Hifadhi faili hii nje ya demo kabla ya kufunga ukurasa.')
   }
 
   // Handle Captive Portal Payment Simulation
@@ -453,11 +497,12 @@ export default function AltavoxWifiStandalonePortal() {
       const found = vouchers.find((v) => v.code.trim().toUpperCase() === portalVoucherInput.trim().toUpperCase())
       setTimeout(() => {
         if (found && found.status === 'unused') {
-          found.status = 'active'
-          found.usedByMac = 'D8:9C:E4:91:AA:02'
-          found.expiresAt = 'Kesho saa kama hii'
-          setPortalSimState('authenticated')
-          setPortalMessage(`Vocha Imekubaliwa! Umepata intaneti ya ${found.packageName}. Furahia kasi ya Altavox WiFi!`)
+          const expiresAt = new Date(Date.now() + found.durationHours * 60 * 60 * 1000).toLocaleString('sw-TZ')
+          setVouchers((current) => current.map((voucher) => voucher.code === found.code
+            ? { ...voucher, status: 'active', usedByMac: 'DEMO-CLIENT', expiresAt }
+            : voucher))
+          setPortalSimState('demo-completed')
+          setPortalMessage(`Vocha imekubaliwa kwenye demo pekee (${found.packageName}). Hakuna RADIUS authentication au internet session iliyofunguliwa.`)
         } else if (found && found.status !== 'unused') {
           setPortalSimState('idle')
           alert(`Vocha hii tayari imeshatumika au muda wake umeisha. Jaribu vocha nyingine.`)
@@ -469,25 +514,33 @@ export default function AltavoxWifiStandalonePortal() {
       return
     }
 
-    // Mobile Money Simulation
     const selectedPkgObj = packages.find((p) => p.id === portalSelectedPkg) || packages[0]
+    const methodLabel: PaymentTransaction['method'] = portalPaymentMethod === 'mpesa'
+      ? 'M-PESA'
+      : portalPaymentMethod === 'tigo'
+        ? 'TIGO PESA'
+        : portalPaymentMethod === 'airtel'
+          ? 'AIRTEL MONEY'
+          : 'HALOPESA'
+
     setTimeout(() => {
       const newTx: PaymentTransaction = {
-        id: `tx-${Date.now().toString().slice(-4)}`,
-        receiptNumber: `ALTA-MP-${Math.floor(10000000 + Math.random() * 90000000)}`,
+        id: `demo-${Date.now().toString(36)}`,
+        receiptNumber: `DEMO-${Date.now().toString(36).toUpperCase()}`,
         customerPhone: portalPhone,
-        method: portalPaymentMethod.toUpperCase() as any,
+        method: methodLabel,
         amountTzs: selectedPkgObj.priceTzs,
         packageName: selectedPkgObj.name,
         routerName: routers[0].name,
         timestamp: new Date().toISOString().substring(0, 19).replace('T', ' '),
-        status: 'COMPLETED'
+        status: 'DEMO'
       }
 
       setTransactions((prev) => [newTx, ...prev])
-      setPortalSimState('authenticated')
-      setPortalMessage(`Malipo ya TZS ${selectedPkgObj.priceTzs.toLocaleString()} yamepokelewa kikamilifu kupitia ${portalPaymentMethod.toUpperCase()}! Umeunganishwa kwenye intaneti kwa muda wa ${selectedPkgObj.durationHours} masaa.`)
-    }, 2200)
+      setPortalSimState('demo-completed')
+      setPortalMessage(`Simulasi ya ${methodLabel} kwa TZS ${selectedPkgObj.priceTzs.toLocaleString()} limekamilika. Hakuna payment request iliyotumwa, pesa iliyopokelewa au internet session iliyofunguliwa.`)
+    }, 500)
+
   }
 
   // Pure Altavox Proprietary RouterOS Connector & Read Diagnostics Engine
@@ -534,7 +587,7 @@ export default function AltavoxWifiStandalonePortal() {
 # ------------------------------------------------------------------------------
 # 3. KUSOMA MAWASILIANO NA HALI YA ALTAVOX CLOUD RADIUS (READ RADIUS STATUS)
 # ------------------------------------------------------------------------------
-# Inasoma hali ya uhai wa server ya RADIUS (197.243.12.82):
+# Inasoma hali ya uhai wa server ya RADIUS (192.0.2.10):
 /radius monitor numbers=0 once
 
 # Inasoma maelezo kamili ya usanidi wa RADIUS:
@@ -597,7 +650,7 @@ mca-cli-op info
 show guests active
 
 # 2. Read RADIUS Authentication Test & Ping:
-radtest altavox_test AltavoxRadiusKey2026 197.243.12.82:1812 0 AltavoxRadiusKey2026
+radtest altavox_test REPLACE_WITH_UNIQUE_RADIUS_SECRET 192.0.2.10:1812 0 REPLACE_WITH_UNIQUE_RADIUS_SECRET
 
 # 3. Read System Load & Memory:
 uptime
@@ -628,35 +681,18 @@ ${vouchers
   )
   .join('\n')}
 
-/log info message="✓ Altavox WiFi: Vocha ${Math.min(vouchers.length, 20)} zimehifadhiwa kikamilifu kwenye Router!"`
+/log info message="Altavox WiFi demo voucher template executed; verify router records manually."`
       } else {
         return `# Vocha zinasawazishwa kwa njia ya Cloud RADIUS moja kwa moja kwenye ${selectedRouterForScript.brand}.`
       }
     }
 
-    // 3. ROLLBACK SCRIPT
+    // Broad rollback scripts are withheld because the demo cannot verify a router's existing configuration.
     if (scriptType === 'rollback') {
-      if (isMikrotik) {
-        return `# ==============================================================================
-# ALTAVOX WIFI — ROLLBACK & REMOVE SCRIPT (RouterOS ${routerOsVersion.toUpperCase()})
-# Router: ${selectedRouterForScript.name}
-# Amri hizi zinaondoa usanidi wa Altavox na kurejesha router katika hali yake ya awali
-# ==============================================================================
-
-/radius remove [ find comment="Altavox Cloud RADIUS AAA" ]
-/ip hotspot walled-garden ip remove [ find comment~"Altavox" ]
-/ip hotspot walled-garden ip remove [ find comment~"M-Pesa" ]
-/ip hotspot walled-garden ip remove [ find comment~"Tigo" ]
-/ip hotspot walled-garden ip remove [ find comment~"Airtel" ]
-/ip hotspot walled-garden ip remove [ find comment~"HaloPesa" ]
-/system scheduler remove [ find name="Altavox-Heartbeat-Schedule" ]
-/system script remove [ find name="Altavox-Cloud-Heartbeat" ]
-/ip hotspot profile set [ find default=yes ] use-radius=no
-
-/log warning message="✓ Mipangilio ya Altavox WiFi imeondolewa kikamilifu kwenye Router."`
-      } else {
-        return `# Futa RADIUS Profile 'Altavox-AAA' kwenye Controller ya ${selectedRouterForScript.brand}.`
-      }
+      return `# ROLLBACK NOT GENERATED IN DEMO MODE
+# Take a verified backup, identify only the exact objects created for this deployment,
+# and have the network owner review a recovery plan during an approved maintenance window.
+# This preview has no device connection and will not modify a router.`
     }
 
     // 4. DEFAULT: FULL READY DEPLOYMENT SCRIPT (SETUP)
@@ -681,11 +717,11 @@ add action=accept dst-host="*.vodacom.co.tz" comment="Vodacom M-Pesa Push Gatewa
 add action=accept dst-host="*.tigo.co.tz" comment="Tigo Pesa Mixx Gateway"
 add action=accept dst-host="*.airtel.co.tz" comment="Airtel Money Tanzania"
 add action=accept dst-host="*.halotel.co.tz" comment="HaloPesa Gateway"
-add action=accept dst-address=197.243.12.82 comment="Altavox Dedicated RADIUS IP"
+add action=accept dst-address=192.0.2.10 comment="Altavox Dedicated RADIUS IP"
 
 # 3. ALTAVOX CLOUD RADIUS AAA (AUTHENTICATION & ACCOUNTING)
 /radius
-add address=197.243.12.82 secret="AltavoxRadiusKey2026" service=hotspot \\
+add address=192.0.2.10 secret="REPLACE_WITH_UNIQUE_RADIUS_SECRET" service=hotspot \\
     authentication-port=1812 accounting-port=1813 timeout=3000ms \\
     comment="Altavox Cloud RADIUS AAA"
 
@@ -721,11 +757,11 @@ add interval=2m name="Altavox-Heartbeat-Schedule" on-event="Altavox-Cloud-Heartb
 # ALTAVOX WIFI — ${selectedRouterForScript.brand.toUpperCase()} CLOUD RADIUS INTEGRATION
 # Router: ${selectedRouterForScript.name}
 # ==============================================================================
-RADIUS Authentication Server IP: 197.243.12.82
+RADIUS Authentication Server IP: 192.0.2.10
 Port: 1812
-RADIUS Accounting Server IP: 197.243.12.82
+RADIUS Accounting Server IP: 192.0.2.10
 Port: 1813
-Shared Secret: AltavoxRadiusKey2026
+Shared Secret: REPLACE_WITH_UNIQUE_RADIUS_SECRET
 Captive Portal Redirection URL: https://wifi.altavox.space/guest/s/portal/
 Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airtel.co.tz`
     }
@@ -745,22 +781,23 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
     URL.revokeObjectURL(url)
   }
 
-  // Export Financial CSV / Report
+  // Export only the local illustrative records with explicit demo provenance.
   const exportFinancialReport = () => {
-    let csv = 'Receipt,CustomerPhone,Method,Amount_TZS,Package,Router,Timestamp,Status\n'
-    transactions.forEach((tx) => {
-      csv += `${tx.receiptNumber},${tx.customerPhone},${tx.method},${tx.amountTzs},"${tx.packageName}","${tx.routerName}",${tx.timestamp},${tx.status}\n`
-    })
-
+    const rows: Array<Array<string | number>> = [
+      ['Report mode', 'DEMO SAMPLE · NOT VERIFIED SALES'],
+      ['Receipt', 'CustomerPhone', 'Method', 'Amount_TZS', 'Package', 'Router', 'Timestamp', 'Status'],
+      ...transactions.map((tx) => [tx.receiptNumber, tx.customerPhone, tx.method, tx.amountTzs, tx.packageName, tx.routerName, tx.timestamp, tx.status])
+    ]
+    const csv = [String.fromCharCode(0xfeff), rows.map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(',')).join(String.fromCharCode(13, 10))].join('')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `altavox_wifi_sales_report_${Date.now()}.csv`
+    link.download = `altavox_wifi_demo_report_${new Date().toISOString().slice(0, 10)}.csv`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
   }
 
   return (
@@ -775,6 +812,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
           {/* Left: Brand & Mobile Menu */}
           <div className="flex items-center gap-3">
             <button
+              type="button"
+              aria-label={mobileSidebarOpen ? 'Close WiFi navigation' : 'Open WiFi navigation'}
+              aria-expanded={mobileSidebarOpen}
+              aria-controls="wifi-mobile-navigation"
               onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
               className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer"
             >
@@ -790,9 +831,9 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                   <span className="text-base sm:text-lg font-black tracking-tight text-white whitespace-nowrap">
                     ALTAVOX <span className="text-[#f26522]">WIFI</span>
                   </span>
-                  <span className="hidden sm:inline-flex text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">
-                    Enterprise Portal v4.2
-                  </span>
+                    <span className="hidden sm:inline-flex text-[10px] font-mono bg-amber-500/15 text-amber-200 border border-amber-500/30 px-2 py-0.5 rounded font-bold">
+                      DEMO · SAMPLE DATA
+                    </span>
                 </div>
                 <div className="text-[11px] text-slate-400 font-medium truncate max-w-[180px] sm:max-w-xs">
                   {businessName}
@@ -801,7 +842,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
             </div>
           </div>
 
-          {/* Center: Live Financials & Fleet Ticker */}
+          {/* Center: Sample Financials & Fleet Ticker */}
           <div className="hidden xl:flex items-center gap-4 text-xs font-mono">
             <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3.5 py-1.5">
               <span className="size-2 rounded-full bg-emerald-400" />
@@ -933,10 +974,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
             <div className="p-4 m-3 rounded-2xl bg-white/5 border border-white/10 text-xs space-y-2">
               <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
                 <Shield className="size-3.5" />
-                <span>100% Pesa Yako Moja kwa Moja</span>
+                <span>Demo mode · malipo hayajaunganishwa</span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Fedha zote za M-Pesa, Tigo Pesa na Airtel Money zinaingia moja kwa moja kwenye namba yako ya Till bila kupitia mtu wa kati.
+                Sandbox hii haiunganishi malipo. Settlement ya moja kwa moja itahitaji gateway halisi iliyosanidiwa na kuthibitishwa.
               </p>
             </div>
           )}
@@ -954,7 +995,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
 
         {/* Mobile Flyout Drawer */}
         {mobileSidebarOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div id="wifi-mobile-navigation" className="lg:hidden fixed inset-0 z-50 flex">
             <div
               className="fixed inset-0 bg-black/70 backdrop-blur-xs"
               onClick={() => setMobileSidebarOpen(false)}
@@ -1027,7 +1068,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
 
         {/* Central Workspace Canvas */}
         <main className="flex-1 overflow-y-auto bg-slate-900 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto space-y-6">
+            <div className="max-w-6xl mx-auto space-y-6">
+              <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs leading-relaxed text-amber-100">
+                <strong className="font-bold">DEMO SANDBOX:</strong> Router, session, payment, revenue and telemetry figures are illustrative sample data. Controls update this browser preview only; no router, RADIUS, payment, SMS or WhatsApp service is connected.
+              </div>
 
             {/* ============================================================ */}
             {/* WORKSPACE VIEW 1: DASHBOARD OVERVIEW */}
@@ -1039,7 +1083,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                   {/* Revenue Card */}
                   <div className="rounded-2xl border border-white/10 bg-[#072444] p-5 shadow-lg">
                     <div className="flex items-center justify-between text-slate-400 mb-2">
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider">Mapato ya Leo</span>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider">Mapato ya Demo (sample)</span>
                       <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                         <DollarSign className="size-4" />
                       </span>
@@ -1049,14 +1093,14 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     </div>
                     <div className="mt-2 text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
                       <TrendingUp className="size-3" />
-                      <span>100% Pesa Inaingia Moja kwa Moja kwenye Till Yako</span>
+                      <span>Demo values · no payment received</span>
                     </div>
                   </div>
 
                   {/* Connected Devices */}
                   <div className="rounded-2xl border border-white/10 bg-[#072444] p-5 shadow-lg">
                     <div className="flex items-center justify-between text-slate-400 mb-2">
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider">Waliounganishwa</span>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider">Sample connected devices</span>
                       <span className="flex size-8 items-center justify-center rounded-lg bg-orange-500/20 text-[#f26522] border border-orange-500/30">
                         <Users className="size-4" />
                       </span>
@@ -1078,11 +1122,11 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                       </span>
                     </div>
                     <div className="text-2xl sm:text-3xl font-black text-white">
-                      {routers.filter((r) => r.status === 'online').length} / {routers.length} Online
+                      {routers.filter((r) => r.status === 'online').length} / {routers.length} sample online
                     </div>
                     <div className="mt-2 text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
                       <span className="size-1.5 rounded-full bg-emerald-400" />
-                      <span>Altavox Cloud RADIUS Connected</span>
+                      <span>Sample fleet · RADIUS not connected</span>
                     </div>
                   </div>
 
@@ -1103,7 +1147,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                   </div>
                 </div>
 
-                {/* D3.js Live Analytics Suite (Daily Revenue Trends, Peak Hours, Router Performance) */}
+                {/* D3.js sample analytics suite (synthetic preview data) */}
                 <WifiD3Analytics />
 
                 {/* Altavox AI Telemetry & Revenue Intelligence Advisor */}
@@ -1119,7 +1163,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                           Vipanga Njia vya Hotspot (MikroTik, UniFi, Omada)
                         </h3>
                         <p className="text-xs text-slate-400">
-                          Zinasimamiwa na Altavox WiFi kupitia Cloud RADIUS na REST API
+                          Router samples only; live Cloud RADIUS and REST API are not connected in this sandbox.
                         </p>
                       </div>
                       <button
@@ -1179,15 +1223,15 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     </div>
                   </div>
 
-                  {/* Right: Live Payment Feed */}
+                  {/* Right: Sample Transaction Feed */}
                   <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-[#072444] p-6 shadow-lg">
                     <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
                       <div>
                         <h3 className="text-base font-extrabold text-white">
-                          Miamala ya Hivi Karibuni
+                          Miamala ya Mfano (Demo)
                         </h3>
                         <p className="text-xs text-slate-400">
-                          Malipo yaliyothibitishwa na M-Pesa & Tigo Pesa
+                          Sample transaction feed · no provider verification
                         </p>
                       </div>
                       <span className="flex size-2 rounded-full bg-emerald-400" />
@@ -1278,7 +1322,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                       Vipanga Njia vya Hotspot (Routers Fleet)
                     </h3>
                     <p className="text-xs text-slate-300 mt-1">
-                      Unganisha router yoyote ya MikroTik, Ubiquiti UniFi, TP-Link Omada, Ruijie Reyee au pfSense kwa dakika 2 tu.
+                      Ongeza sample router card kwa mafunzo. Live connection inahitaji controller integration ambayo haijaunganishwa kwenye sandbox hii.
                     </p>
                   </div>
 
@@ -1290,14 +1334,14 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                           id: `rtr-${Date.now().toString().slice(-3)}`,
                           name,
                           location: 'Tanzania Hotspot Node',
-                          model: 'MikroTik RouterOS v7.14',
+                          model: 'Sample MikroTik RouterOS v7.14',
                           brand: 'MikroTik',
-                          ip: '197.243.16.' + Math.floor(10 + Math.random() * 200),
-                          status: 'online',
+                          ip: `192.0.2.${Math.min(200 + routers.length, 250)}`,
+                          status: 'offline',
                           activeUsers: 0,
                           totalRevenueToday: 0,
                           cpuUsage: 8,
-                          uptime: 'Just Connected',
+                          uptime: 'Not connected · demo',
                           interface: 'ether1'
                         }
                         setRouters([...routers, newRtr])
@@ -1308,7 +1352,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     className="inline-flex items-center gap-1.5 rounded-xl bg-[#f26522] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
                   >
                     <Plus className="size-4" />
-                    <span>Ongeza Router Mpya</span>
+                    <span>Ongeza Demo Router</span>
                   </button>
                 </div>
 
@@ -1344,7 +1388,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
 
                         <div className="mt-3 text-[11px] text-slate-400 flex items-center justify-between">
                           <span>CPU: {router.cpuUsage}%</span>
-                          <span>Uptime: {router.uptime}</span>
+                          <span>Sample uptime: {router.uptime}</span>
                         </div>
                       </div>
 
@@ -1471,7 +1515,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                       <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
                         <span className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
                           <CheckCircle2 className="size-3" />
-                          <span>Active kwenye Splash</span>
+                          <span>Demo package · not deployed</span>
                         </span>
                         <button
                           onClick={() => {
@@ -1498,7 +1542,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-white/10 pb-4">
                     <div>
                       <h3 className="text-xl font-black text-white">
-                        Zalisha Vocha za Karatasi (Cash Vouchers)
+                        Zalisha Vocha za Demo (Cash Voucher Preview)
                       </h3>
                       <p className="text-xs text-slate-300 mt-1">
                         Kwa wateja wanaolipa pesa taslimu madukani au mikahawani. Chapisha na uuze mara moja.
@@ -1561,26 +1605,29 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     </div>
                   </div>
 
+                  {voucherNotice && <p role="status" aria-live="polite" className="mt-4 rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-xs text-cyan-100">{voucherNotice}</p>}
+                  <p className="mt-3 text-[11px] text-amber-200">Demo-only batch: codes are generated in memory, not synced to a router, and disappear when this page is refreshed. Export the CSV to keep a copy.</p>
                   <div className="mt-6 pt-4 border-t border-white/10 flex justify-end">
                     <button
                       onClick={handleGenerateVouchers}
                       className="inline-flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
                     >
                       <Ticket className="size-4" />
-                      <span>Zalisha Vocha {voucherQty} Sasa</span>
+                      <span>Zalisha Vocha za Demo {voucherQty}</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Vouchers Table */}
                 <div className="rounded-2xl border border-white/10 bg-[#072444] shadow-lg overflow-hidden">
-                  <div className="p-5 border-b border-white/10 flex items-center justify-between">
-                    <h4 className="text-base font-extrabold text-white">
-                      Orodha ya Vocha Zilizopo ({vouchers.length})
-                    </h4>
-                    <span className="text-xs text-slate-400">
-                      Bofya nambari ya vocha kuinakili (copy)
-                    </span>
+                  <div className="p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <h4 className="text-base font-extrabold text-white">Orodha ya Vocha za Demo ({vouchers.length})</h4>
+                      <span className="text-xs text-slate-400">Bofya code kuinakili; export CSV kabla ya kufunga preview.</span>
+                    </div>
+                    <button type="button" onClick={handleExportVouchers} disabled={vouchers.length === 0} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3 text-xs font-bold text-white hover:bg-white/15 disabled:opacity-50">
+                      <FileSpreadsheet className="size-4 text-cyan-300" /> Export CSV
+                    </button>
                   </div>
 
                   <div className="overflow-x-auto">
@@ -2305,10 +2352,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 <div className="rounded-2xl border border-white/10 bg-[#072444] p-6 sm:p-8 shadow-lg space-y-6">
                   <div>
                     <h3 className="text-xl font-black text-white">
-                      SMS & WhatsApp Automated Dispatch
+                      SMS & WhatsApp · Demo Settings
                     </h3>
                     <p className="text-xs text-slate-300 mt-1">
-                      Wateja wanaponunua kifurushi au vocha, mfumo unawatumia ujumbe wa SMS au WhatsApp papo hapo pamoja na ukumbusho kabla bando halijaisha.
+                      Mawazo ya SMS/WhatsApp kwa demo tu. Hakuna gateway iliyounganishwa na hakuna ujumbe utakaotumwa.
                     </p>
                   </div>
 
@@ -2316,7 +2363,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
                       <div>
                         <div className="text-xs font-bold text-white">SMS Gateway (Beem Africa / NextSMS)</div>
-                        <div className="text-[11px] text-slate-400">Tuma risiti na nambari ya vocha kwa SMS</div>
+                        <div className="text-[11px] text-slate-400">Demo option only · no SMS sender connected</div>
                       </div>
                       <input
                         type="checkbox"
@@ -2329,7 +2376,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                     <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
                       <div>
                         <div className="text-xs font-bold text-white">WhatsApp Bot Dispatch</div>
-                        <div className="text-[11px] text-slate-400">Tuma maelekezo ya kuunganishwa kupitia WhatsApp</div>
+                        <div className="text-[11px] text-slate-400">Demo option only · no WhatsApp sender connected</div>
                       </div>
                       <input
                         type="checkbox"
@@ -2366,7 +2413,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
 
                   <div className="pt-4 border-t border-white/10 flex justify-end">
                     <button
-                      onClick={() => alert('Mipangilio ya SMS na WhatsApp imehifadhiwa!')}
+                      onClick={() => alert('Mabadiliko yako ni ya demo tu; hakuna SMS au WhatsApp iliyotumwa wala kuhifadhiwa.')}
                       className="rounded-xl bg-[#f26522] px-6 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
                     >
                       Hifadhi Mipangilio ya Ujumbe
@@ -2384,7 +2431,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#072444] p-6 rounded-2xl border border-white/10 shadow-lg">
                   <div>
                     <h3 className="text-xl font-black text-white">
-                      Ripoti za Kifedha & Uhasibu
+                      Ripoti za Mfano · Demo Only
                     </h3>
                     <p className="text-xs text-slate-300 mt-1">
                       Uchambuzi wa kina wa mauzo ya kila mtandao (M-Pesa vs Tigo Pesa vs Airtel vs Cash).
@@ -2438,13 +2485,13 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                   <div>
                     <div className="flex items-center gap-2 text-xs font-mono text-orange-400 font-bold">
                       <Smartphone className="size-4" />
-                      <span>Live Captive Portal Simulator (Guest Splash Page)</span>
+                      <span>Captive Portal DEMO · local only</span>
                     </div>
                     <h3 className="text-xl font-black text-white mt-1">
                       Jaribu Kile Mteja Anachokiona Kwenye Simu Yake
                     </h3>
                     <p className="text-xs text-slate-300 mt-1">
-                      Mteja akijiunga na mtandao wa &quot;ALTAVOX-WIFI&quot;, ukurasa huu unafunguka mara moja kumruhusu alipie kwa M-Pesa au kuweka vocha.
+                      Preview ya splash page pekee. Hakuna M-Pesa/Tigo/Airtel request, RADIUS authentication au internet session inayotumwa kutoka sandbox hii.
                     </p>
                   </div>
 
@@ -2479,30 +2526,30 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                           {businessName}
                         </h4>
                         <p className="text-[11px] text-slate-500">
-                          Unganishwa na intaneti ya kasi ya juu sasa hivi
+                          Internet access preview · actual access needs a verified network
                         </p>
                       </div>
 
                       {/* Authenticated State */}
-                      {portalSimState === 'authenticated' ? (
+                      {portalSimState === 'demo-completed' ? (
                         <div className="py-8 text-center space-y-4">
                           <div className="flex size-14 mx-auto items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                             <CheckCircle2 className="size-8" />
                           </div>
                           <h5 className="text-lg font-black text-[#07294d]">
-                            Umeunganishwa Mtandaoni!
+                            Jaribio la Demo Limekamilika
                           </h5>
                           <p className="text-xs text-slate-600 leading-relaxed px-2">
                             {portalMessage}
                           </p>
                           <div className="rounded-xl bg-slate-50 p-3 text-xs font-mono text-slate-600 border border-slate-200">
-                            IP: 10.10.4.18 · MAC: D8:9C:E4:91:AA:02
+                            DEMO SESSION · hakuna IP/MAC halisi iliyotolewa
                           </div>
                           <button
                             onClick={() => setPortalSimState('idle')}
                             className="w-full rounded-xl bg-[#07294d] py-3 text-xs font-bold text-white hover:bg-[#051c36] transition cursor-pointer"
                           >
-                            Anza Kuperuzi (Browse Web)
+                            Anza Demo Nyingine
                           </button>
                         </div>
                       ) : (
@@ -2544,7 +2591,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                           {/* Step 2: Payment Method */}
                           <div>
                             <label className="block text-xs font-bold text-slate-700 mb-2">
-                              2. Njia ya Kulipa:
+                              2. Chagua njia ya malipo ya kuonyesha kwenye demo:
                             </label>
                             <div className="grid grid-cols-2 gap-1.5 text-xs">
                               <button
@@ -2625,7 +2672,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:border-[#f26522] focus:outline-none"
                               />
                               <p className="text-[10px] text-slate-400 mt-1">
-                                Utapokea ujumbe kwenye simu wa kuweka PIN kukamilisha malipo.
+                                Demo input only · hakuna USSD/SMS request inayotumwa.
                               </p>
                             </div>
                           )}
@@ -2641,19 +2688,19 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                             {portalSimState === 'prompting' ? (
                               <>
                                 <RefreshCw className="size-3.5 animate-spin" />
-                                <span>Inatuma USSD Push kwenye Simu...</span>
+                                <span>Inaendesha simulizi la malipo (demo)...</span>
                               </>
                             ) : portalPaymentMethod === 'voucher' ? (
                               <span>Unganisha kwa Vocha</span>
                             ) : (
-                              <span>Lipa & Unganishwa Mara Moja</span>
+                              <span>Run local payment simulation</span>
                             )}
                           </button>
                         </form>
                       )}
 
                       <div className="pt-3 border-t border-slate-100 text-center text-[10px] text-slate-400">
-                        Powered by Altavox WiFi Engine · Salama 100%
+                        Demo UI tu · payment na router integrations hazijaunganishwa
                       </div>
                     </div>
                   </div>
@@ -2669,10 +2716,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 <div className="rounded-2xl border border-white/10 bg-[#072444] p-6 sm:p-8 shadow-lg space-y-6">
                   <div>
                     <h3 className="text-xl font-black text-white">
-                      Mipangilio ya Lipa Namba & Till Yako
+                      Mipangilio ya Lipa Namba & Till · Demo Preview
                     </h3>
                     <p className="text-xs text-slate-300 mt-1">
-                      Weka taarifa za akaunti yako ya biashara. Fedha zote zinazokusanywa na wateja wako zitaingia hapa moja kwa moja bila kupitia mtu wa kati.
+                      Demo fields pekee. Till numbers hizi hazisawazishwi, hazihifadhiwi kwenye router, na hazimaanishi payment gateway imeunganishwa.
                     </p>
                   </div>
 
@@ -2709,6 +2756,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                         <input
                           type="text"
                           value={mpesaTill}
+                          placeholder="Not configured"
                           onChange={(e) => setMpesaTill(e.target.value)}
                           className="w-full rounded-xl border border-white/20 bg-slate-800 px-3 py-2 text-xs font-mono font-bold text-white focus:border-[#f26522] focus:outline-none"
                         />
@@ -2721,6 +2769,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                         <input
                           type="text"
                           value={tigoTill}
+                          placeholder="Not configured"
                           onChange={(e) => setTigoTill(e.target.value)}
                           className="w-full rounded-xl border border-white/20 bg-slate-800 px-3 py-2 text-xs font-mono font-bold text-white focus:border-[#f26522] focus:outline-none"
                         />
@@ -2734,6 +2783,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                       <input
                         type="text"
                         value={airtelPaybill}
+                        placeholder="Not configured"
                         onChange={(e) => setAirtelPaybill(e.target.value)}
                         className="w-full rounded-xl border border-white/20 bg-slate-800 px-3 py-2 text-xs font-mono font-bold text-white focus:border-[#f26522] focus:outline-none"
                       />
@@ -2743,10 +2793,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                   <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                     <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
                       <CheckCircle2 className="size-4" />
-                      <span>Mipangilio Imehifadhiwa Kwenye Altavox Cloud</span>
+                      <span>Demo settings · hazijasawazishwa</span>
                     </span>
                     <button
-                      onClick={() => alert('Mipangilio ya Lipa Namba imesasishwa kikamilifu!')}
+                      onClick={() => alert('Mabadiliko haya yamehifadhiwa kwenye preview pekee; hayajatumwa kwa router au huduma ya malipo.')}
                       className="rounded-xl bg-[#f26522] px-6 py-2.5 text-xs font-bold text-white hover:bg-[#e05312] transition shadow-md cursor-pointer"
                     >
                       Hifadhi Mipangilio
@@ -2792,6 +2842,10 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
               >
                 ✕
               </button>
+            </div>
+
+            <div role="note" className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-100">
+              Demo templates only: no script is executed here. Router IPs use documentation-only addresses and RADIUS secrets are placeholders; review, replace, back up, and test in a lab before any production use.
             </div>
 
             {/* Script Category Tabs */}
@@ -2841,7 +2895,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 }`}
               >
                 <RefreshCw className="size-3.5" />
-                <span>Rollback (Rejesha Awali)</span>
+                <span>Rollback (disabled in demo)</span>
               </button>
             </div>
 
@@ -2851,9 +2905,9 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
                 <span className="size-2 rounded-full bg-emerald-400 shrink-0" />
                 <span>
                   {scriptType === 'read-diagnostics' && 'Amri halisi za KUSOMA watumiaji, rasilimali za CPU, RADIUS, logi na queues.'}
-                  {scriptType === 'setup' && 'Script kamili ya kusanidi MikroTik Hotspot, Walled Garden ya mitandao ya simu na RADIUS.'}
-                  {scriptType === 'sync-vouchers' && 'Hupakia vocha 20 zilizopo kwenye hifadhi ya router ili zifanye kazi offline.'}
-                  {scriptType === 'rollback' && 'Huondoa usanidi wote wa Altavox na kurejesha router kama ilivyokuwa mwanzo.'}
+                  {scriptType === 'setup' && 'Sample template only; use the documented placeholders and review every setting before applying to a lab router.'}
+                  {scriptType === 'sync-vouchers' && 'Preview template for up to 20 sample vouchers; copying does not sync them to a device.'}
+                  {scriptType === 'rollback' && 'Rollback commands are withheld in demo mode; use a verified backup and reviewed object list.'}
                 </span>
               </div>
 
@@ -2907,7 +2961,7 @@ Walled Garden Whitelist: *.altavox.space, *.vodacom.co.tz, *.tigo.co.tz, *.airte
               <div className="text-[11px] text-slate-400 flex items-center gap-1.5 self-start sm:self-auto">
                 <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
                 <span>
-                  Fungua <strong>Winbox &gt; New Terminal</strong>, kisha bandika (Ctrl+V) au pakua faili ya <strong>.rsc</strong>.
+                  Reference template only: review placeholders, back up the device, and validate in a lab before applying any <strong>.rsc</strong> file.
                 </span>
               </div>
 
