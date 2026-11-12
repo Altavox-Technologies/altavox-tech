@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Activity, CheckCircle2, RotateCcw, ShieldCheck } from 'lucide-react'
 import { PageFrame } from '@/components/site-shell'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 const diagnostics = {
   availability: {
@@ -70,6 +71,7 @@ export function EnigmaPage() {
             </div>
           )}
         </div>
+        <div className="mt-8"><SevenCipherSeal system="enigma" /></div>
       </section>
     </PageFrame>
   )

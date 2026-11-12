@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Archive, ArrowUpRight, Search } from 'lucide-react'
 import { PageFrame } from '@/components/site-shell'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 const records = [
   { title: 'Company overview', type: 'Company', updated: 'Public page', href: '/about', description: 'Organization background and engineering focus.' },
@@ -43,6 +44,7 @@ export function ArchivePage() {
           </article>)}
           {filtered.length === 0 && <p className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600 sm:col-span-2">No published records match your search.</p>}
         </div>
+        <div className="mt-8"><SevenCipherSeal system="archive" /></div>
       </section>
     </PageFrame>
   )

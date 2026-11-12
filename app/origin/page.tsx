@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { AltavoxHeader } from '@/components/altavox-header';
 import { AltavoxFooter } from '@/components/altavox-footer';
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal';
 import {
   Compass,
   History,
@@ -390,6 +391,10 @@ export default function OriginPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mb-12">
+          <SevenCipherSeal system="origin" dark />
         </div>
 
         {/* Footer Navigation Strip */}

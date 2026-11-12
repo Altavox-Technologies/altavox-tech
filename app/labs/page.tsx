@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 export default function AltavoxLabsPage() {
   const [selectedProject, setSelectedProject] = useState<string>('mesh-protocol')
@@ -208,6 +209,9 @@ export default function AltavoxLabsPage() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SevenCipherSeal system="research" dark />
         </div>
       </main>
 

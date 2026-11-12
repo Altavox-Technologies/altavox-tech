@@ -227,11 +227,12 @@ export function QuickContactWidget() {
                   </div>
                 ) : (
                   <form onSubmit={handleCallback} className="space-y-2">
-                    <label className="block text-[11px] font-bold text-slate-700">
+                    <label htmlFor="callback-phone" className="block text-[11px] font-bold text-slate-700">
                       Omba Tupige Mara Moja (Instant Callback):
                     </label>
                     <div className="flex gap-1.5">
                       <input
+                        id="callback-phone"
                         required
                         type="tel"
                         value={phoneInput}
@@ -307,7 +308,10 @@ export function QuickContactWidget() {
                   type="text"
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                  aria-label="Ask the Altavox Direct Desk assistant"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.nativeEvent.isComposing && e.keyCode !== 229) handleSendMessage()
+                  }}
                   placeholder="Andika swali lako hapa..."
                   className="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-xs text-slate-900 outline-none focus:border-[#f26522]"
                 />
@@ -333,6 +337,8 @@ export function QuickContactWidget() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-label={isOpen ? 'Close contact options' : 'Open contact options'}
         className="flex items-center gap-2 rounded-full bg-[#f26522] text-white px-4 py-3 shadow-xl hover:bg-[#e05312] transition-all hover:scale-105 active:scale-95 duration-150 border-2 border-white cursor-pointer"
         title="Wasiliana na Direct Desk"
       >
@@ -342,7 +348,7 @@ export function QuickContactWidget() {
         </span>
         <Phone className="size-4" />
         <span className="text-xs font-bold tracking-wide hidden sm:inline">Direct Desk: +255 750 227 073</span>
-        <span className="text-xs font-bold tracking-wide sm:hidden">+255 750 227 073</span>
+        <span className="sr-only">Open contact options</span>
       </button>
     </div>
   )

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { BookOpen, Search, ArrowUpRight } from 'lucide-react'
 import { PageFrame } from '@/components/site-shell'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 const decisions = [
   {
@@ -88,6 +89,7 @@ export function CodexPage() {
             </div>
           )}
         </div>
+        <div className="mt-8"><SevenCipherSeal system="codex" /></div>
       </section>
     </PageFrame>
   )

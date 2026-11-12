@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { CheckCircle2, ShieldCheck, XCircle } from 'lucide-react'
 import { PageFrame } from '@/components/site-shell'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 const questions = [
   { prompt: 'A payment provider callback cannot be verified because the webhook secret is missing. What should the service do?', options: ['Accept the callback if its JSON says completed.', 'Keep the payment pending and report verification as unavailable.', 'Grant access and reconcile it later.'], answer: 1, explanation: 'Access is granted only after server-side verification. Missing credentials must fail closed.' },
@@ -56,6 +57,7 @@ export function SecurityChallengePage() {
           )}
           <div className="mt-5 flex items-center justify-center gap-2 border-t border-slate-100 pt-4 text-[11px] text-slate-500"><XCircle className="size-3.5" aria-hidden="true" />No network activity or external targets are used.</div>
         </div>
+        <div className="mt-8"><SevenCipherSeal system="security" /></div>
       </section>
     </PageFrame>
   )

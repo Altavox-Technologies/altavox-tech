@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowDown, ArrowUpRight, Layers3 } from 'lucide-react'
 import { PageFrame } from '@/components/site-shell'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 const systems = [
   { id: 'A', name: 'Codex Knowledge', area: 'Engineering decisions', href: '/codex', feeds: 'Architecture guidance' },
@@ -29,6 +30,7 @@ export function AtlasPage() {
             <Link href={system.href} className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#f26522] hover:underline">Open system <ArrowUpRight className="size-3.5" /></Link>
           </article>)}
         </div>
+        <div className="mt-8"><SevenCipherSeal system="atlas" /></div>
       </section>
     </PageFrame>
   )
