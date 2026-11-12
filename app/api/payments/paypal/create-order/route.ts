@@ -3,10 +3,35 @@ import { coursesData } from '@/lib/courses-data'
 import { publishedBooks } from '@/lib/bookstore-data'
 import { createPayPalOrder } from '@/lib/payments/paypal'
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function getPublicBaseUrl() {
+  const configuredUrl = process.env.BETTER_AUTH_URL
+    ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined)
+    ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined)
+    ?? process.env.V0_RUNTIME_URL
+    ?? 'http://localhost:3000'
+  return configuredUrl
+}
+
 export async function POST(request: Request) {
+  if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+    return NextResponse.json({ error: 'PayPal checkout is not configured. No payment was created.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
+  }
+
+  const contentLength = Number(request.headers.get('content-length') ?? 0)
+  if (contentLength > 16_384) return NextResponse.json({ error: 'Request is too large.' }, { status: 413 })
+
   try {
-    const body = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+    }
+
     const { itemType, itemSlug, customerEmail, customerName } = body
+    if (!['course', 'book'].includes(itemType) || typeof itemSlug !== 'string' || itemSlug.length < 1 || itemSlug.length > 120 || typeof customerEmail !== 'string' || !emailPattern.test(customerEmail.trim())) {
+      return NextResponse.json({ error: 'Provide a valid item and customer email.' }, { status: 400 })
+    }
 
     if (!itemType || !itemSlug) {
       return NextResponse.json(
@@ -47,10 +72,10 @@ export async function POST(request: Request) {
       itemTitle: verifiedTitle,
       amount: verifiedPriceUSD,
       currency: 'USD',
-      customerEmail: customerEmail || 'guest@altavox.space',
-      customerName: customerName || 'Valued Customer',
-      returnUrl: `${process.env.BETTER_AUTH_URL || ''}/academy/dashboard?order_status=success`,
-      cancelUrl: `${process.env.BETTER_AUTH_URL || ''}/academy?order_status=cancelled`
+      customerEmail: customerEmail.trim().toLowerCase(),
+      customerName: typeof customerName === 'string' ? customerName.trim().slice(0, 120) : 'Valued Customer',
+      returnUrl: new URL('/academy/dashboard?order_status=success', getPublicBaseUrl()).toString(),
+      cancelUrl: new URL('/academy?order_status=cancelled', getPublicBaseUrl()).toString()
     })
 
     return NextResponse.json({
@@ -60,8 +85,8 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[API Create PayPal Order Error]', error)
     return NextResponse.json(
-      { error: error.message || 'Unable to initiate PayPal transaction.' },
-      { status: 500 }
+      { error: 'Unable to initiate PayPal checkout. Please try again later.' },
+      { status: 502, headers: { 'Cache-Control': 'no-store' } }
     )
   }
 }

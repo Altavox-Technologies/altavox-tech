@@ -57,8 +57,8 @@ export interface RouterTelemetryPoint {
   omadaSessions: number
 }
 
-// Generate realistic 30-day revenue data for Altavox WiFi
-const generateRevenueData = (daysCount: number): DailyRevenuePoint[] => {
+// Generate deterministic demo data so chart paths and KPI totals stay consistent.
+const generateRevenueData = (daysCount: number, sampleRevision = 0): DailyRevenuePoint[] => {
   const result: DailyRevenuePoint[] = []
   const now = new Date()
 
@@ -72,12 +72,13 @@ const generateRevenueData = (daysCount: number): DailyRevenuePoint[] => {
 
     // Weekends see 30-50% traffic surges in student hostels & cafes
     const baseRevenue = isWeekend ? 340000 : 210000
-    const variance = Math.floor(Math.sin(i * 0.7) * 45000 + Math.random() * 35000)
+    const seed = d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate() + sampleRevision * 101
+    const variance = Math.floor(Math.sin(seed * 0.7) * 45000 + Math.cos(seed * 0.29) * 35000)
     const revenueTzs = Math.max(120000, baseRevenue + variance)
 
     const avgTicket = 1500
     const transactions = Math.floor(revenueTzs / avgTicket)
-    const mobileMoneyShare = 0.72 + (Math.random() * 0.08 - 0.04)
+    const mobileMoneyShare = 0.72 + Math.sin(seed * 0.37) * 0.04
     const mobileMoneySales = Math.floor(revenueTzs * mobileMoneyShare)
     const voucherSales = revenueTzs - mobileMoneySales
 
@@ -145,6 +146,7 @@ const ROUTER_TELEMETRY_SERIES: RouterTelemetryPoint[] = [
 export function WifiD3Analytics() {
   // State
   const [revenueRangeDays, setRevenueRangeDays] = useState<7 | 14 | 30>(14)
+  const [sampleRevision, setSampleRevision] = useState(0)
   const [telemetryMetric, setTelemetryMetric] = useState<'cpu' | 'throughput' | 'sessions'>('cpu')
   const [activeRoutersFilter, setActiveRoutersFilter] = useState<{ [key: string]: boolean }>({
     ccr2004: true,
@@ -195,7 +197,7 @@ export function WifiD3Analytics() {
   useEffect(() => {
     if (!revenueSvgRef.current) return
     const svgEl = revenueSvgRef.current
-    const data = generateRevenueData(revenueRangeDays)
+    const data = generateRevenueData(revenueRangeDays, sampleRevision)
 
     const width = svgEl.clientWidth || 700
     const height = 260
@@ -417,7 +419,7 @@ export function WifiD3Analytics() {
         focusCircle.style('opacity', 0)
         setRevenueTooltip({ visible: false, x: 0, y: 0 })
       })
-  }, [revenueRangeDays, uniqueId])
+  }, [revenueRangeDays, sampleRevision, uniqueId])
 
   // =========================================================================
   // CHART 2: D3 PEAK CONNECTION HOURS (24H DYNAMIC BAR CHART)
@@ -780,7 +782,7 @@ export function WifiD3Analytics() {
   }, [telemetryMetric, activeRoutersFilter])
 
   // Calculation summaries
-  const revenuePoints = generateRevenueData(revenueRangeDays)
+  const revenuePoints = generateRevenueData(revenueRangeDays, sampleRevision)
   const totalRevenue = revenuePoints.reduce((acc, curr) => acc + curr.revenueTzs, 0)
   const totalTransactions = revenuePoints.reduce((acc, curr) => acc + curr.transactions, 0)
   const avgDailyRevenue = Math.round(totalRevenue / revenuePoints.length)
@@ -798,31 +800,29 @@ export function WifiD3Analytics() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base sm:text-lg font-black text-white">
-                D3.js Live Hotspot Analytics & Telemetry Engine
+                D3.js Hotspot Analytics · Sample Data
               </h2>
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live D3 SVG
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold bg-amber-500/15 text-amber-200 border border-amber-500/30 px-2 py-0.5 rounded">
+                Illustrative dataset
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Uchambuzi wa moja kwa moja wa mapato, masaa ya msongamano na afya ya vifaa vya mtandao (MikroTik, UniFi, Omada).
+              Sample calculations for interface preview only; router telemetry and payment records are not connected.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto text-xs font-mono">
-          <span className="text-slate-400 text-[11px]">Sasisho la Mwisho:</span>
+          <span className="text-slate-400 text-[11px]">Demo generated:</span>
           <span className="bg-white/5 border border-white/10 px-2.5 py-1 rounded-lg text-white font-bold">
             {lastRefreshed || '18:04:12'}
           </span>
           <button
             onClick={() => {
+              setSampleRevision((revision) => revision + 1)
               setLastRefreshed(new Date().toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
-              // Force trigger state
-              setRevenueRangeDays((prev) => prev)
             }}
-            title="Sasisha Takwimu"
+            title="Regenerate deterministic sample data"
             className="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
           >
             <RefreshCw className="size-3.5" />
@@ -845,11 +845,11 @@ export function WifiD3Analytics() {
                 <TrendingUp className="size-4" />
               </span>
               <h3 className="text-sm sm:text-base font-extrabold text-white">
-                Mwenendo wa Mapato ya Kila Siku (Daily Revenue Trends)
+                Mwenendo wa Mapato ya Mfano (Sample Revenue Trends)
               </h3>
             </div>
             <p className="text-xs text-slate-400 mt-1">
-              Jumla ya mapato ya TZS yaliyokusanywa moja kwa moja kwenye M-Pesa, Tigo Pesa, na vocha za karatasi.
+              Values are synthetic examples for layout testing, not collected payments or accounting data.
             </p>
           </div>
 
@@ -893,9 +893,9 @@ export function WifiD3Analytics() {
             </span>
           </div>
           <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">Ufanisi wa Mtandao</span>
-            <span className="text-base sm:text-lg font-black text-[#f26522] font-mono flex items-center gap-1">
-              99.94% <ArrowUpRight className="size-3.5 text-emerald-400" />
+            <span className="text-[10px] font-mono text-slate-400 uppercase block">Sample uptime value</span>
+            <span className="text-base sm:text-lg font-black text-amber-200 font-mono flex items-center gap-1">
+              99.94% example
             </span>
           </div>
         </div>

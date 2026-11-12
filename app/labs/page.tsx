@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { AltavoxHeader } from '@/components/altavox-header'
 import { AltavoxFooter } from '@/components/altavox-footer'
+import { SevenCipherSeal } from '@/components/system-pages/seven-cipher-seal'
 
 export default function AltavoxLabsPage() {
   const [selectedProject, setSelectedProject] = useState<string>('mesh-protocol')
@@ -69,6 +70,35 @@ export default function AltavoxLabsPage() {
   ]
 
   const activeProject = labProjects.find((p) => p.id === selectedProject) || labProjects[0]
+
+  const downloadRfc = () => {
+    const content = [
+      `# ${activeProject.title}`,
+      '',
+      `Status: ${activeProject.status}`,
+      '',
+      `## Summary`,
+      activeProject.tagline,
+      '',
+      `## Problem`,
+      activeProject.problem,
+      '',
+      `## Approach`,
+      activeProject.approach,
+      '',
+      `## Research metrics`,
+      ...Object.entries(activeProject.metrics).map(([key, value]) => `- ${key}: ${value}`),
+    ].join('\\n')
+    const file = new Blob([content], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(file)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `${activeProject.id}-research-note.md`
+    document.body.appendChild(anchor)
+    anchor.click()
+    anchor.remove()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-900 font-sans text-slate-100">
@@ -171,7 +201,7 @@ export default function AltavoxLabsPage() {
 
                 <button
                   type="button"
-                  onClick={() => alert(`Downloading Whitepaper RFC for: ${activeProject.title}`)}
+                  onClick={downloadRfc}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-[#f26522] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#d9531e] transition"
                 >
                   <Download className="size-3.5" /> Download Research RFC
@@ -179,6 +209,9 @@ export default function AltavoxLabsPage() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SevenCipherSeal system="research" dark />
         </div>
       </main>
 

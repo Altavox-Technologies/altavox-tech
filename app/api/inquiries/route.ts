@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       service: optionalValues.service,
       projectType: optionalValues.projectType,
       timeline: optionalValues.timeline,
+      phone: cleanOptional(body.phone),
     })
   } catch (error) {
     console.error('[inquiry] persistence failed', { requestId, error })

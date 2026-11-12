@@ -129,9 +129,9 @@ export function WifiClientSessionsModal({
   if (!isOpen) return null
 
   const handleKick = (mac: string, devName: string) => {
-    if (confirm(`Una uhakika unataka kukata muunganisho wa ${devName} (${mac})?`)) {
+    if (confirm(`Remove sample session for ${devName} (${mac}) from this local demo? No device will be disconnected.`)) {
       setClients((prev) => prev.filter((c) => c.mac !== mac))
-      setAlertMessage(`Kifaa ${mac} kimekatwa muunganisho mara moja kupitia RADIUS Disconnect API!`)
+      setAlertMessage(`Demo only: ${mac} imeondolewa kwenye orodha ya hapa; hakuna disconnect iliyotumwa kwa router.`)
       setTimeout(() => setAlertMessage(null), 3500)
     }
   }
@@ -143,8 +143,8 @@ export function WifiClientSessionsModal({
     const target = clients.find((c) => c.mac === mac)
     setAlertMessage(
       target?.isBypassed
-        ? `Bypass ya ${mac} imeondolewa.`
-        : `Bypass imewashwa kwa ${mac}! Kifaa hiki kitakuwa na intaneti ya kudumu bila vocha.`
+        ? `Demo only: bypass marker removed for ${mac}.`
+        : `Demo only: bypass ya mfano imewashwa kwa ${mac}; hakuna rule iliyotumwa.`
     )
     setTimeout(() => setAlertMessage(null), 3500)
   }
@@ -156,8 +156,8 @@ export function WifiClientSessionsModal({
     const target = clients.find((c) => c.mac === mac)
     setAlertMessage(
       target?.isThrottled
-        ? `Kasi ya kawaida imerejeshwa kwa ${mac}.`
-        : `Kasi imebanwa (Throttled 1 Mbps) kwa ${mac} ili kupunguza msongamano wa mtandao.`
+        ? `Demo only: throttle marker removed for ${mac}.`
+        : `Demo only: alama ya throttle imebadilika kwa ${mac}; hakuna router setting iliyobadilishwa.`
     )
     setTimeout(() => setAlertMessage(null), 3500)
   }
@@ -183,14 +183,14 @@ export function WifiClientSessionsModal({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base sm:text-lg font-black text-white">
-                  Usimamizi wa Wateja Waliounganishwa (Active Sessions)
+                  Sample client sessions
                 </h3>
-                <span className="font-mono text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">
-                  {clients.length} Wateja Mkondoni
+                <span className="font-mono text-[10px] bg-amber-500/15 text-amber-200 border border-amber-500/30 px-2 py-0.5 rounded font-bold">
+                  {clients.length} sample records
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5 font-mono">
-                Router: {routerName} ({routerIp}) · Altavox RADIUS REST AAA
+                Demo data · no RADIUS connection · sample router: {routerName} ({routerIp})
               </p>
             </div>
           </div>
@@ -202,6 +202,8 @@ export function WifiClientSessionsModal({
             <X className="size-4" />
           </button>
         </div>
+
+        <p role="status" className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-100">These are sample client records. Search and controls are local UI demonstrations; no client data is fetched and no router or RADIUS command is sent.</p>
 
         {/* Quick Notification Toast */}
         {alertMessage && (
@@ -306,7 +308,7 @@ export function WifiClientSessionsModal({
                       {/* Throttle toggle */}
                       <button
                         onClick={() => handleToggleThrottle(c.mac)}
-                        title={c.isThrottled ? 'Rejesha Kasi Kamili' : 'Punguza Bendi (Limit 1M)'}
+                        title={c.isThrottled ? 'Remove sample throttle marker' : 'Toggle sample throttle marker'}
                         className={`p-1.5 rounded-lg border transition cursor-pointer ${
                           c.isThrottled
                             ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
@@ -319,7 +321,7 @@ export function WifiClientSessionsModal({
                       {/* Bypass toggle */}
                       <button
                         onClick={() => handleToggleBypass(c.mac)}
-                        title={c.isBypassed ? 'Ondoa Bypass' : 'Weka VIP Bypass'}
+                        title={c.isBypassed ? 'Remove sample bypass marker' : 'Toggle sample bypass marker'}
                         className={`p-1.5 rounded-lg border transition cursor-pointer ${
                           c.isBypassed
                             ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
@@ -332,7 +334,7 @@ export function WifiClientSessionsModal({
                       {/* Kick disconnect button */}
                       <button
                         onClick={() => handleKick(c.mac, c.device)}
-                        title="Kata Muunganisho (Kick Session)"
+                        title="Remove sample row only; no router action"
                         className="p-1.5 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:bg-rose-500/30 transition cursor-pointer"
                       >
                         <Trash2 className="size-3.5" />
@@ -347,7 +349,7 @@ export function WifiClientSessionsModal({
 
         {/* Footer */}
         <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
-          <span>RADIUS Coa (Change of Authorization) & POD (Packet of Disconnect) Active</span>
+          <span>Demo controls only · no RADIUS CoA or disconnect command is sent</span>
           <button
             onClick={onClose}
             className="rounded-xl border border-white/20 bg-white/10 px-5 py-2 text-xs font-bold text-white hover:bg-white/20 transition cursor-pointer"

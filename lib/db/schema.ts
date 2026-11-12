@@ -1,4 +1,4 @@
-import { boolean, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, date, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -56,7 +56,8 @@ export const inquiries = pgTable('inquiries', {
   timeline: text('timeline'),
   description: text('description').notNull(),
   status: text('status').notNull().default('new'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  phone: text('phone')
 })
 
 export const devices = pgTable('devices', {
@@ -182,7 +183,7 @@ export const computerServiceRequests = pgTable('computer_service_requests', {
   serviceType: text('service_type').notNull(),
   deviceDetails: text('device_details').notNull(),
   issueDescription: text('issue_description').notNull(),
-  preferredDate: text('preferred_date'),
+  preferredDate: date('preferred_date', { mode: 'string' }),
   status: text('status').notNull().default('received'),
   quoteAmount: numeric('quote_amount', { precision: 12, scale: 2 }),
   quoteCurrency: text('quote_currency').notNull().default('TZS'),
