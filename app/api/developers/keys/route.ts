@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
+import { requireAdminApiAccess } from '@/lib/api-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,7 +8,7 @@ interface DevApiKey {
   id: string
   name: string
   keyPrefix: string
-  secretKey?: string // Only returned on creation
+  secretKey?: string
   createdAt: string
   lastUsedAt: string
   environment: 'live' | 'test'
@@ -15,42 +16,33 @@ interface DevApiKey {
   scopes: string[]
 }
 
-// Memory-backed developer key registry
-let devKeys: DevApiKey[] = [
-  {
-    id: 'key-dev-01',
-    name: 'Production Gateway Key',
-    keyPrefix: 'avx_live_9a7d',
-    createdAt: '2026-10-15T08:30:00Z',
-    lastUsedAt: '2026-11-10T19:42:00Z',
-    environment: 'live',
-    status: 'active',
-    scopes: ['orders:create', 'courses:read', 'telemetry:read']
-  },
-  {
-    id: 'key-dev-02',
-    name: 'Sandbox Integration Tester',
-    keyPrefix: 'avx_test_4f2e',
-    createdAt: '2026-11-02T14:10:00Z',
-    lastUsedAt: '2026-11-10T21:15:00Z',
-    environment: 'test',
-    status: 'active',
-    scopes: ['*']
-  }
-]
+let devKeys: DevApiKey[] = []
 
-export async function GET() {
-  // Return list of keys without sensitive raw secret
+export async function GET(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   const safeKeys = devKeys.map(({ secretKey, ...rest }) => rest)
-  return NextResponse.json({ success: true, keys: safeKeys })
+  return NextResponse.json(
+    { success: true, keys: safeKeys },
+    { headers: { 'Cache-Control': 'no-store' } }
+  )
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const { name, environment = 'test', scopes = ['courses:read', 'orders:create'] } = await req.json()
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
 
-    if (!name || typeof name !== 'string') {
-      return NextResponse.json({ error: 'Key name is required.' }, { status: 400 })
+  try {
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+    }
+
+    const { name, environment = 'test', scopes = ['courses:read', 'orders:create'] } = body
+
+    if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 80) {
+      return NextResponse.json({ error: 'Valid key name (2-80 chars) is required.' }, { status: 400 })
     }
 
     const randomBytes = crypto.randomBytes(24).toString('hex')
@@ -62,39 +54,50 @@ export async function POST(req: NextRequest) {
       id: `key-dev-${Date.now()}`,
       name: name.trim(),
       keyPrefix,
-      secretKey: rawSecretKey, // Only provided once on creation
+      secretKey: rawSecretKey,
       createdAt: new Date().toISOString(),
       lastUsedAt: 'Never',
       environment: environment === 'live' ? 'live' : 'test',
       status: 'active',
-      scopes: Array.isArray(scopes) ? scopes : ['courses:read']
+      scopes: Array.isArray(scopes) ? scopes.map(String).slice(0, 10) : ['courses:read'],
     }
 
     devKeys = [newKey, ...devKeys]
 
-    return NextResponse.json({
-      success: true,
-      message: 'API Key generated successfully. Save this secret now; you will not be able to view it again.',
-      key: newKey
-    })
-  } catch (err) {
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'API Key generated successfully. Save this secret now; you will not be able to view it again.',
+        key: newKey,
+      },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
+  } catch {
     return NextResponse.json({ error: 'Failed to generate developer API key.' }, { status: 500 })
   }
 }
 
 export async function DELETE(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   try {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
 
-    if (!id) {
-      return NextResponse.json({ error: 'Key ID is required.' }, { status: 400 })
+    if (!id || id.length > 64) {
+      return NextResponse.json({ error: 'Valid Key ID is required.' }, { status: 400 })
+    }
+
+    const exists = devKeys.some((k) => k.id === id)
+    if (!exists) {
+      return NextResponse.json({ error: 'Key not found.' }, { status: 404 })
     }
 
     devKeys = devKeys.map((k) => (k.id === id ? { ...k, status: 'revoked' as const } : k))
 
     return NextResponse.json({ success: true, message: 'API key revoked successfully.' })
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Failed to revoke API key.' }, { status: 500 })
   }
 }

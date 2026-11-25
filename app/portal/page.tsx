@@ -24,6 +24,7 @@ import { AltavoxFooter } from '@/components/altavox-footer'
 export default function CustomerPortalPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'subscriptions' | 'invoices' | 'organization' | 'tickets'>('overview')
   const [currentOrg, setCurrentOrg] = useState('Jaslyn Telecommunications Ltd')
+  const [inviteNotice, setInviteNotice] = useState<string | null>(null)
 
   const clientSubscriptions = [
     {
@@ -318,12 +319,22 @@ export default function CustomerPortalPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => alert('New member invitation modal opened for organization: ' + currentOrg)}
+                  onClick={() =>
+                    setInviteNotice(
+                      `Organization invitations for ${currentOrg} require verified Better Auth or administrator session authorization via /sign-in.`
+                    )
+                  }
                   className="rounded-lg bg-[#f26522] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#d9531e] flex items-center gap-1.5"
                 >
                   <Plus className="size-3.5" /> Invite Member
                 </button>
               </div>
+
+              {inviteNotice && (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900">
+                  {inviteNotice}
+                </div>
+              )}
 
               <div className="divide-y divide-slate-100">
                 {orgMembers.map((m, idx) => (

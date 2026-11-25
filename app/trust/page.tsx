@@ -27,6 +27,7 @@ export default function AltavoxTrustCenterPage() {
   const [details, setDetails] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [responseNotice, setResponseNotice] = useState<string | null>(null)
+  const [errorNotice, setErrorNotice] = useState<string | null>(null)
 
   const handleDataRequest = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,6 +35,7 @@ export default function AltavoxTrustCenterPage() {
 
     setSubmitting(true)
     setResponseNotice(null)
+    setErrorNotice(null)
 
     try {
       const res = await fetch('/api/trust/data-request', {
@@ -46,17 +48,17 @@ export default function AltavoxTrustCenterPage() {
           details
         })
       })
-      const data = await res.json()
-      if (data.success) {
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.success) {
         setResponseNotice(data.message)
         setRequesterName('')
         setRequesterEmail('')
         setDetails('')
       } else {
-        alert(data.error || 'Failed to submit request.')
+        setErrorNotice(data.error || 'Failed to submit request.')
       }
-    } catch (err) {
-      alert('Error contacting trust desk.')
+    } catch {
+      setErrorNotice('Error contacting trust desk.')
     } finally {
       setSubmitting(false)
     }
@@ -274,6 +276,12 @@ export default function AltavoxTrustCenterPage() {
                 Exercise your statutory right to request a complete machine-readable copy of your data, submit a deletion notice, or report a suspected vulnerability to our security team.
               </p>
             </div>
+
+            {errorNotice && (
+              <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-xs text-rose-800">
+                {errorNotice}
+              </div>
+            )}
 
             <form onSubmit={handleDataRequest} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">

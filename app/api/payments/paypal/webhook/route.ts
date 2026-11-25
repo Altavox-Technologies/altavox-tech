@@ -7,7 +7,17 @@ const processedEventIds = new Set<string>()
 export async function POST(request: Request) {
   try {
     const rawBody = await request.text()
+    if (!rawBody || rawBody.length > 262_144) {
+      return NextResponse.json({ error: 'Invalid or oversized webhook payload' }, { status: 400 })
+    }
     const headers = request.headers
+    const transmissionTime = headers.get('paypal-transmission-time')
+    if (transmissionTime) {
+      const ts = Date.parse(transmissionTime)
+      if (!Number.isFinite(ts) || Math.abs(Date.now() - ts) > 15 * 60_000) {
+        return NextResponse.json({ error: 'Stale or invalid webhook timestamp' }, { status: 400 })
+      }
+    }
 
     const verification = await verifyPayPalWebhookSignature(headers, rawBody)
     if (!verification.verified) {

@@ -1,23 +1,12 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Projects & Deployments',
-  description: 'Explore selected Altavox technology projects and implementation work across digital platforms and operational systems.',
+  title: 'Projects Portfolio',
+  description:
+    'Explore all client platforms and Altavox Tech ecosystem systems including Jaslyn Net, Sammena School, Mrisho Art Gallery, Altavox WiFi, Academy, Bookstore, NetBill NOC, and Nexora Cloud.',
   alternates: { canonical: '/projects' },
-  openGraph: {
-    type: 'website',
-    title: 'Projects & Deployments | Altavox Technologies',
-    description: 'Explore selected Altavox technology projects and implementation work across digital platforms and operational systems.',
-    url: '/projects',
-    siteName: 'Altavox Technologies',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Projects & Deployments | Altavox Technologies',
-    description: 'Explore selected Altavox technology projects and implementation work across digital platforms and operational systems.',
-  },
 }
 
-export default function RouteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function ProjectsLayout({ children }: { children: React.ReactNode }) {
   return children
 }

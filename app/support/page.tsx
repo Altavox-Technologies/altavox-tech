@@ -39,7 +39,10 @@ interface TicketItem {
 export default function AltavoxSupportPage() {
   const [activeTab, setActiveTab] = useState<'tickets' | 'new-ticket' | 'kb' | 'incidents'>('tickets')
   const [tickets, setTickets] = useState<TicketItem[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
+  const [authRequired, setAuthRequired] = useState(false)
+  const [lookupNumber, setLookupNumber] = useState('')
+  const [lookupEmail, setLookupEmail] = useState('')
+  const [lookupLoading, setLookupLoading] = useState(false)
   const [kbQuery, setKbQuery] = useState('')
 
   // New ticket state
@@ -51,18 +54,56 @@ export default function AltavoxSupportPage() {
   const [contactName, setContactName] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [ticketNotice, setTicketNotice] = useState<string | null>(null)
+  const [ticketError, setTicketError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchTickets()
   }, [])
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (ticketNumber?: string, email?: string) => {
+    setTicketError(null)
     try {
-      const res = await fetch('/api/support/tickets')
+      const qs =
+        ticketNumber && email
+          ? `?ticketNumber=${encodeURIComponent(ticketNumber)}&email=${encodeURIComponent(email)}`
+          : ''
+      const res = await fetch(`/api/support/tickets${qs}`)
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        return
+      }
+      setAuthRequired(false)
       const data = await res.json()
-      if (data.tickets) setTickets(data.tickets)
-    } catch (err) {
-      // Fallback
+      if (data.tickets) {
+        setTickets(data.tickets)
+      }
+    } catch {
+      setTicketError('Unable to reach the support ticket service.')
+    }
+  }
+
+  const handleTicketLookup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!lookupNumber.trim() || !lookupEmail.trim()) return
+    setLookupLoading(true)
+    setTicketError(null)
+    try {
+      const res = await fetch(
+        `/api/support/tickets?ticketNumber=${encodeURIComponent(lookupNumber.trim())}&email=${encodeURIComponent(lookupEmail.trim())}`
+      )
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setTicketError(data.error || 'Could not retrieve matching ticket.')
+        return
+      }
+      setTickets(data.tickets || [])
+      if (!data.tickets?.length) {
+        setTicketError('No ticket found matching that reference number and email address.')
+      }
+    } catch {
+      setTicketError('Network error looking up support ticket.')
+    } finally {
+      setLookupLoading(false)
     }
   }
 
@@ -72,6 +113,7 @@ export default function AltavoxSupportPage() {
 
     setSubmitting(true)
     setTicketNotice(null)
+    setTicketError(null)
 
     try {
       const res = await fetch('/api/support/tickets', {
@@ -86,18 +128,18 @@ export default function AltavoxSupportPage() {
           contactName
         })
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (data.success && data.ticket) {
         setTicketNotice(data.message)
+        setTickets((prev) => [data.ticket, ...prev.filter((t) => t.id !== data.ticket.id)])
         setSubject('')
         setDescription('')
         setActiveTab('tickets')
-        fetchTickets()
       } else {
-        alert(data.error || 'Failed to submit ticket.')
+        setTicketError(data.error || 'Failed to submit ticket.')
       }
-    } catch (err) {
-      alert('Error communicating with support API.')
+    } catch {
+      setTicketError('Error communicating with support API.')
     } finally {
       setSubmitting(false)
     }
@@ -223,6 +265,24 @@ export default function AltavoxSupportPage() {
           </div>
         )}
 
+        {ticketError && (
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
+            <div className="flex items-center justify-between rounded-xl border border-rose-300 bg-rose-50 p-4 text-rose-900 text-xs sm:text-sm">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="size-4 text-rose-600 shrink-0" />
+                <span>{ticketError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTicketError(null)}
+                className="font-bold text-rose-800 hover:text-rose-950 text-xs"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10">
           {/* TAB 1: TICKETS LIST */}
           {activeTab === 'tickets' && (
@@ -231,7 +291,7 @@ export default function AltavoxSupportPage() {
                 <div>
                   <h2 className="text-xl font-bold text-[#07294d]">Active Support Tickets</h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Tickets submitted by your organization or student account.
+                    Look up an existing ticket using your ticket reference and email, or open a new support ticket.
                   </p>
                 </div>
                 <button
@@ -243,39 +303,92 @@ export default function AltavoxSupportPage() {
                 </button>
               </div>
 
-              <div className="space-y-3">
-                {tickets.map((t) => (
-                  <div
-                    key={t.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-[#f26522] transition-colors"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-[#07294d]">{t.ticketNumber}</span>
-                        <span className="text-slate-400">•</span>
-                        <span className="font-mono uppercase text-[10px] text-slate-500">{t.category}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${statusColors[t.status]}`}>
-                          {t.status.replace(/_/g, ' ')}
-                        </span>
-                        <span className={`rounded px-1.5 py-0.5 text-[10px] font-mono uppercase font-bold ${
-                          t.priority === 'critical' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'
-                        }`}>
-                          {t.priority}
-                        </span>
-                      </div>
+              {authRequired && (
+                <form
+                  onSubmit={handleTicketLookup}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-3"
+                >
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                      <h3 className="text-sm font-bold text-[#07294d]">Self-Service Ticket Lookup</h3>
+                      <p className="text-xs text-slate-500">
+                        For customer privacy, all-ticket queues require administrator sign-in. Enter your ticket number and contact email to retrieve your ticket.
+                      </p>
                     </div>
-
-                    <h3 className="font-bold text-sm text-[#07294d]">{t.subject}</h3>
-                    <p className="mt-1 text-xs text-slate-600 leading-relaxed">{t.description}</p>
-
-                    <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Submitted by: <strong className="text-slate-700">{t.contactName}</strong> ({t.contactEmail})</span>
-                      <span>Created: {new Date(t.createdAt).toLocaleDateString()}</span>
-                    </div>
+                    <Link
+                      href="/sign-in"
+                      className="text-xs font-bold text-[#f26522] hover:underline"
+                    >
+                      Admin Sign-In →
+                    </Link>
                   </div>
-                ))}
+                  <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+                    <input
+                      type="text"
+                      required
+                      value={lookupNumber}
+                      onChange={(e) => setLookupNumber(e.target.value)}
+                      placeholder="Ticket Number (e.g. AVX-TKT-1234)"
+                      className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-[#f26522] focus:outline-hidden"
+                    />
+                    <input
+                      type="email"
+                      required
+                      value={lookupEmail}
+                      onChange={(e) => setLookupEmail(e.target.value)}
+                      placeholder="Contact Email used on ticket"
+                      className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-[#f26522] focus:outline-hidden"
+                    />
+                    <button
+                      type="submit"
+                      disabled={lookupLoading}
+                      className="rounded-xl bg-[#07294d] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#093563] disabled:opacity-50 transition"
+                    >
+                      {lookupLoading ? 'Searching...' : 'Look Up Ticket'}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="space-y-3">
+                {tickets.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-xs text-slate-500">
+                    No support tickets loaded. Submit a new ticket or look up your ticket reference above.
+                  </div>
+                ) : (
+                  tickets.map((t) => (
+                    <div
+                      key={t.id}
+                      className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs hover:border-[#f26522] transition-colors"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-[#07294d]">{t.ticketNumber}</span>
+                          <span className="text-slate-400">•</span>
+                          <span className="font-mono uppercase text-[10px] text-slate-500">{t.category}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${statusColors[t.status]}`}>
+                            {t.status.replace(/_/g, ' ')}
+                          </span>
+                          <span className={`rounded px-1.5 py-0.5 text-[10px] font-mono uppercase font-bold ${
+                            t.priority === 'critical' ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            {t.priority}
+                          </span>
+                        </div>
+                      </div>
+
+                      <h3 className="font-bold text-sm text-[#07294d]">{t.subject}</h3>
+                      <p className="mt-1 text-xs text-slate-600 leading-relaxed">{t.description}</p>
+
+                      <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>Submitted by: <strong className="text-slate-700">{t.contactName}</strong> ({t.contactEmail})</span>
+                        <span>Created: {new Date(t.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

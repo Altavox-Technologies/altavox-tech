@@ -1,0 +1,339 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Pillar 1 / Phase 4: Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================
+    // Global Hardened Primitives (Phase 3)
+    // =========================================================
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBootstrappedAdminEmail() {
+      return isVerifiedUser() && request.auth.token.email == 'yurianarshad@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdminEmail() ||
+        (isVerifiedUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidSlug(slug) {
+      return slug is string && slug.size() >= 2 && slug.size() <= 120 && slug.matches('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+    }
+
+    function isValidBoundedStringList(listVal, maxItems, maxItemLen) {
+      return listVal is list &&
+        listVal.size() <= maxItems &&
+        (listVal.size() == 0 || (listVal[0] is string && listVal[0].size() >= 1 && listVal[0].size() <= maxItemLen));
+    }
+
+    // =========================================================
+    // Entity Validation Blueprints (Pillar 2 - Anti-Update-Gap)
+    // =========================================================
+    function isValidProject(data) {
+      return data.keys().hasAll([
+          'slug', 'name', 'category', 'client', 'summary', 'description',
+          'status', 'projectGroup', 'visibility', 'url', 'tags', 'keyFeatures',
+          'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'slug', 'name', 'category', 'client', 'summary', 'description',
+          'engineeringChallenge', 'engineeringSolution', 'status', 'projectGroup',
+          'visibility', 'url', 'screenshotUrl', 'tags', 'keyFeatures',
+          'frontendStack', 'backendStack', 'databaseStack', 'infrastructureStack',
+          'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        isValidSlug(data.slug) && data.slug.size() <= 100 &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 160 &&
+        data.category is string && data.category.size() >= 2 && data.category.size() <= 120 &&
+        data.client is string && data.client.size() >= 2 && data.client.size() <= 160 &&
+        data.summary is string && data.summary.size() >= 10 && data.summary.size() <= 500 &&
+        data.description is string && data.description.size() >= 10 && data.description.size() <= 3000 &&
+        (!('engineeringChallenge' in data) || (data.engineeringChallenge is string && data.engineeringChallenge.size() <= 2000)) &&
+        (!('engineeringSolution' in data) || (data.engineeringSolution is string && data.engineeringSolution.size() <= 2000)) &&
+        data.status in ['Production', 'In development', 'Exploration', 'Archived'] &&
+        data.projectGroup in ['client', 'ecosystem'] &&
+        data.visibility in ['public', 'private'] &&
+        data.url is string && data.url.size() >= 1 && data.url.size() <= 300 &&
+        (!('screenshotUrl' in data) || (data.screenshotUrl is string && data.screenshotUrl.size() <= 500)) &&
+        isValidBoundedStringList(data.tags, 12, 60) &&
+        isValidBoundedStringList(data.keyFeatures, 12, 240) &&
+        (!('frontendStack' in data) || (data.frontendStack is string && data.frontendStack.size() <= 240)) &&
+        (!('backendStack' in data) || (data.backendStack is string && data.backendStack.size() <= 240)) &&
+        (!('databaseStack' in data) || (data.databaseStack is string && data.databaseStack.size() <= 240)) &&
+        (!('infrastructureStack' in data) || (data.infrastructureStack is string && data.infrastructureStack.size() <= 240)) &&
+        isValidId(data.ownerUid) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPublicUserProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'role', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'role', 'createdAt', 'updatedAt']) &&
+        isValidId(data.uid) &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120 &&
+        data.role in ['student', 'partner', 'admin'] &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPrivateUserInfo(data) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'phone', 'organization', 'createdAt', 'updatedAt']) &&
+        isValidId(data.uid) &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 254 &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 40)) &&
+        (!('organization' in data) || (data.organization is string && data.organization.size() <= 160)) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidLessonProgress(data) {
+      return data.keys().hasAll(['userId', 'courseSlug', 'completedLessons', 'updatedAt']) &&
+        data.keys().hasOnly(['userId', 'courseSlug', 'completedLessons', 'updatedAt']) &&
+        isValidId(data.userId) &&
+        isValidSlug(data.courseSlug) &&
+        isValidBoundedStringList(data.completedLessons, 50, 80) &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCourseEnrollment(data) {
+      return data.keys().hasAll([
+          'userId', 'courseSlug', 'courseTitle', 'status',
+          'paymentProvider', 'orderRef', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'userId', 'courseSlug', 'courseTitle', 'status',
+          'paymentProvider', 'orderRef', 'createdAt', 'updatedAt'
+        ]) &&
+        isValidId(data.userId) &&
+        isValidSlug(data.courseSlug) &&
+        data.courseTitle is string && data.courseTitle.size() >= 2 && data.courseTitle.size() <= 200 &&
+        data.status in ['pending', 'active', 'completed', 'revoked'] &&
+        data.paymentProvider in ['paypal', 'mpesa', 'admin_grant'] &&
+        data.orderRef is string && data.orderRef.size() >= 3 && data.orderRef.size() <= 120 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCertificateRecord(data) {
+      return data.keys().hasAll([
+          'certificateId', 'userId', 'studentName', 'courseSlug',
+          'courseTitle', 'verificationHash', 'status', 'issuedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'certificateId', 'userId', 'studentName', 'courseSlug',
+          'courseTitle', 'verificationHash', 'status', 'issuedAt'
+        ]) &&
+        data.certificateId is string && data.certificateId.size() >= 4 && data.certificateId.size() <= 64 &&
+        data.certificateId.matches('^[A-Z0-9\\-]+$') &&
+        isValidId(data.userId) &&
+        data.studentName is string && data.studentName.size() >= 2 && data.studentName.size() <= 120 &&
+        isValidSlug(data.courseSlug) &&
+        data.courseTitle is string && data.courseTitle.size() >= 2 && data.courseTitle.size() <= 200 &&
+        data.verificationHash is string && data.verificationHash.size() >= 16 && data.verificationHash.size() <= 128 &&
+        data.status in ['verified', 'revoked'] &&
+        data.issuedAt is timestamp;
+    }
+
+    function isValidAdminAccount(data) {
+      return data.keys().hasAll(['uid', 'grantedAt']) &&
+        data.keys().hasOnly(['uid', 'grantedAt']) &&
+        isValidId(data.uid) &&
+        data.grantedAt is timestamp;
+    }
+
+    // =========================================================
+    // Collection Match Blocks
+    // =========================================================
+
+    // 1. Connection verification probe (read-only on single doc 'connection')
+    match /test/{docId} {
+      allow get: if docId == 'connection';
+      allow list, create, update, delete: if false;
+    }
+
+    // 2. Projects Portfolio (Public read for published projects; Admin-only writes)
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId) && (existing().visibility == 'public' || isAdmin());
+      allow list: if resource.data.visibility == 'public' || isBootstrappedAdminEmail();
+      allow create: if isAdmin() &&
+        isValidId(projectId) &&
+        isValidProject(incoming()) &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isAdmin() &&
+        isValidId(projectId) &&
+        isValidProject(incoming()) &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'slug', 'name', 'category', 'client', 'summary', 'description',
+          'engineeringChallenge', 'engineeringSolution', 'status', 'projectGroup',
+          'visibility', 'url', 'screenshotUrl', 'tags', 'keyFeatures',
+          'frontendStack', 'backendStack', 'databaseStack', 'infrastructureStack',
+          'updatedAt'
+        ]);
+      allow delete: if isAdmin() && isValidId(projectId);
+    }
+
+    // 3. Public User Profiles (PII-free) & Isolated Private PII Subcollection
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isOwner(userId) &&
+        isValidPublicUserProfile(incoming()) &&
+        incoming().uid == request.auth.uid &&
+        incoming().role == 'student' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isValidPublicUserProfile(incoming()) && (
+          isAdmin() || (
+            isOwner(userId) &&
+            incoming().uid == existing().uid &&
+            incoming().role == existing().role &&
+            incoming().createdAt == existing().createdAt &&
+            incoming().updatedAt == request.time &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'updatedAt'])
+          )
+        );
+      allow delete: if isAdmin() && isValidId(userId);
+
+      match /private/{docId} {
+        allow get: if isValidId(userId) && isValidId(docId) && (isOwner(userId) || isAdmin());
+        allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+        allow create: if isVerifiedUser() &&
+          isValidId(userId) &&
+          isValidId(docId) &&
+          isOwner(userId) &&
+          isValidPrivateUserInfo(incoming()) &&
+          incoming().uid == request.auth.uid &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time;
+        allow update: if isVerifiedUser() &&
+          isValidId(userId) &&
+          isValidId(docId) &&
+          isValidPrivateUserInfo(incoming()) && (
+            isAdmin() || (
+              isOwner(userId) &&
+              incoming().uid == existing().uid &&
+              incoming().createdAt == existing().createdAt &&
+              incoming().updatedAt == request.time &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['email', 'phone', 'organization', 'updatedAt'])
+            )
+          );
+        allow delete: if isAdmin() && isValidId(userId) && isValidId(docId);
+      }
+    }
+
+    // 4. Student Lesson Progress
+    match /lessonProgress/{progressId} {
+      allow get: if isValidId(progressId) && isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() &&
+        isValidId(progressId) &&
+        isValidLessonProgress(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(progressId) &&
+        isValidLessonProgress(incoming()) && (
+          isAdmin() || (
+            existing().userId == request.auth.uid &&
+            incoming().userId == existing().userId &&
+            incoming().courseSlug == existing().courseSlug &&
+            incoming().updatedAt == request.time &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['completedLessons', 'updatedAt'])
+          )
+        );
+      allow delete: if isAdmin() && isValidId(progressId);
+    }
+
+    // 5. Course Enrollments (No self-approval of active status)
+    match /enrollments/{enrollmentId} {
+      allow get: if isValidId(enrollmentId) && isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() &&
+        isValidId(enrollmentId) &&
+        isValidCourseEnrollment(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time && (
+          isAdmin() || (
+            incoming().userId == request.auth.uid &&
+            incoming().status == 'pending'
+          )
+        );
+      allow update: if isAdmin() &&
+        isValidId(enrollmentId) &&
+        isValidCourseEnrollment(incoming()) &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'orderRef', 'updatedAt']);
+      allow delete: if isAdmin() && isValidId(enrollmentId);
+    }
+
+    // 6. Verified Certificates (Public lookup by exact ID only; Admin-only issuance)
+    match /certificates/{certificateId} {
+      allow get: if isValidId(certificateId);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isAdmin() &&
+        isValidId(certificateId) &&
+        isValidCertificateRecord(incoming()) &&
+        incoming().issuedAt == request.time;
+      allow update: if isAdmin() &&
+        isValidId(certificateId) &&
+        isValidCertificateRecord(incoming()) &&
+        incoming().certificateId == existing().certificateId &&
+        incoming().userId == existing().userId &&
+        incoming().issuedAt == existing().issuedAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'verificationHash']);
+      allow delete: if isAdmin() && isValidId(certificateId);
+    }
+
+    // 7. Admin Registry
+    match /admins/{adminUid} {
+      allow get: if isValidId(adminUid) && (isOwner(adminUid) || isAdmin());
+      allow list: if false;
+      allow create: if isAdmin() &&
+        isValidId(adminUid) &&
+        isValidAdminAccount(incoming()) &&
+        incoming().grantedAt == request.time;
+      allow update: if false;
+      allow delete: if isAdmin() && isValidId(adminUid);
+    }
+  }
+}

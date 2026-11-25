@@ -1,14 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
-  try {
-    const { documentText, focus = 'architecture' } = await req.json()
+  const ip = getClientIp(req)
+  const rl = checkRateLimit(`ai-summarize:${ip}`, 10, 60_000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Please wait before submitting another document.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds) } }
+    )
+  }
 
-    if (!documentText || typeof documentText !== 'string' || documentText.trim().length === 0) {
-      return NextResponse.json({ error: 'Document text is required.' }, { status: 400 })
+  try {
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid request payload.' }, { status: 400 })
+    }
+    const { documentText, focus = 'architecture' } = body
+
+    if (!documentText || typeof documentText !== 'string' || documentText.trim().length === 0 || documentText.length > 25000) {
+      return NextResponse.json({ error: 'Document text (1-25000 characters) is required.' }, { status: 400 })
     }
 
     const apiKey = process.env.GEMINI_API_KEY

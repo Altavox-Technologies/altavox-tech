@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdminApiAccess } from '@/lib/api-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -119,7 +120,10 @@ let financialApprovals: FinancialApproval[] = [
   }
 ]
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   return NextResponse.json({
     success: true,
     projects: erpProjects,
@@ -130,6 +134,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   try {
     const { action, approvalId, decision } = await req.json()
 

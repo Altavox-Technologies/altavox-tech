@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, CheckCircle2, Cpu, ExternalLink, Globe, Layers, Server, ShieldCheck } from 'lucide-react'
-import { notFound } from 'next/navigation'
 import { PageFrame } from '@/components/site-shell'
 import { projects } from '@/lib/site-data'
 import { ProjectPreview } from '@/components/project-preview'
+import { FirestoreProjectFallback } from '@/components/firestore-project-fallback'
+
+export const dynamicParams = true
 
 export function generateStaticParams() {
   const baseParams = projects.map(({ slug }) => ({ slug }))
@@ -22,7 +24,7 @@ export default async function Project({ params }: { params: Promise<{ slug: stri
       (slug === 'mrisho-art' && item.slug === 'mrisho-art-gallery') ||
       (slug === 'sammena-school' && item.slug === 'sammena')
   )
-  if (!project) notFound()
+  if (!project) return <FirestoreProjectFallback slug={slug} />
 
   return (
     <PageFrame

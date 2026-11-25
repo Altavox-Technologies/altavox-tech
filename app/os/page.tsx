@@ -35,9 +35,9 @@ export default function AltavoxEnterpriseOSPage() {
     'erp' | 'crm' | 'subscriptions' | 'flow' | 'productops' | 'intelligence' | 'security'
   >('erp')
 
-  // ERP State
+  const [authRequired, setAuthRequired] = useState(false)
+  const [osLoading, setOsLoading] = useState(true)
   const [erpData, setErpData] = useState<any>(null)
-  const [erpLoading, setErpLoading] = useState(false)
   const [approvalActionNotice, setApprovalActionNotice] = useState<string | null>(null)
 
   // CRM State
@@ -71,21 +71,38 @@ export default function AltavoxEnterpriseOSPage() {
     loadAllModules()
   }, [])
 
+  const fetchProtectedJson = async (url: string) => {
+    const res = await fetch(url)
+    if (res.status === 401 || res.status === 403) {
+      setAuthRequired(true)
+      return null
+    }
+    if (!res.ok) return null
+    return res.json()
+  }
+
   const loadAllModules = async () => {
-    // 1. ERP
-    fetch('/api/os/erp').then((r) => r.json()).then(setErpData).catch(() => {})
-    // 2. CRM
-    fetch('/api/os/crm').then((r) => r.json()).then(setCrmData).catch(() => {})
-    // 3. Subscriptions
-    fetch('/api/os/subscriptions').then((r) => r.json()).then(setSubData).catch(() => {})
-    // 4. Flow
-    fetch('/api/os/flow').then((r) => r.json()).then(setFlowData).catch(() => {})
-    // 5. ProductOps
-    fetch('/api/os/productops').then((r) => r.json()).then(setProductOpsData).catch(() => {})
-    // 6. Analytics
-    fetch('/api/os/analytics').then((r) => r.json()).then(setAnalyticsData).catch(() => {})
-    // 7. Security
-    fetch('/api/os/security').then((r) => r.json()).then(setSecurityData).catch(() => {})
+    setOsLoading(true)
+    try {
+      const [erp, crm, subs, flow, prod, analytics, security] = await Promise.all([
+        fetchProtectedJson('/api/os/erp'),
+        fetchProtectedJson('/api/os/crm'),
+        fetchProtectedJson('/api/os/subscriptions'),
+        fetchProtectedJson('/api/os/flow'),
+        fetchProtectedJson('/api/os/productops'),
+        fetchProtectedJson('/api/os/analytics'),
+        fetchProtectedJson('/api/os/security'),
+      ])
+      if (erp) setErpData(erp)
+      if (crm) setCrmData(crm)
+      if (subs) setSubData(subs)
+      if (flow) setFlowData(flow)
+      if (prod) setProductOpsData(prod)
+      if (analytics) setAnalyticsData(analytics)
+      if (security) setSecurityData(security)
+    } finally {
+      setOsLoading(false)
+    }
   }
 
   // Handle ERP Financial Approval Decision
@@ -96,13 +113,20 @@ export default function AltavoxEnterpriseOSPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'decide_approval', approvalId, decision })
       })
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setApprovalActionNotice(data.message)
-        fetch('/api/os/erp').then((r) => r.json()).then(setErpData)
+        const updated = await fetchProtectedJson('/api/os/erp')
+        if (updated) setErpData(updated)
+      } else {
+        setApprovalActionNotice(data.error || 'Could not update approval decision.')
       }
-    } catch (err) {
-      alert('Error updating approval.')
+    } catch {
+      setApprovalActionNotice('Error updating approval.')
     }
   }
 
@@ -121,17 +145,22 @@ export default function AltavoxEnterpriseOSPage() {
           estimatedValueUSD: Number(newLeadVal)
         })
       })
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setCrmNotice(data.message)
         setNewLeadName('')
         setNewLeadOrg('')
         setNewLeadEmail('')
-        fetch('/api/os/crm').then((r) => r.json()).then(setCrmData)
+        const updated = await fetchProtectedJson('/api/os/crm')
+        if (updated) setCrmData(updated)
       } else {
         setCrmNotice(data.warning || data.error)
       }
-    } catch (err) {
+    } catch {
       setCrmNotice('Failed to create lead.')
     }
   }
@@ -139,10 +168,14 @@ export default function AltavoxEnterpriseOSPage() {
   // Evaluate Server-Authoritative Entitlement
   const handleCheckEntitlement = async () => {
     try {
-      const res = await fetch(`/api/os/subscriptions?orgId=${testOrgId}&featureId=${testFeature}`)
+      const res = await fetch(`/api/os/subscriptions?orgId=${encodeURIComponent(testOrgId)}&featureId=${encodeURIComponent(testFeature)}`)
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        return
+      }
       const data = await res.json()
       setEntitlementResult(data.evaluation)
-    } catch (err) {
+    } catch {
       setEntitlementResult({ authorized: false, reason: 'Evaluation failure.' })
     }
   }
@@ -155,13 +188,20 @@ export default function AltavoxEnterpriseOSPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'approve', runId })
       })
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setFlowNotice(data.message)
-        fetch('/api/os/flow').then((r) => r.json()).then(setFlowData)
+        const updated = await fetchProtectedJson('/api/os/flow')
+        if (updated) setFlowData(updated)
+      } else {
+        setFlowNotice(data.error || 'Error approving run.')
       }
-    } catch (err) {
-      alert('Error approving run.')
+    } catch {
+      setFlowNotice('Error approving run.')
     }
   }
 
@@ -178,11 +218,16 @@ export default function AltavoxEnterpriseOSPage() {
           payload: { triggerSource: 'Altavox OS 3.0 Console', amountUSD: 450 }
         })
       })
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        return
+      }
       const data = await res.json()
-      setFlowNotice(data.message)
-      fetch('/api/os/flow').then((r) => r.json()).then(setFlowData)
-    } catch (err) {
-      alert('Error triggering flow event.')
+      setFlowNotice(data.message || data.error)
+      const updated = await fetchProtectedJson('/api/os/flow')
+      if (updated) setFlowData(updated)
+    } catch {
+      setFlowNotice('Error triggering flow event.')
     }
   }
 
@@ -241,6 +286,35 @@ export default function AltavoxEnterpriseOSPage() {
         </section>
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10">
+          {osLoading ? (
+            <div className="rounded-2xl border border-white/10 bg-slate-800/60 p-8 text-center text-xs text-slate-300">
+              Verifying administrator session and loading Altavox OS modules...
+            </div>
+          ) : authRequired ? (
+            <div className="rounded-2xl border border-amber-500/30 bg-slate-800/70 p-8 max-w-2xl mx-auto space-y-4">
+              <div className="flex items-center gap-2 text-amber-300 font-bold text-base">
+                <ShieldAlert className="size-5" /> Administrator Session Required
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Altavox OS exposes sensitive internal ERP budgets, CRM leads, subscriptions, automation runs, and security telemetry. Sign in with a verified administrator account to access this console.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-1">
+                <Link
+                  href="/sign-in"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#f26522] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#d9531e] transition"
+                >
+                  Sign In as Administrator <ArrowRight className="size-3.5" />
+                </Link>
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-semibold text-white hover:bg-white/10 transition"
+                >
+                  Open Control Plane
+                </Link>
+              </div>
+            </div>
+          ) : (
+          <>
           {/* TAB 1: ERP OPERATIONS */}
           {activeTab === 'erp' && (
             <div className="space-y-8">
@@ -249,23 +323,23 @@ export default function AltavoxEnterpriseOSPage() {
                 <div className="rounded-xl border border-white/10 bg-slate-800/80 p-5">
                   <span className="text-xs font-mono text-slate-400 uppercase">Total Active Project Budgets</span>
                   <p className="mt-2 text-2xl font-mono font-bold text-white">
-                    ${erpData?.totalActiveBudget?.toLocaleString() || '25,500'} USD
+                    ${(erpData?.totalActiveBudget ?? 0).toLocaleString()} USD
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-400">Across 3 carrier & institutional deployments</p>
+                  <p className="mt-1 text-[11px] text-slate-400">Across {erpData?.projects?.length ?? 0} tracked deployments</p>
                 </div>
 
                 <div className="rounded-xl border border-white/10 bg-slate-800/80 p-5">
                   <span className="text-xs font-mono text-slate-400 uppercase">Capital Expenditures Spent</span>
                   <p className="mt-2 text-2xl font-mono font-bold text-sky-400">
-                    ${erpData?.totalSpent?.toLocaleString() || '17,750'} USD
+                    ${(erpData?.totalSpent ?? 0).toLocaleString()} USD
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-400">69.6% Budget allocation utilized</p>
+                  <p className="mt-1 text-[11px] text-slate-400">Observed expenditure ledger</p>
                 </div>
 
                 <div className="rounded-xl border border-white/10 bg-slate-800/80 p-5">
                   <span className="text-xs font-mono text-slate-400 uppercase">Pending Financial Approvals</span>
                   <p className="mt-2 text-2xl font-mono font-bold text-amber-400">
-                    {erpData?.approvals?.filter((a: any) => a.status === 'PENDING').length || 1} Request
+                    {erpData?.approvals?.filter((a: any) => a.status === 'PENDING').length ?? 0} Request
                   </p>
                   <p className="mt-1 text-[11px] text-slate-400">Separated dual-authorization workflow</p>
                 </div>
@@ -394,9 +468,9 @@ export default function AltavoxEnterpriseOSPage() {
                 <div>
                   <span className="text-xs font-mono text-slate-400 uppercase">Active Sales Pipeline</span>
                   <p className="mt-1 text-2xl font-mono font-bold text-white">
-                    ${crmData?.summary?.totalPipelineValueUSD?.toLocaleString() || '22,500'} USD
+                    ${(crmData?.summary?.totalPipelineValueUSD ?? 0).toLocaleString()} USD
                   </p>
-                  <p className="text-xs text-slate-400">Total qualified leads: {crmData?.summary?.activeDeals || 4}</p>
+                  <p className="text-xs text-slate-400">Total qualified leads: {crmData?.summary?.activeDeals ?? 0}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -498,10 +572,10 @@ export default function AltavoxEnterpriseOSPage() {
                         <td className="py-3.5 px-4 text-right">
                           <button
                             type="button"
-                            onClick={() => alert(`Opening CRM detail card for: ${lead.organization}`)}
+                            onClick={() => setCrmNotice(`Selected lead: ${lead.organization} (${lead.stage})`)}
                             className="text-slate-400 hover:text-white"
                           >
-                            Edit
+                            Inspect
                           </button>
                         </td>
                       </tr>
@@ -848,6 +922,8 @@ export default function AltavoxEnterpriseOSPage() {
                 </div>
               </div>
             </div>
+          )}
+          </>
           )}
         </div>
       </main>

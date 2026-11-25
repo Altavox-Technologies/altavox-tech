@@ -87,7 +87,7 @@ export default async function CourseDetailPage({
                   href="/courses"
                   className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
                 >
-                  <ArrowLeft className="size-4" /> Kozi Zote (10)
+                  <ArrowLeft className="size-4" /> Kozi Zote ({coursesData.length})
                 </Link>
               </div>
 

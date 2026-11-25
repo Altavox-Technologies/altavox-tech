@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { pool } from '@/lib/db'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -31,6 +32,15 @@ const statuses: Record<string, string> = {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request)
+  const rl = checkRateLimit(`computer-post:${ip}`, 8, 60_000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many booking attempts. Please wait a minute and try again.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds) } }
+    )
+  }
+
   if (!configured || !pool) {
     return NextResponse.json({ error: 'Online service booking is temporarily unavailable. Please contact the support desk directly.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
   }
@@ -82,6 +92,15 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const ip = getClientIp(request)
+  const rl = checkRateLimit(`computer-get:${ip}`, 20, 60_000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many lookup requests. Please wait a minute.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds) } }
+    )
+  }
+
   if (!configured || !pool) return NextResponse.json({ error: 'Repair tracking is temporarily unavailable.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
 
   const url = new URL(request.url)

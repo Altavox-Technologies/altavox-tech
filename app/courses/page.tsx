@@ -85,7 +85,7 @@ export default function CoursesPage() {
                   Jifunze Teknolojia kwa <span className="text-[#f26522]">Kujenga Mifumo Halisi.</span>
                 </h1>
                 <p className="max-w-2xl text-base sm:text-lg text-slate-200 leading-relaxed">
-                  Kozi 10 za kina za kiufundi zilizoundwa kuwajengea wahandisi, mafundi wa mitandao, na watengenezaji programu stadi za kiwango cha juu. Mafunzo ya ana kwa ana katika maabara zetu jijini Arusha na mtandaoni kwa Afrika Mashariki nzima.
+                  Kozi {coursesData.length} za kina za kiufundi zilizoundwa kuwajengea wahandisi, mafundi wa mitandao, na watengenezaji programu stadi za kiwango cha juu. Mafunzo ya ana kwa ana katika maabara zetu jijini Arusha na mtandaoni kwa Afrika Mashariki nzima.
                 </p>
 
                 <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -93,7 +93,7 @@ export default function CoursesPage() {
                     href="#course-catalogue"
                     className="inline-flex items-center gap-2 rounded-xl bg-[#f26522] px-6 py-3.5 text-xs sm:text-sm font-bold text-white shadow-lg hover:bg-[#d9531e] transition-colors"
                   >
-                    Tazama Kozi Zote 10 <ArrowRight className="size-4" />
+                    Tazama Kozi Zote {coursesData.length} <ArrowRight className="size-4" />
                   </a>
                   <a
                     href="https://wa.me/255750227073?text=Habari%20Altavox%20Academy%2C%20naomba%20ushauri%20wa%20kujiunga%20na%20kozi"
@@ -140,7 +140,7 @@ export default function CoursesPage() {
                 </span>
                 <h2 className="mt-1 text-2xl font-bold text-[#07294d]">Chagua Mwelekeo Wako wa Uhandisi</h2>
                 <p className="mt-1 text-xs sm:text-sm text-slate-500">
-                  Machaguo 10 ya mafunzo yaliyoidhinishwa na maabara ya mifumo ya Altavox Tech.
+                  Machaguo {coursesData.length} ya mafunzo yaliyoidhinishwa na maabara ya mifumo ya Altavox Tech.
                 </p>
               </div>
 

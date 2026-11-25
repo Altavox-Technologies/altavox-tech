@@ -42,6 +42,10 @@ export default function AltavoxDevelopersPage() {
   const [newKeyEnv, setNewKeyEnv] = useState<'test' | 'live'>('test')
   const [createdSecret, setCreatedSecret] = useState<string | null>(null)
   const [keyLoading, setKeyLoading] = useState(false)
+  const [authRequired, setAuthRequired] = useState(false)
+  const [keyError, setKeyError] = useState<string | null>(null)
+  const [keyNotice, setKeyNotice] = useState<string | null>(null)
+  const [confirmRevokeId, setConfirmRevokeId] = useState<string | null>(null)
   const [copiedSecret, setCopiedSecret] = useState(false)
   const [codeLang, setCodeLang] = useState<'curl' | 'typescript' | 'python'>('curl')
 
@@ -64,16 +68,24 @@ export default function AltavoxDevelopersPage() {
   const fetchKeys = async () => {
     try {
       const res = await fetch('/api/developers/keys')
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        setKeys([])
+        return
+      }
+      setAuthRequired(false)
       const data = await res.json()
       if (data.keys) setKeys(data.keys)
-    } catch (err) {
-      // Fallback
+    } catch {
+      setKeyError('Unable to reach the developer key service.')
     }
   }
 
   const handleCreateKey = async () => {
     if (!newKeyName.trim()) return
     setKeyLoading(true)
+    setKeyError(null)
+    setKeyNotice(null)
 
     try {
       const res = await fetch('/api/developers/keys', {
@@ -81,26 +93,42 @@ export default function AltavoxDevelopersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newKeyName, environment: newKeyEnv })
       })
-      const data = await res.json()
-      if (data.key) {
-        setCreatedSecret(data.key.secretKey)
-        setNewKeyName('')
-        fetchKeys()
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true)
+        setKeyError(data.error || 'Administrator authentication is required to issue API keys.')
+        return
       }
-    } catch (err) {
-      alert('Error creating API key.')
+      if (!res.ok || !data.key) {
+        setKeyError(data.error || 'Failed to generate API key.')
+        return
+      }
+      setCreatedSecret(data.key.secretKey)
+      setNewKeyName('')
+      setKeyNotice('New API key issued.')
+      fetchKeys()
+    } catch {
+      setKeyError('Network error while creating API key.')
     } finally {
       setKeyLoading(false)
     }
   }
 
   const handleRevokeKey = async (id: string) => {
-    if (!confirm('Are you sure you want to revoke this API key? This will immediately invalidate existing integrations.')) return
+    setKeyError(null)
+    setKeyNotice(null)
     try {
-      await fetch(`/api/developers/keys?id=${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/developers/keys?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setKeyError(data.error || 'Failed to revoke key.')
+        return
+      }
+      setConfirmRevokeId(null)
+      setKeyNotice('API key revoked.')
       fetchKeys()
-    } catch (err) {
-      alert('Error revoking key.')
+    } catch {
+      setKeyError('Network error while revoking key.')
     }
   }
 
@@ -300,7 +328,7 @@ export default function AltavoxDevelopersPage() {
 
           {/* TAB 2: API KEYS */}
           {activeTab === 'keys' && (
-            <div className="rounded-2xl border border-white/10 bg-slate-800/60 p-6 sm:p-8 shadow-xl max-w-4xl space-y-8">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/60 p-6 sm:p-8 shadow-xl max-w-4xl space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Key className="size-4 text-[#f26522]" /> Manage Secret API Keys
@@ -310,121 +338,177 @@ export default function AltavoxDevelopersPage() {
                 </p>
               </div>
 
-              {/* Newly Created Secret Modal Notice */}
-              {createdSecret && (
-                <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">
-                  <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase font-mono">
-                    <ShieldCheck className="size-4 text-amber-400" />
-                    Save Your API Secret Key Now
-                  </div>
-                  <p className="mt-1 text-xs text-slate-300">
-                    For your security, this key will <strong>never be shown again</strong>. Copy and store it in your encrypted environment manager.
-                  </p>
-                  <div className="mt-3 flex items-center gap-2 rounded-lg bg-slate-950 p-3 font-mono text-xs text-amber-300 border border-amber-500/30">
-                    <span className="flex-1 truncate">{createdSecret}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(createdSecret)
-                        setCopiedSecret(true)
-                        setTimeout(() => setCopiedSecret(false), 2000)
-                      }}
-                      className="rounded bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition flex items-center gap-1"
-                    >
-                      {copiedSecret ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
-                      <span>{copiedSecret ? 'Copied' : 'Copy Key'}</span>
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setCreatedSecret(null)}
-                    className="mt-3 text-[11px] font-semibold text-slate-400 hover:text-white"
-                  >
-                    I have safely copied my key
-                  </button>
+              {keyError && (
+                <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-xs text-rose-200">
+                  {keyError}
                 </div>
               )}
 
-              {/* Generate New Key Form */}
-              <div className="rounded-xl border border-white/10 bg-slate-900/80 p-5">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                  Generate New API Key
-                </span>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  <input
-                    type="text"
-                    value={newKeyName}
-                    onChange={(e) => setNewKeyName(e.target.value)}
-                    placeholder="Key Label (e.g., Billing Microservice, Mobile App Backend)"
-                    className="flex-1 min-w-[240px] rounded-lg border border-white/10 bg-slate-950 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-[#f26522] focus:outline-hidden"
-                  />
-                  <select
-                    value={newKeyEnv}
-                    onChange={(e) => setNewKeyEnv(e.target.value as any)}
-                    className="rounded-lg border border-white/10 bg-slate-950 px-3.5 py-2 text-xs text-slate-300 focus:border-[#f26522] focus:outline-hidden"
-                  >
-                    <option value="test">Sandbox (avx_test_...)</option>
-                    <option value="live">Production (avx_live_...)</option>
-                  </select>
-                  <button
-                    type="button"
-                    disabled={keyLoading || !newKeyName.trim()}
-                    onClick={handleCreateKey}
-                    className="rounded-lg bg-[#f26522] px-4 py-2 text-xs font-bold text-white hover:bg-[#d9531e] disabled:opacity-50 transition flex items-center gap-1.5"
-                  >
-                    <Plus className="size-3.5" /> Generate Key
-                  </button>
+              {keyNotice && (
+                <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs text-emerald-200">
+                  {keyNotice}
                 </div>
-              </div>
+              )}
 
-              {/* Existing Keys Table */}
-              <div className="overflow-x-auto rounded-xl border border-white/10 bg-slate-900/60">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-950 text-slate-400 border-b border-white/10 text-[11px] uppercase font-mono">
-                    <tr>
-                      <th className="py-3 px-4">Key Label</th>
-                      <th className="py-3 px-4">Prefix</th>
-                      <th className="py-3 px-4">Env</th>
-                      <th className="py-3 px-4">Last Active</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Revoke</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {keys.map((k) => (
-                      <tr key={k.id} className="hover:bg-white/[0.02] transition">
-                        <td className="py-3 px-4 font-bold text-white">{k.name}</td>
-                        <td className="py-3 px-4 font-mono text-sky-400">{k.keyPrefix}••••••••</td>
-                        <td className="py-3 px-4">
-                          <span className={`rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase ${
-                            k.environment === 'live' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-300'
-                          }`}>
-                            {k.environment}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-slate-400 text-[11px]">{k.lastUsedAt}</td>
-                        <td className="py-3 px-4">
-                          <span className={`text-[11px] font-semibold ${k.status === 'active' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                            {k.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {k.status === 'active' && (
-                            <button
-                              type="button"
-                              onClick={() => handleRevokeKey(k.id)}
-                              className="text-slate-400 hover:text-rose-400 transition"
-                              title="Revoke Key"
-                            >
-                              <Trash2 className="size-4" />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {authRequired ? (
+                <div className="rounded-xl border border-amber-500/30 bg-slate-900/80 p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-amber-300 text-sm font-bold">
+                    <Lock className="size-4" /> Administrator Authentication Required
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Secret API keys are restricted to verified Altavox administrators. Sign in with an authorized account to view, issue, or revoke keys.
+                  </p>
+                  <Link
+                    href="/sign-in"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#f26522] px-4 py-2 text-xs font-bold text-white hover:bg-[#d9531e] transition"
+                  >
+                    Sign In to Manage Keys <ArrowRight className="size-3.5" />
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {/* Newly Created Secret Modal Notice */}
+                  {createdSecret && (
+                    <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-5">
+                      <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase font-mono">
+                        <ShieldCheck className="size-4 text-amber-400" />
+                        Save Your API Secret Key Now
+                      </div>
+                      <p className="mt-1 text-xs text-slate-300">
+                        For your security, this key will <strong>never be shown again</strong>. Copy and store it in your encrypted environment manager.
+                      </p>
+                      <div className="mt-3 flex items-center gap-2 rounded-lg bg-slate-950 p-3 font-mono text-xs text-amber-300 border border-amber-500/30">
+                        <span className="flex-1 truncate">{createdSecret}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(createdSecret)
+                            setCopiedSecret(true)
+                            setTimeout(() => setCopiedSecret(false), 2000)
+                          }}
+                          className="rounded bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition flex items-center gap-1"
+                        >
+                          {copiedSecret ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                          <span>{copiedSecret ? 'Copied' : 'Copy Key'}</span>
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setCreatedSecret(null)}
+                        className="mt-3 text-[11px] font-semibold text-slate-400 hover:text-white"
+                      >
+                        I have safely copied my key
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Generate New Key Form */}
+                  <div className="rounded-xl border border-white/10 bg-slate-900/80 p-5">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                      Generate New API Key
+                    </span>
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      <input
+                        type="text"
+                        value={newKeyName}
+                        onChange={(e) => setNewKeyName(e.target.value)}
+                        placeholder="Key Label (e.g., Billing Microservice, Mobile App Backend)"
+                        className="flex-1 min-w-[240px] rounded-lg border border-white/10 bg-slate-950 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-[#f26522] focus:outline-hidden"
+                      />
+                      <select
+                        value={newKeyEnv}
+                        onChange={(e) => setNewKeyEnv(e.target.value as 'test' | 'live')}
+                        className="rounded-lg border border-white/10 bg-slate-950 px-3.5 py-2 text-xs text-slate-300 focus:border-[#f26522] focus:outline-hidden"
+                      >
+                        <option value="test">Sandbox (avx_test_...)</option>
+                        <option value="live">Production (avx_live_...)</option>
+                      </select>
+                      <button
+                        type="button"
+                        disabled={keyLoading || !newKeyName.trim()}
+                        onClick={handleCreateKey}
+                        className="rounded-lg bg-[#f26522] px-4 py-2 text-xs font-bold text-white hover:bg-[#d9531e] disabled:opacity-50 transition flex items-center gap-1.5"
+                      >
+                        <Plus className="size-3.5" /> Generate Key
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Existing Keys Table */}
+                  <div className="overflow-x-auto rounded-xl border border-white/10 bg-slate-900/60">
+                    {keys.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-slate-400">
+                        No developer API keys have been issued in this session yet.
+                      </div>
+                    ) : (
+                      <table className="w-full text-left text-xs text-slate-300">
+                        <thead className="bg-slate-950 text-slate-400 border-b border-white/10 text-[11px] uppercase font-mono">
+                          <tr>
+                            <th className="py-3 px-4">Key Label</th>
+                            <th className="py-3 px-4">Prefix</th>
+                            <th className="py-3 px-4">Env</th>
+                            <th className="py-3 px-4">Last Active</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Revoke</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {keys.map((k) => (
+                            <tr key={k.id} className="hover:bg-white/[0.02] transition">
+                              <td className="py-3 px-4 font-bold text-white">{k.name}</td>
+                              <td className="py-3 px-4 font-mono text-sky-400">{k.keyPrefix}••••••••</td>
+                              <td className="py-3 px-4">
+                                <span className={`rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase ${
+                                  k.environment === 'live' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-300'
+                                }`}>
+                                  {k.environment}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-slate-400 text-[11px]">{k.lastUsedAt}</td>
+                              <td className="py-3 px-4">
+                                <span className={`text-[11px] font-semibold ${k.status === 'active' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                  {k.status.toUpperCase()}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                {k.status === 'active' && (
+                                  confirmRevokeId === k.id ? (
+                                    <div className="inline-flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRevokeKey(k.id)}
+                                        className="rounded bg-rose-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-rose-700"
+                                      >
+                                        Confirm
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => setConfirmRevokeId(null)}
+                                        className="text-[10px] text-slate-400 hover:text-white"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => setConfirmRevokeId(k.id)}
+                                      className="text-slate-400 hover:text-rose-400 transition"
+                                      title="Revoke Key"
+                                    >
+                                      <Trash2 className="size-4" />
+                                    </button>
+                                  )
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
 

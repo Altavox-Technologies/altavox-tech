@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { EntitlementEngine, ENTITLEMENT_CATALOG, SubscriptionPlanId } from '@/lib/entitlements/engine'
+import { requireAdminApiAccess } from '@/lib/api-auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   const { searchParams } = new URL(req.url)
   const orgId = searchParams.get('orgId')
   const featureId = searchParams.get('featureId')
@@ -28,6 +32,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   try {
     const { orgId, newPlanId, billingInterval = 'monthly' } = await req.json()
 

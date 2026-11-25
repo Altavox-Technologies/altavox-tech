@@ -1,14 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
-  try {
-    const { prompt, context = 'general', model = 'gemini-2.5-flash' } = await req.json()
+  const ip = getClientIp(req)
+  const rl = checkRateLimit(`ai-assistant:${ip}`, 15, 60_000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Please wait before sending another query.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds) } }
+    )
+  }
 
-    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-      return NextResponse.json({ error: 'Prompt string is required.' }, { status: 400 })
+  try {
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid request payload.' }, { status: 400 })
+    }
+    const { prompt, context = 'general', model = 'gemini-2.5-flash' } = body
+
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0 || prompt.length > 4000) {
+      return NextResponse.json({ error: 'Prompt string (1-4000 characters) is required.' }, { status: 400 })
     }
 
     const apiKey = process.env.GEMINI_API_KEY

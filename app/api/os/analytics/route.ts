@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdminApiAccess } from '@/lib/api-auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   const { searchParams } = new URL(req.url)
   const format = searchParams.get('format')
 

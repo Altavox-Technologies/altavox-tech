@@ -13,6 +13,10 @@ const getPayPalBaseUrl = () => {
     : 'https://api-m.sandbox.paypal.com'
 }
 
+export interface ExtendedCreateOrderParams extends CreateOrderParams {
+  internalOrderId?: string
+}
+
 /**
  * Obtain server-side OAuth2 access token from PayPal
  */
@@ -55,9 +59,9 @@ export async function getPayPalAccessToken(): Promise<string | null> {
  * Server-side PayPal Order Creation
  */
 export async function createPayPalOrder(
-  params: CreateOrderParams
+  params: ExtendedCreateOrderParams
 ): Promise<CreateOrderResult> {
-  const internalOrderId = `ATX-${randomUUID().replace(/-/g, '')}`
+  const internalOrderId = params.internalOrderId || `ATX-${randomUUID().replace(/-/g, '')}`
   const token = await getPayPalAccessToken()
 
   if (!token) {
@@ -68,6 +72,14 @@ export async function createPayPalOrder(
     throw new Error('Payment amount must be a positive number.')
   }
 
+  const normalizedCurrency = params.currency === 'TZS' ? 'USD' : params.currency
+
+  const returnUrlObj = new URL(params.returnUrl || `${process.env.BETTER_AUTH_URL || 'http://localhost:3000'}/academy/dashboard`)
+  returnUrlObj.searchParams.set('order_status', 'success')
+  returnUrlObj.searchParams.set('internalOrderId', internalOrderId)
+  returnUrlObj.searchParams.set('itemType', params.itemType)
+  returnUrlObj.searchParams.set('slug', params.itemSlug)
+
   const payload = {
     intent: 'CAPTURE',
     purchase_units: [
@@ -76,7 +88,7 @@ export async function createPayPalOrder(
         description: `Altavox Tech: ${params.itemTitle}`.slice(0, 127),
         custom_id: params.itemId,
         amount: {
-          currency_code: params.currency === 'TZS' ? 'USD' : params.currency, // PayPal expects supported international currency
+          currency_code: normalizedCurrency,
           value: params.amount.toFixed(2)
         }
       }
@@ -85,8 +97,8 @@ export async function createPayPalOrder(
       brand_name: 'Altavox Technologies',
       landing_page: 'NO_PREFERENCE',
       user_action: 'PAY_NOW',
-      return_url: params.returnUrl || `${process.env.BETTER_AUTH_URL || ''}/academy/dashboard`,
-      cancel_url: params.cancelUrl || `${process.env.BETTER_AUTH_URL || ''}/academy`
+      return_url: returnUrlObj.toString(),
+      cancel_url: params.cancelUrl || `${process.env.BETTER_AUTH_URL || 'http://localhost:3000'}/academy?order_status=cancelled`
     }
   }
 
@@ -116,7 +128,7 @@ export async function createPayPalOrder(
     providerOrderId: orderData.id,
     approvalUrl: approvalLink,
     amount: params.amount,
-    currency: params.currency,
+    currency: normalizedCurrency,
     status: 'created'
   }
 }
@@ -143,7 +155,7 @@ export async function capturePayPalOrder(
   }
 
   const response = await fetch(
-    `${getPayPalBaseUrl()}/v2/checkout/orders/${params.providerOrderId}/capture`,
+    `${getPayPalBaseUrl()}/v2/checkout/orders/${encodeURIComponent(params.providerOrderId)}/capture`,
     {
       method: 'POST',
       headers: {
@@ -176,8 +188,14 @@ export async function capturePayPalOrder(
   const amount = Number(captureUnit?.amount?.value)
   const currency = captureUnit?.amount?.currency_code || 'USD'
   const referenceMatches = purchaseUnit?.reference_id === params.internalOrderId
-  const amountMatches = Number.isFinite(amount) && amount === params.expectedAmount && currency === params.expectedCurrency
-  const isCompleted = (captureData.status === 'COMPLETED' || captureUnit?.status === 'COMPLETED') && referenceMatches && amountMatches
+  const amountMatches =
+    Number.isFinite(amount) &&
+    Math.round(amount * 100) === Math.round(params.expectedAmount * 100) &&
+    currency === params.expectedCurrency
+  const isCompleted =
+    (captureData.status === 'COMPLETED' || captureUnit?.status === 'COMPLETED') &&
+    referenceMatches &&
+    amountMatches
 
   return {
     success: isCompleted,
@@ -205,7 +223,17 @@ export async function verifyPayPalWebhookSignature(
     return { verified: false, error: 'PayPal webhook verification is not configured.' }
   }
 
-  let webhookEvent: unknown
+  const authAlgo = headers.get('paypal-auth-algo')
+  const certUrl = headers.get('paypal-cert-url')
+  const transmissionId = headers.get('paypal-transmission-id')
+  const transmissionSig = headers.get('paypal-transmission-sig')
+  const transmissionTime = headers.get('paypal-transmission-time')
+
+  if (!authAlgo || !certUrl || !transmissionId || !transmissionSig || !transmissionTime) {
+    return { verified: false, error: 'Missing required PayPal transmission signature headers.' }
+  }
+
+  let webhookEvent: Record<string, any>
   try {
     webhookEvent = JSON.parse(rawBody)
   } catch {
@@ -213,11 +241,11 @@ export async function verifyPayPalWebhookSignature(
   }
 
   const payload = {
-    auth_algo: headers.get('paypal-auth-algo'),
-    cert_url: headers.get('paypal-cert-url'),
-    transmission_id: headers.get('paypal-transmission-id'),
-    transmission_sig: headers.get('paypal-transmission-sig'),
-    transmission_time: headers.get('paypal-transmission-time'),
+    auth_algo: authAlgo,
+    cert_url: certUrl,
+    transmission_id: transmissionId,
+    transmission_sig: transmissionSig,
+    transmission_time: transmissionTime,
     webhook_id: webhookId,
     webhook_event: webhookEvent
   }
@@ -242,12 +270,11 @@ export async function verifyPayPalWebhookSignature(
 
     const data = await res.json()
     const verified = data.verification_status === 'SUCCESS'
-    const event = JSON.parse(rawBody)
 
     return {
       verified,
-      eventType: event.event_type,
-      resourceId: event.resource?.id
+      eventType: webhookEvent.event_type,
+      resourceId: webhookEvent.resource?.id
     }
   } catch (err: any) {
     return { verified: false, error: err.message || 'Webhook verification exception.' }

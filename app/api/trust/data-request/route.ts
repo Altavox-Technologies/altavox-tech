@@ -1,6 +1,11 @@
+import { randomInt } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const allowedRequestTypes = new Set(['DATA_EXPORT', 'DATA_DELETION', 'RESPONSIBLE_DISCLOSURE'])
 
 interface GovernanceRequest {
   id: string
@@ -13,47 +18,66 @@ interface GovernanceRequest {
   referenceCode: string
 }
 
-let governanceRequests: GovernanceRequest[] = [
-  {
-    id: 'gov-01',
-    requestType: 'DATA_EXPORT',
-    requesterEmail: 'student@altavox.space',
-    requesterName: 'Michael Kweka',
-    status: 'COMPLETED',
-    createdAt: '2026-11-04T12:00:00Z',
-    referenceCode: 'DSR-EXP-9921'
-  }
-]
+let governanceRequests: GovernanceRequest[] = []
 
 export async function POST(req: NextRequest) {
-  try {
-    const { requestType, requesterEmail, requesterName, details, organization } = await req.json()
+  const ip = getClientIp(req)
+  const rl = checkRateLimit(`trust-dsr:${ip}`, 6, 60_000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait before submitting another governance request.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds) } }
+    )
+  }
 
-    if (!requesterEmail || !requestType) {
-      return NextResponse.json({ error: 'Email and request type are required.' }, { status: 400 })
+  try {
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid request payload.' }, { status: 400 })
     }
 
-    const referenceCode = `DSR-${requestType.slice(0, 3)}-${Math.floor(1000 + Math.random() * 9000)}`
+    const { requestType, requesterEmail, requesterName, organization } = body
+
+    if (
+      typeof requestType !== 'string' ||
+      !allowedRequestTypes.has(requestType) ||
+      typeof requesterEmail !== 'string' ||
+      !emailPattern.test(requesterEmail.trim()) ||
+      requesterEmail.trim().length > 200
+    ) {
+      return NextResponse.json(
+        { error: 'A valid request type and contact email are required.' },
+        { status: 400 }
+      )
+    }
+
+    const referenceCode = `DSR-${requestType.slice(0, 3)}-${randomInt(1000, 9999)}`
 
     const newReq: GovernanceRequest = {
       id: `gov-${Date.now()}`,
-      requestType,
-      requesterEmail: requesterEmail.trim(),
-      requesterName: (requesterName || 'User').trim(),
-      organization,
+      requestType: requestType as GovernanceRequest['requestType'],
+      requesterEmail: requesterEmail.trim().toLowerCase(),
+      requesterName: (typeof requesterName === 'string' && requesterName.trim()
+        ? requesterName.trim()
+        : 'Requester'
+      ).slice(0, 120),
+      organization: typeof organization === 'string' ? organization.trim().slice(0, 120) : undefined,
       status: 'RECEIVED',
       createdAt: new Date().toISOString(),
       referenceCode
     }
 
-    governanceRequests = [newReq, ...governanceRequests]
+    governanceRequests = [newReq, ...governanceRequests].slice(0, 100)
 
-    return NextResponse.json({
-      success: true,
-      message: `Your ${requestType.replace(/_/g, ' ')} request has been registered with reference ${referenceCode}. Our privacy and compliance desk will process this within 14 business days.`,
-      referenceCode
-    })
-  } catch (err) {
+    return NextResponse.json(
+      {
+        success: true,
+        message: `Your ${requestType.replace(/_/g, ' ')} request has been registered with reference ${referenceCode}. Our privacy and compliance desk will process this within 14 business days.`,
+        referenceCode
+      },
+      { headers: { 'Cache-Control': 'no-store' } }
+    )
+  } catch {
     return NextResponse.json({ error: 'Failed to register data governance request.' }, { status: 500 })
   }
 }

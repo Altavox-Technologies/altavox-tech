@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { AppProviders } from '@/components/app-providers'
 
 const brandEmblem = '/capricorn_emblem_clean_black.svg'
 
@@ -119,7 +120,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   )

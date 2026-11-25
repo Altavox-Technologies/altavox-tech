@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { coursesData } from '@/lib/courses-data'
 import { publishedBooks } from '@/lib/bookstore-data'
 import { createPayPalOrder } from '@/lib/payments/paypal'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -15,6 +16,15 @@ function getPublicBaseUrl() {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request)
+  const rl = checkRateLimit(`paypal-create:${ip}`, 15, 60_000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many checkout attempts. Please wait a moment.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSeconds), 'Cache-Control': 'no-store' } }
+    )
+  }
+
   if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
     return NextResponse.json({ error: 'PayPal checkout is not configured. No payment was created.' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
   }

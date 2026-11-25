@@ -212,7 +212,7 @@ export function AltavoxHeader() {
               >
                 <div className="p-2 border-b border-slate-100 pb-2 mb-2">
                   <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
-                    Altavox Academy Pathways (10 Tracks)
+                    Altavox Academy Pathways (20 Tracks)
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -287,7 +287,7 @@ export function AltavoxHeader() {
                     onClick={() => setSolutionsDropdownOpen(false)}
                     className="text-[11px] font-bold text-[#f26522] hover:underline"
                   >
-                    View all 10 courses →
+                    View all 20 courses →
                   </Link>
                   <Link
                     href="/projects"

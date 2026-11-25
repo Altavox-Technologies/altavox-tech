@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { FlowAutomationEngine, FlowEventTopic } from '@/lib/flow/engine'
+import { requireAdminApiAccess } from '@/lib/api-auth'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   const workflows = FlowAutomationEngine.getWorkflows()
   const runs = FlowAutomationEngine.getExecutionRuns()
 
@@ -20,6 +24,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const authCheck = await requireAdminApiAccess(req)
+  if (!authCheck.ok) return authCheck.response
+
   try {
     const { action, topic, idempotencyKey, payload, runId } = await req.json()
 

@@ -1,0 +1,400 @@
+{
+  "entities": {
+    "Project": {
+      "title": "AltavoxProject",
+      "description": "Production platform, client deployment, or internal system engineered by Altavox Tech.",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "URL-safe unique project slug"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160,
+          "description": "Official project display title"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "description": "Domain category"
+        },
+        "client": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160,
+          "description": "Operating client or Altavox division"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500,
+          "description": "Concise executive summary"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 3000,
+          "description": "Detailed operational description"
+        },
+        "engineeringChallenge": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Core technical challenge solved"
+        },
+        "engineeringSolution": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Implemented architectural solution"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Production", "In development", "Exploration", "Archived"],
+          "description": "Verified lifecycle state"
+        },
+        "projectGroup": {
+          "type": "string",
+          "enum": ["client", "ecosystem"],
+          "description": "Whether the project is a client deployment or an Altavox ecosystem platform"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "private"],
+          "description": "Public portfolio visibility"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "description": "Production URL or relative route"
+        },
+        "screenshotUrl": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Verified screenshot image path or HTTPS URL"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Bounded list of technology tags (max 12)"
+        },
+        "keyFeatures": {
+          "type": "array",
+          "description": "Bounded list of core capabilities (max 12)"
+        },
+        "frontendStack": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Frontend stack summary"
+        },
+        "backendStack": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Backend stack summary"
+        },
+        "databaseStack": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Database stack summary"
+        },
+        "infrastructureStack": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Infrastructure stack summary"
+        },
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Authenticated creator UID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "slug",
+        "name",
+        "category",
+        "client",
+        "summary",
+        "description",
+        "status",
+        "projectGroup",
+        "visibility",
+        "url",
+        "tags",
+        "keyFeatures",
+        "ownerUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PublicUserProfile": {
+      "title": "PublicUserProfile",
+      "description": "Non-PII public user identity record.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "role": {
+          "type": "string",
+          "enum": ["student", "partner", "admin"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "role", "createdAt", "updatedAt"]
+    },
+    "PrivateUserInfo": {
+      "title": "PrivateUserInfo",
+      "description": "Isolated PII record accessible only by the account owner or verified admins.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "organization": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt", "updatedAt"]
+    },
+    "LessonProgress": {
+      "title": "LessonProgress",
+      "description": "Student lesson completion progress per Academy course.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "courseSlug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "completedLessons": {
+          "type": "array",
+          "description": "Bounded list of completed lesson IDs (max 50)"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "courseSlug", "completedLessons", "updatedAt"]
+    },
+    "CourseEnrollment": {
+      "title": "CourseEnrollment",
+      "description": "Verified Academy course enrollment record.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "courseSlug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "courseTitle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "active", "completed", "revoked"]
+        },
+        "paymentProvider": {
+          "type": "string",
+          "enum": ["paypal", "mpesa", "admin_grant"]
+        },
+        "orderRef": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "courseSlug",
+        "courseTitle",
+        "status",
+        "paymentProvider",
+        "orderRef",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CertificateRecord": {
+      "title": "CertificateRecord",
+      "description": "Issued Academy certificate verification record (non-PII).",
+      "type": "object",
+      "properties": {
+        "certificateId": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 64,
+          "pattern": "^[A-Z0-9\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "studentName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "courseSlug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "courseTitle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "verificationHash": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        },
+        "status": {
+          "type": "string",
+          "enum": ["verified", "revoked"]
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "certificateId",
+        "userId",
+        "studentName",
+        "courseSlug",
+        "courseTitle",
+        "verificationHash",
+        "status",
+        "issuedAt"
+      ]
+    },
+    "AdminAccount": {
+      "title": "AdminAccount",
+      "description": "Explicit Firestore admin role marker document.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "grantedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "grantedAt"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "All Altavox Tech client and ecosystem projects"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/PublicUserProfile" },
+      "description": "Non-PII user display profile"
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/PrivateUserInfo" },
+      "description": "Isolated user PII document"
+    },
+    "/lessonProgress/{progressId}": {
+      "schema": { "$ref": "#/entities/LessonProgress" },
+      "description": "Per-user Academy lesson completion state"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": { "$ref": "#/entities/CourseEnrollment" },
+      "description": "Verified Academy course enrollments"
+    },
+    "/certificates/{certificateId}": {
+      "schema": { "$ref": "#/entities/CertificateRecord" },
+      "description": "Publicly verifiable Academy certificates"
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminAccount" },
+      "description": "Authorized admin UID registry"
+    }
+  }
+}
